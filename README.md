@@ -1,2 +1,2 @@
-# msc-ai-thesis
-Repo for my MSc AI thesis on controlled text generation
+# MSc AI thesis on Controllable Text Generation and Adaptive Dialogue Systems using Transformer-based Language Models
+...
