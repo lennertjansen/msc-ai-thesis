@@ -1,2 +1,2 @@
-# MSc AI thesis on Controllable Text Generation and Adaptive Dialogue Systems using Transformer-based Language Models
-...
+# Controllable Text Generation using Transformer-based Language Models
+Repo for my thesis project on controlled text generation and adaptive dialogue systems using Transformer-based Language Models.
