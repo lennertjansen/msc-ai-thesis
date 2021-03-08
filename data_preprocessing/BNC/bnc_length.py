@@ -6,7 +6,8 @@ import spacy
 from nltk import word_tokenize as nltk_tokenize
 from transformers import RobertaTokenizer
 
-from src.BNC import Corpus
+# from src.BNC import Corpus
+from BNC import Corpus
 
 nlp = spacy.load('en_core_web_sm', disable=['ner', 'parser', 'tagger'])
 
@@ -17,26 +18,28 @@ def spacy_tokenize(text):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--data_path", default="../data/bnc2014spoken-xml/spoken", type=str, required=True,
+        "--data_path", default="../../data/bnc2014spoken-xml/spoken", type=str,
         help="The input data directory."
     )
     parser.add_argument(
-        "--out_path", type=str, required=True,
+        "--out_path", default = "output", type=str,
         help="The output data directory."
     )
     parser.add_argument(
-        "--cutoff", default=1, type=int, required=True,
+        "--cutoff", default=1, type=int,
         help="The sentence position frequency cut-off. Skip sentence positions with frequency lower than this value."
     )
     parser.add_argument(
         "--tokenizer", type=str,
         help="Tokenizer: 'nltk', 'spacy', or 'huggingface'."
     )
+    parser.add_argument("--n", type=int, default = 100, help = "Number of files to load. 0: all")
     args = parser.parse_args()
 
     c = Corpus(
         untagged_path=os.path.join(args.data_path, "untagged"),
-        tagged_path=os.path.join(args.data_path, "tagged")
+        tagged_path=os.path.join(args.data_path, "tagged"),
+        n = args.n
     )
 
     if args.tokenizer == 'huggingface':

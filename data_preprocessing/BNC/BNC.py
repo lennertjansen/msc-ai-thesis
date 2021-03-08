@@ -5,6 +5,9 @@ import re
 from string import ascii_uppercase
 from tqdm import tqdm
 
+# Added by Lennert
+import pdb
+
 
 SPEAKER_NAMES = [c for c in ascii_uppercase]
 
@@ -157,6 +160,9 @@ class Conversation(object):
         else:
             self.speaker_id2name = None
 
+        self.speakers_ages_exact = {}
+        self.speakers_age_ranges = {}
+
         speaker_ids_tmp = []
         for sp_elem in header.find("speakerInfo").findall("speaker"):
             speaker = Speaker(sp_elem)
@@ -173,6 +179,10 @@ class Conversation(object):
                 speakers2conv[speaker.id].append(self.id)
             else:
                 speakers2conv[speaker.id] = [self.id]
+
+            self.speakers_age_ranges[speaker.id] = speaker.age_range
+            if speaker.age:
+                self.speakers_ages_exact[speaker.id] = speaker.age
 
         assert len(speaker_ids_tmp) == self.n_speakers
 
@@ -192,8 +202,8 @@ class Conversation(object):
 class Corpus(object):
     def __init__(
             self,
-            untagged_path="../data/bnc2014spoken-xml/spoken/untagged",
-            tagged_path="../data/bnc2014spoken-xml/spoken/tagged",
+            untagged_path="../../data/bnc2014spoken-xml/spoken/untagged",
+            tagged_path="../../data/bnc2014spoken-xml/spoken/tagged",
             n=0,
             add_speaker_id=False
     ):
