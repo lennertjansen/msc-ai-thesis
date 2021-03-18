@@ -18,68 +18,12 @@ import numpy as np # for linear algebra and numerical methods
 import pandas as pd # for easier csv parsing
 from torch import is_tensor
 from torch.utils.data import Dataset, DataLoader
-import spacy # for tokenizer
-# TODO: use huggingface tokenizers and experiment with BPE, WordPiece, and SentencePiece encodings: https://huggingface.co/transformers/tokenizer_summary.html
 from nltk.corpus import stopwords
 import re
 import torch
 from torch.nn.utils.rnn import pad_sequence  # pad batch
-
-# spacy english tokenizer
-spacy_eng = spacy.load("en_core_web_sm")
-
-class Vocabulary:
-    '''
-    Manual vocabulary using spacy tokenizer.
-    '''
-
-    def __init__(self, freq_threshold):
-
-        # integer to string mappings (and vice versa) with tokens for padding,
-        # start of sentence, end of sentence, and unknown
-        self.itos = {0: "<PAD>", 1: "<BOS>", 2: "<EOS>", 3: "<UNK>"} # int to str dict
-        self.stoi = {"<PAD>": 0, "<BOS>": 1, "<EOS>": 2, "<UNK>": 3} # str to int dict
-
-        # frequency threshold for token to be added to vocabulary
-        self.freq_threshold = freq_threshold
-
-    def __len__(self):
-        ''' Returns length (aka size) of vocabulary.'''
-        return len(self.itos)
-
-    @staticmethod
-    def tokenizer_eng(text):
-        return [tok.text.lower() for tok in spacy_eng.tokenizer(text)]
-
-    def build_vocabulary(self, sentence_list):
-        frequencies = {}
-
-        index = 4 # start integer index at 4 because 0 through 3 are special tokens
-
-        for sentence in sentence_list:
-            for word in self.tokenizer_eng(sentence):
-                # add dict entry for word if not yet in dict, else increment
-                if word not in frequencies:
-                    frequencies[word] = 1
-                else:
-                    frequencies[word] += 1
-
-                # add word to vocab if it passes frequency threshold
-                if frequencies[word] == self.freq_threshold:
-                    self.stoi[word] = index
-                    self.itos[index] = word
-                    index += 1
-
-    def numericalize(self, text):
-        tokenized_text = self.tokenizer_eng(text)
-
-        return [
-            self.stoi[token] if token in self.stoi else self.stoi["<UNK>"]
-            for token in tokenized_text
-        ]
-
-
-
+from tokenizers import Vocabulary, WordTokenizer
+from itertools import islice
 
 class BlogDataset(Dataset):
     '''
@@ -162,6 +106,7 @@ class BlogDataset(Dataset):
 
         # get blog at desired index
         blog = self.df.clean_text[index]
+        target = self.df.age[index]
 
         # start and end numericalized/embedded blog with respective special
         # tokens. Numericalize content
@@ -169,7 +114,7 @@ class BlogDataset(Dataset):
                              + self.vocab.numericalize(blog)\
                              + [self.vocab.stoi["<BOS>"]]
 
-        return torch.tensor(numericalized_blog)
+        return torch.tensor(numericalized_blog), torch.tensor(target)
 
 
 class MyCollate:
@@ -196,10 +141,15 @@ def padded_collate(batch, pad_index = 0):
 
     return torch.LongTensor(padded_texts), lengths
 
-# create dataset instance
-dataset = BlogDataset()
 
-data_loader = DataLoader(dataset, batch_size = 4,
-                         collate_fn=MyCollate(pad_index = 0))
+if __name__ == "__main__":
 
-set_trace()
+    # create dataset instance
+    dataset = BlogDataset()
+
+    data_loader = DataLoader(dataset, batch_size = 1)
+
+    for a in islice(data_loader, 10):
+        print(a)
+
+    set_trace()
