@@ -22,7 +22,7 @@ from nltk.corpus import stopwords
 import re
 import torch
 from torch.nn.utils.rnn import pad_sequence  # pad batch
-from tokenizers import Vocabulary, WordTokenizer
+from tokenizers import Vocabulary
 from itertools import islice
 
 class BlogDataset(Dataset):
@@ -31,7 +31,7 @@ class BlogDataset(Dataset):
     '''
 
     def __init__(self, file_path = 'data/blogs_kaggle/blogtext.csv',
-                 transform = None, freq_threshold = 1):
+                 transform = None, freq_threshold = 4):
         """
         Args:
             file_path (string): Path to csv file with blogtext data and labels.
@@ -46,7 +46,7 @@ class BlogDataset(Dataset):
 
         # read csv as dataframe
         self.df = pd.read_csv(file_path, encoding="utf-8") # to keep no. unique chars consistent across platforms
-        self.df = self.df[:1000] #TODO; remove this when done testing.
+        self.df = self.df[:1] #TODO; remove this when done testing.
         self.data_size = len(self.df)
         self.transform = transform
 
@@ -81,8 +81,25 @@ class BlogDataset(Dataset):
         self.vocab = Vocabulary(freq_threshold)
         self.vocab.build_vocabulary(self.df.clean_text)
 
-        # TODO: save age cateogry targets (maybe also astrological sign as a joke)
-        self.age_exact = self.df['age']
+        # Add labels for age categories
+        def age_to_cat(age):
+            '''Returns age category label for given age number.'''
+
+            if 13 <= int(age) <= 17:
+                return 0 #'13-17'
+            elif 23 <= int(age) <= 27:
+                return 1 #'23-27'
+            elif 33 <= int(age) <= 47:
+                return 2 #'33-47'
+            else:
+                raise ValueError("Given age not in one of pre-defined age groups.")
+
+        self.df['age_cat'] = self.df['age'].apply(age_to_cat)
+
+        # TODO: make this dynamic.
+        self.num_classes = 3
+
+
 
 
     def __len__(self):
@@ -106,7 +123,8 @@ class BlogDataset(Dataset):
 
         # get blog at desired index
         blog = self.df.clean_text[index]
-        target = self.df.age[index]
+        # target = self.df.age[index]
+        target = self.df.age_cat[index]
 
         # start and end numericalized/embedded blog with respective special
         # tokens. Numericalize content
@@ -141,12 +159,30 @@ def padded_collate(batch, pad_index = 0):
 
     return torch.LongTensor(padded_texts), lengths
 
+#TODO: write a function get_datasets() that handles the splitting of train, val
+# test sets etc. and returns the desired sets
+def get_datasets():
+    """
+    Args
+    ----
+    ....
+
+    Returns
+    -------
+    desired datasets
+    """
+
+    dataset = BlogDataset()
+
+    return dataset
+
 
 if __name__ == "__main__":
 
     # create dataset instance
     dataset = BlogDataset()
 
+    # TODO: add colate function for batching that also returns lengths
     data_loader = DataLoader(dataset, batch_size = 1)
 
     for a in islice(data_loader, 10):
