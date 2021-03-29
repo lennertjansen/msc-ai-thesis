@@ -183,7 +183,7 @@ if __name__ == "__main__":
     dataset = BlogDataset()
 
     # TODO: add colate function for batching that also returns lengths
-    data_loader = DataLoader(dataset, batch_size = 1)
+    data_loader = DataLoader(dataset, batch_size = 2, collate_fn = padded_collate)
 
     for a in islice(data_loader, 10):
         print(a)

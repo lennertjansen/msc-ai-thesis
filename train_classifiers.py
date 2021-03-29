@@ -17,8 +17,9 @@ from classifiers import TextClassificationLSTM
 from dataset import get_datasets
 from torch.utils.data import DataLoader
 
-def train_one_epoch():
-    pass
+def train_one_epoch(model, data_loader, optimizer, device):
+
+
 
 def train():
     #TODO: set seed

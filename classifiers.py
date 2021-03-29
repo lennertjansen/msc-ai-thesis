@@ -127,15 +127,19 @@ class TextClassificationLSTM(nn.Module):
         return output
 
 
-class TextClassificationGRU(nn.Module):
-    """Gated Recurrent Unit RNN module.
+class TextClassificationLogit(nn.Module):
     """
-    pass
+    Based on this tutorial: https://medium.com/biaslyai/pytorch-linear-and-logistic-regression-models-5c5f0da2cb9
+    """
+    def __init__(self, num_classes):
+        super(TextClassificationLogit, self).__init__()
+        self.linear = nn.Linear(1, num_classes)
 
-class TextClassificationRNN(nn.Module):
-    """Vanilla RNN module.
-    """
-    pass
+    def forward(self, x):
+        out = self.linear(x)
+        out = nn.functional.sigmoid(out)
+
+        return out
 
 class TextClassificationBERT():
     """
