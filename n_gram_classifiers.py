@@ -1,7 +1,7 @@
 # Import statements
-import os # for directory operations
-import numpy as np # for numerical/linear algebra methods
-import pandas as pd # for data(frame) processing
+import os  # for directory operations
+import numpy as np  # for numerical/linear algebra methods
+import pandas as pd  # for data(frame) processing
 import pdb # for debudding
 import matplotlib.pyplot as plt # for plotting
 import seaborn as sns # for cool plotting
@@ -28,11 +28,6 @@ import pickle
 from collections import Counter
 import spacy
 import argparse
-
-# TODO: write specification scheme for type of "simple" classifier to build and test?
-# Maybe just have the notebook build, train, and test all simple ones, i.e., Logit+ n-grams, Logit + grams + linguistic features, etc.
-# Specifiy trian-test splits
-# What else? --> Label to predict (e.g., age cat, age number, gender, astrological sign, topic)
 
 def train_classifiers(dataset,
                       dataset_fp,
@@ -146,45 +141,6 @@ def train_classifiers(dataset,
 
         data['clean_data'] = data['clean_data'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords]))
 
-        # # Check difference: before
-        # print(f"Unprocessed data =====> {data['text'][0]}")
-        # print(81 * "=")
-        # # After
-        # print(f"Cleaned data so far =====> {data['clean_data'][0]}")
-
-        # TO DELETE FROM HERE ======================================================
-        # # Drop columns that are uninformative for writing style (i.e., ID and date)
-        # data.drop(['id', 'date'], axis = 1, inplace = True)
-        #
-        # # Add labels for age categories
-        # def age_to_cat(age):
-        #     '''Returns age category label for given age number.'''
-        #
-        #     if 13 <= int(age) <= 17:
-        #         return '13-17'
-        #     elif 23 <= int(age) <= 27:
-        #         return '23-27'
-        #     elif 33 <= int(age):
-        #         return '33-47'
-        #     else:
-        #         print(int(age))
-        #         raise ValueError("Given age not in one of pre-defined age groups.")
-        #
-        #
-        # data['age_cat'] = data['age'].apply(age_to_cat)
-        #
-        # # Merge all possibly interesting labels into one column
-        # data['labels'] = data.apply(lambda col: [col['gender'], str(col['age']), col['topic'], col['sign']], axis = 1)
-        #
-        # # Only keep age as label
-        # # data['labels'] = data.apply(lambda col: [str(col['age'])], axis = 1) # TODO: Why keep age as string?
-        # # data['labels'] = data.apply(lambda col: [col['age']], axis = 1)
-        # data['labels'] = data.apply(lambda col: [col['age_cat']], axis = 1)
-        #
-        # # Reduce dataframe to only contain cleaned blogs and list of labels
-        # data = data[['clean_data', 'labels']]
-        # TO HERE ==================================================================
-
         print("Done preprocessing data.")
 
         print("Saving preprocessed dataframe to csv...")
@@ -284,7 +240,7 @@ def train_classifiers(dataset,
         feature_names = vectorizer.get_feature_names()
         for i, class_label in enumerate(class_labels):
             topn = np.argsort(clf.estimators_[i].coef_)[0][-n_feat:]
-            topn = topn[::-1]
+            topn = topn[::-1]  # Reverse order of arg s.t. features with high coefficients appear first
             print("%s: %s" % (class_label,
                   " ".join(feature_names[j] for j in topn if feature_names[j] in counter)))
 
@@ -331,8 +287,6 @@ def train_classifiers(dataset,
                         label_counts[label] += 1
                     else:
                         label_counts[label] = 1
-
-            label_counts
 
             # Binarize the labels for prediction
             binarizer = MultiLabelBinarizer(classes = sorted(label_counts.keys()))

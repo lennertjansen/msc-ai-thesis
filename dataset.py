@@ -46,7 +46,8 @@ class BlogDataset(Dataset):
 
         # read csv as dataframe
         self.df = pd.read_csv(file_path, encoding="utf-8") # to keep no. unique chars consistent across platforms
-        self.df = self.df[:1] #TODO; remove this when done testing.
+        self.df = self.df[:4]  #TODO; remove this when done testing.
+        # self.df.reset_index(drop=True, inplace=True)  # Reset index after subsetting
         self.data_size = len(self.df)
         self.transform = transform
 
@@ -124,7 +125,7 @@ class BlogDataset(Dataset):
         # get blog at desired index
         blog = self.df.clean_text[index]
         # target = self.df.age[index]
-        target = self.df.age_cat[index]
+        label = self.df.age_cat[index]
 
         # start and end numericalized/embedded blog with respective special
         # tokens. Numericalize content
@@ -132,7 +133,8 @@ class BlogDataset(Dataset):
                              + self.vocab.numericalize(blog)\
                              + [self.vocab.stoi["<BOS>"]]
 
-        return torch.tensor(numericalized_blog), torch.tensor(target)
+        return torch.tensor(numericalized_blog), torch.tensor(label)
+        # return numericalized_blog, label
 
 
 class MyCollate:
@@ -147,17 +149,39 @@ class MyCollate:
 
         return blogs
 
-def padded_collate(batch, pad_index = 0):
+class PadSequence:
+    def __init__(self, pad_index=0):
+        self.pad_index = pad_index
 
-    texts = batch
-    lengths = [len(text) for text in texts]
+    def __call__(self, batch):
+        # Let's assume that each element in "batch" is a tuple (data, label).
+        # Sort the batch in the descending order
+        sorted_batch = sorted(batch, key=lambda x: x[0].shape[0], reverse=True)
+        # sorted_batch = sorted(batch, key=lambda x: len(x[0]), reverse=True)
+        # Get each sequence and pad it
+        sequences = [x[0] for x in sorted_batch]
 
+        sequences_padded = pad_sequence(sequences, batch_first=True, padding_value=self.pad_index)
+
+        # Also need to store the length of each sequence
+        # This is later needed in order to unpad the sequences
+        lengths = torch.LongTensor([len(x) for x in sequences])
+
+        # Don't forget to grab the labels of the *sorted* batch
+        labels = torch.LongTensor(list(map(lambda x: x[1], sorted_batch)))
+
+        return sequences_padded, labels, lengths
+
+def padded_collate(batch, pad_idx=0):
+    """Pad sentences, return sentences and labels as LongTensors."""
+    blogs, labels = zip(*batch)
+    lengths = [len(s) for s in blogs]
     max_length = max(lengths)
+    # Pad each sentence with zeros to max_length
+    padded_sentences = [blog + [pad_idx] * (max_length - len(blog)) for blog in blogs]
+    # padded_targets = [s + [pad_idx] * (max_length - len(s)) for s in targets]
 
-    # Pad blogs
-    padded_texts = [text + [pad_index] * (max_length - len(text)) for text in texts]
-
-    return torch.LongTensor(padded_texts), lengths
+    return torch.LongTensor(padded_sentences), torch.LongTensor(labels), lengths
 
 #TODO: write a function get_datasets() that handles the splitting of train, val
 # test sets etc. and returns the desired sets
@@ -182,10 +206,9 @@ if __name__ == "__main__":
     # create dataset instance
     dataset = BlogDataset()
 
-    # TODO: add colate function for batching that also returns lengths
-    data_loader = DataLoader(dataset, batch_size = 2, collate_fn = padded_collate)
+    # TODO: add collate function for batching that also returns lengths
+    data_loader = DataLoader(dataset, batch_size = 2, collate_fn = PadSequence())
 
     for a in islice(data_loader, 10):
         print(a)
 
-    set_trace()
