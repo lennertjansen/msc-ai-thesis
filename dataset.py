@@ -46,8 +46,8 @@ class BlogDataset(Dataset):
 
         # read csv as dataframe
         self.df = pd.read_csv(file_path, encoding="utf-8") # to keep no. unique chars consistent across platforms
-        self.df = self.df[:4]  #TODO; remove this when done testing.
-        # self.df.reset_index(drop=True, inplace=True)  # Reset index after subsetting
+        self.df = self.df.iloc[:10000]  #TODO; remove this when done testing.
+        self.df.reset_index(drop=True, inplace=True)  # Reset index after subsetting
         self.data_size = len(self.df)
         self.transform = transform
 
@@ -90,7 +90,7 @@ class BlogDataset(Dataset):
                 return 0 #'13-17'
             elif 23 <= int(age) <= 27:
                 return 1 #'23-27'
-            elif 33 <= int(age) <= 47:
+            elif 33 <= int(age):
                 return 2 #'33-47'
             else:
                 raise ValueError("Given age not in one of pre-defined age groups.")
@@ -123,9 +123,9 @@ class BlogDataset(Dataset):
             index = index.tolist()
 
         # get blog at desired index
-        blog = self.df.clean_text[index]
+        blog = self.df.clean_text.iloc[index]
         # target = self.df.age[index]
-        label = self.df.age_cat[index]
+        label = self.df.age_cat.iloc[index]
 
         # start and end numericalized/embedded blog with respective special
         # tokens. Numericalize content
