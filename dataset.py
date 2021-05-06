@@ -30,8 +30,7 @@ class BlogDataset(Dataset):
     Text dataset type. Inherits functionality from data.Dataset.
     '''
 
-    def __init__(self, file_path = 'data/blogs_kaggle/blogtext.csv',
-                 transform = None, freq_threshold = 4):
+    def __init__(self, df, transform = None, freq_threshold = 4):
         """
         Args:
             file_path (string): Path to csv file with blogtext data and labels.
@@ -41,13 +40,7 @@ class BlogDataset(Dataset):
                 it to be added to the vocabulary
         """
 
-        # check if file csv format
-        assert os.path.splitext(file_path)[1] == ".csv"
-
-        # read csv as dataframe
-        self.df = pd.read_csv(file_path, encoding="utf-8") # to keep no. unique chars consistent across platforms
-        self.df = self.df.iloc[:10000]  #TODO; remove this when done testing.
-        self.df.reset_index(drop=True, inplace=True)  # Reset index after subsetting
+        self.df = df
         self.data_size = len(self.df)
         self.transform = transform
 
@@ -183,32 +176,73 @@ def padded_collate(batch, pad_idx=0):
 
     return torch.LongTensor(padded_sentences), torch.LongTensor(labels), lengths
 
-#TODO: write a function get_datasets() that handles the splitting of train, val
-# test sets etc. and returns the desired sets
-def get_datasets():
+
+
+def get_datasets(subset_size=None,
+                 file_path = 'data/blogs_kaggle/blogtext.csv',
+                 train_frac = 0.7,
+                 test_frac = 0.2,
+                 val_frac = 0.1,
+                 seed=2021):
+
     """
-    Args
-    ----
-    ....
-
-    Returns
-    -------
-    desired datasets
+    :param subset_size: (int) number of datapoints to take as subset. If None, full dataset is taken.
+    :param file_path: (str) full file path to .csv dataset
+    :param train_frac: (float) fraction of data(sub)set's observations to reserve for training
+    :param test_frac: (float) fraction of data(sub)set's observations to reserve for validation/model selection
+    :param val_frac: (float) fraction of data(sub)set's observations to reserve for testing
+    :param seed: (int) random state/seed for reproducibility of shuyffling dataset.
+    :return: train/val/test splits as BlogDataset types.
     """
 
-    dataset = BlogDataset()
+    # set seed for reproducibility of the shuffling
+    np.random.seed(seed)
 
-    return dataset
+    try:
+        # Assert that the given splits are valid, i.e., sum up to one
+        assert np.sum([train_frac, test_frac, val_frac]) == 1
+    except:
+        # ensure they do
+        val_frac = 1 - train_frac - test_frac
+
+        # Assert that the given splits are valid, i.e., sum up to one
+        assert np.sum([train_frac, test_frac, val_frac]) == 1
+
+
+    # Read in dataframe and do the shuffling and splitting here. s.t. you only have to read it once
+    assert os.path.splitext(file_path)[1] == ".csv"  # check if file csv format
+    df = pd.read_csv(file_path, encoding="utf-8")  # to keep no. unique chars consistent across platforms
+    df = df.sample(frac=1, random_state=seed).reset_index(drop=True)  # shuffle data set before subsampling
+    if subset_size:
+        df = df.iloc[:subset_size]
+        df.reset_index(drop=True, inplace=True)  # Reset index after subsetting
+
+    train_df, val_df, test_df = np.split(df, [int(train_frac * len(df)),
+                                              int((1 - test_frac) * len(df))])
+
+    # reset indices of subsets
+    train_df.reset_index(drop=True, inplace=True)
+    val_df.reset_index(drop=True, inplace=True)
+    test_df.reset_index(drop=True, inplace=True)
+
+    # return the three splits as BlogDataset types
+    train_dataset = BlogDataset(df = train_df)
+    val_dataset = BlogDataset(df=val_df)
+    test_dataset = BlogDataset(df=test_df)
+
+    return train_dataset, val_dataset, test_dataset
 
 
 if __name__ == "__main__":
 
-    # create dataset instance
-    dataset = BlogDataset()
+    # # create dataset instance
+    # dataset = BlogDataset()
+    #
+    # # TODO: add collate function for batching that also returns lengths
+    # data_loader = DataLoader(dataset, batch_size = 2, collate_fn = PadSequence())
+    #
+    # for a in islice(data_loader, 10):
+    #     print(a)
 
-    # TODO: add collate function for batching that also returns lengths
-    data_loader = DataLoader(dataset, batch_size = 2, collate_fn = PadSequence())
-
-    for a in islice(data_loader, 10):
-        print(a)
+    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=10000)
 

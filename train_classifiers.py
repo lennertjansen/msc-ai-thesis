@@ -13,6 +13,8 @@ from classifiers import TextClassificationLSTM
 from dataset import get_datasets, padded_collate, PadSequence
 from torch.utils.data import DataLoader
 
+import matplotlib.pyplot as plt
+
 # General teuxdeuxs
 # TODO: .to(device) everything
 # TODO: Look into tensorboard logging.
@@ -27,7 +29,9 @@ def train_one_epoch(model,
                     start_iteration,
                     clip_grad,
                     max_norm,
-                    log_interval):
+                    log_interval,
+                    losses,
+                    accs):
 
     # set model to train mode
     model.train()
@@ -74,6 +78,9 @@ def train_one_epoch(model,
         #     accuracy, loss
         # ))
 
+        losses.append(loss.item())
+        accs.append(accuracy)
+
         if iteration % log_interval == 0:
 
             print(
@@ -84,7 +91,7 @@ def train_one_epoch(model,
                 )
             )
 
-    return iteration
+    return iteration, losses, accs
 
 
 
@@ -101,10 +108,13 @@ def train(seed,
           clip_grad,
           max_norm,
           train_frac,
+          val_frac,
+          test_frac,
+          subset_size,
           log_interval):
 
-    #TODO: set seed
-    torch.manual_seed(seed)
+    # set seed for reproducibility on cpu or gpu based on availability
+    torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
 
     # set starting time of full training pipeline
     start_time = datetime.now()
@@ -116,20 +126,24 @@ def train(seed,
     print("Starting data preprocessing ... ")
     data_prep_start = datetime.now()
 
-    # Load data and create dataset instance
-    dataset = get_datasets()
+    # Load data and create dataset instances
+    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=subset_size,
+                                                            train_frac=train_frac,
+                                                            val_frac=val_frac,
+                                                            test_frac=test_frac,
+                                                            seed=seed)
 
     # Train, val, and test splits
-    train_size = int(train_frac * len(dataset))
-    test_size = len(dataset) - train_size
-    train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
+    # train_size = int(train_frac * len(dataset))
+    # test_size = len(dataset) - train_size
+    # train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
 
     # TODO: adapt the get_datasets() functions s.t. the dataset splits are instances of BlogDataset
     # TODO initialize the LSTM with the vocab of the training set alone, so you can see how the model handles unknown tokens during testing
 
     # get vocab size number of classes
-    vocab_size = len(dataset.vocab)
-    num_classes = dataset.num_classes
+    vocab_size = len(train_dataset.vocab)
+    num_classes = train_dataset.num_classes
 
     # create dataloaders with pre-specified batch size
     # data_loader = DataLoader(dataset=dataset,
@@ -140,6 +154,11 @@ def train(seed,
     train_loader = DataLoader(dataset=train_dataset,
                               batch_size=batch_size,
                               shuffle=True,
+                              collate_fn=PadSequence())
+
+    val_loader = DataLoader(dataset=val_dataset,
+                              batch_size=batch_size,
+                              shuffle=False,
                               collate_fn=PadSequence())
 
     test_loader = DataLoader(dataset=test_dataset,
@@ -180,6 +199,15 @@ def train(seed,
     # initialize iterations at zero
     iterations = 0
 
+    # values for model selection
+    best_val_loss = torch.tensor(np.inf, device=device)
+    best_epoch = None
+    best_model = None
+
+    # metrics for losses
+    train_losses = []
+    train_accs = []
+
     for epoch in tqdm(range(epochs)):
 
         epoch_start_time = datetime.now()
@@ -187,56 +215,55 @@ def train(seed,
             # set model to training mode. NB: in the actual training loop later on, this
             # statement goes at the beginning of each epoch.
             model.train()
-            iterations = train_one_epoch(model=model, data_loader=train_loader, criterion=criterion,
+            iterations, train_losses, train_accs = train_one_epoch(model=model, data_loader=train_loader, criterion=criterion,
                                          optimizer=optimizer, device=device, start_iteration=iterations,
-                                         clip_grad=clip_grad, max_norm=max_norm, log_interval=log_interval)
+                                         clip_grad=clip_grad, max_norm=max_norm, log_interval=log_interval,
+                                         losses=train_losses, accs=train_accs)
 
         except KeyboardInterrupt:
             print("Manually stopped current epoch")
             __import__('pdb').set_trace()
 
-        print(f"###############################################################")
-        print(f"Epoch {epoch} finished, validation loss: val_loss, ppl: ppl")
-        print(f"###############################################################")
         print("Current epoch training took {}".format(datetime.now() - epoch_start_time))
 
-        test_loss, test_accuracy = evaluate_performance(model=model,
-                                                        data_loader=test_loader,
+        val_loss, val_accuracy = evaluate_performance(model=model,
+                                                        data_loader=val_loader,
                                                         device=device,
                                                         criterion=criterion)
 
+        print(f"#######################################################################")
+        print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
+        print(f"#######################################################################")
 
-        # for batch_index, (input, target, lengths) in enumerate(data_loader):
-        #
-        #     # Reset gradients for next iteration
-        #     model.zero_grad()
-        #
-        #     # zero the parameter gradients
-        #     # optimizer.zero_grad()
-        #
-        #     # Forward pass through model
-        #     model_out = model(text = input, text_lengths = lengths)
-        #
-        #     # Evaluate loss, gradients, and update network parametrers
-        #     loss = criterion(model_out, target)
-        #     loss.backward()
-        #
-        #     # Apply gradient clipping
-        #     if clip_grad:
-        #         torch.nn.utils.clip_grad_norm_(model.parameters(),
-        #                                        max_norm=max_norm)
-        #
-        #     optimizer.step()
-        #
-        #     print(loss.item())
+        # update best performance
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            best_model = model
+            best_epoch = epoch + 1
 
-def evaluate_performance(model, data_loader, device, criterion):
+    print(f"#######################################################################")
+    print(f"Done training and validating. Best model from epoch {best_epoch}:")
+    print(best_model)
+    print(f"#######################################################################")
+
+    print("Starting testing...")
+    _, _ = evaluate_performance(model=best_model, data_loader=test_loader,
+                                                  device=device,
+                                                  criterion=criterion,
+                                                  set='test')
+
+    plot_performance(losses=train_losses, accs=train_accs)
+
+
+
+
+def evaluate_performance(model, data_loader, device, criterion, set='validation'):
 
     # set model to evaluation mode
     model.eval()
 
     # initialize loss and number of correct predictions
-    test_loss = 0
+    set_loss = 0
     total_correct = 0
 
     with torch.no_grad():
@@ -250,24 +277,67 @@ def evaluate_performance(model, data_loader, device, criterion):
             log_probs = model(batch_inputs, batch_lengths)  # log_probs shape: (batch_size, num_classes)
 
             # compute and sum up batch loss and correct predictions
-            test_loss += criterion(log_probs, batch_labels)
+            set_loss += criterion(log_probs, batch_labels)
 
             predictions = torch.argmax(log_probs, dim=1, keepdim=True)
             total_correct += predictions.eq(batch_labels.view_as(predictions)).sum().item()
 
         # average losses and accuracy
-        test_loss /= len(data_loader.dataset)
+        set_loss /= len(data_loader.dataset)
         accuracy = total_correct / len(data_loader.dataset)
 
         print(
-            "Performance on test set: "
+            "Performance on " + set + " set: "
             "Average loss: {:.4f}, Accuracy: {}/{} ({:.4f})".format(
-                test_loss, total_correct, len(data_loader.dataset), accuracy
+                set_loss, total_correct, len(data_loader.dataset), accuracy
             )
         )
 
-        return test_loss, accuracy
+        return set_loss, accuracy
 
+
+def plot_performance(losses, accs, show=True, save=False):
+    # saving destiation
+    FIGDIR = './figures/'
+    fig, (ax1, ax2) = plt.subplots(2, figsize=(20, 12))
+    fig.suptitle(f"LSTM accuracy and loss for default settings.")
+
+    # accs_run, loss_run, steps_run = train(config, seed=seed)
+    # accs_runs.append(accs_run)
+    # loss_runs.append(loss_run)
+    # steps_runs.append(steps_run)
+    #
+    # accs_means = np.mean(accs_runs, axis=0)
+    # accs_stds = np.std(accs_runs, axis=0)
+    # ci = 1.96 * accs_stds / np.sqrt(num_runs)
+    #
+    # loss_means = np.mean(loss_runs, axis=0)
+    # loss_stds = np.std(loss_runs, axis=0)
+    # ci_loss = 1.96 * loss_stds / np.sqrt(num_runs)
+
+    steps = np.arange(len(losses))
+
+    ax1.plot(steps, accs, label="Average accuracy")
+    # ax1.fill_between(steps_runs[0], (accs_means - ci), (accs_means + ci), alpha=0.3)
+    ax1.set_title("Accuracy and Loss for character prediction.")
+    ax1.set_ylabel("accuracy")
+    ax1.set_xlabel("steps")
+
+    ax2.plot(steps, losses, label="Average CE Loss")
+    # ax2.fill_between(steps_runs[0], (loss_means - ci_loss),
+    #                  (loss_means + ci_loss), alpha=0.3)
+    ax2.set_title("CE Loss for various sequence lengths")
+    ax2.set_ylabel("loss")
+    ax2.set_xlabel("steps")
+
+    ax1.legend()
+    ax2.legend()
+
+    if save:
+        plt.savefig(f"{FIGDIR}lstm_default_settings_Grimm.png",
+                    bbox_inches='tight')
+    if show:
+        plt.show()
 
 
 def hp_search():
@@ -292,10 +362,14 @@ def parse_arguments(args = None):
     parser.add_argument('--clip_grad', action='store_true',
                         help = 'Apply gradient clipping. Set to True if included in command line arguments.')
     parser.add_argument('--max_norm', type=float, default=10.0)
-    parser.add_argument('--train_frac', type=float, default=0.8,
+    parser.add_argument('--train_frac', type=float, default=0.7,
                         help='Fraction of full dataset to separate for training.')
-    # parser.add_argument('--test_frac', type=float, default=0.15,
-    #                     help='Fraction of full dataset to separate for testing.')
+    parser.add_argument('--val_frac', type=float, default=0.1,
+                        help='Fraction of full dataset to separate for training.')
+    parser.add_argument('--test_frac', type=float, default=0.2,
+                        help='Fraction of full dataset to separate for testing.')
+    parser.add_argument('--subset_size', type=int, default=None,
+                        help='Number of datapoints to take as subset. If None, full dataset is taken.')
     parser.add_argument('--log_interval', type=int, default=5, help="Number of iterations between printing metrics.")
     # parser.add_argument('--padding_index', type=int, default=0,
     #                     help="Pos. int. value to use as padding when collating input batches.")

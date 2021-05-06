@@ -195,9 +195,13 @@ class Conversation(object):
             u = Utterance(tagged_u_elem, untagged_u_elem, self.speaker_id2name)
             self.utterances.append(u)
 
+    @property
     def n_utterances(self):
         return len(self.utterances)
 
+    @property
+    def n_tokens(self):
+        return sum([len(utterance.tokens) for utterance in self.utterances])
 
 class Corpus(object):
     def __init__(
