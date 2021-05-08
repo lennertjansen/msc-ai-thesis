@@ -15,6 +15,9 @@ from torch.utils.data import DataLoader
 
 import matplotlib.pyplot as plt
 
+from torch.utils.tensorboard import SummaryWriter # for logging
+
+
 # General teuxdeuxs
 # TODO: .to(device) everything
 # TODO: Look into tensorboard logging.
@@ -40,8 +43,8 @@ def train_one_epoch(model,
 
     for iteration, (batch_inputs, batch_labels, batch_lengths) in tqdm(enumerate(data_loader, start=start_iteration)):
 
-        # Reset gradients for next iteration
-        model.zero_grad()
+
+
 
         # move everything to device
         batch_inputs, batch_labels, batch_lengths = batch_inputs.to(device), batch_labels.to(device), \
@@ -55,6 +58,10 @@ def train_one_epoch(model,
 
         # Evaluate loss, gradients, and update network parameters
         loss = criterion(log_probs, batch_labels)
+
+        writer.add_scalar("Loss/train", loss, iteration)
+        # Reset gradients for next iteration
+        optimizer.zero_grad()
         loss.backward()
 
         # Apply gradient clipping
@@ -67,6 +74,7 @@ def train_one_epoch(model,
         predictions = torch.argmax(log_probs, dim=1, keepdim=True)
         correct = predictions.eq(batch_labels.view_as(predictions)).sum().item()
         accuracy = correct / log_probs.size(0)
+        writer.add_scalar("Loss/train", loss, iteration)
 
         # print(loss.item())
         #
@@ -80,6 +88,8 @@ def train_one_epoch(model,
 
         losses.append(loss.item())
         accs.append(accuracy)
+        writer.add_scalar('Accuracy/train', accuracy, iteration)
+
 
         if iteration % log_interval == 0:
 
@@ -167,6 +177,14 @@ def train(seed,
                               collate_fn=PadSequence())
 
     print(f'Data preprocessing finished. Data prep took {datetime.now() - data_prep_start}.')
+
+    print('######### DATA STATS ###############')
+    print(f'Number of classes: {num_classes}')
+    print(f'Vocabulary size: {vocab_size}')
+    print(f'Training set size: {train_dataset.__len__()}')
+    print(f'Validation set size: {val_dataset.__len__()}')
+    print(f'Test set size: {test_dataset.__len__()}')
+    print(81 * '#')
 
     # initialize model
     print("Initializing model ...")
@@ -296,7 +314,7 @@ def evaluate_performance(model, data_loader, device, criterion, set='validation'
         return set_loss, accuracy
 
 
-def plot_performance(losses, accs, show=True, save=False):
+def plot_performance(losses, accs, show=False, save=False):
     # saving destiation
     FIGDIR = './figures/'
     fig, (ax1, ax2) = plt.subplots(2, figsize=(20, 12))
@@ -334,7 +352,7 @@ def plot_performance(losses, accs, show=True, save=False):
     ax2.legend()
 
     if save:
-        plt.savefig(f"{FIGDIR}lstm_default_settings_Grimm.png",
+        plt.savefig(f"{FIGDIR}lstm_blog.png",
                     bbox_inches='tight')
     if show:
         plt.show()
@@ -386,5 +404,18 @@ if __name__ == "__main__":
 
     print(f"Configuration: {args}")
 
+    # Create detailed experiment tag for tensorboard summary writer
+
+    cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
+    log_dir = f'runs/blog_lstm_emb_{args.embedding_dim}_hid_{args.hidden_dim}_l_{args.num_layers}_' \
+              f'bd_{args.bidirectional}_drop_{args.dropout}_bs_{args.batch_size}_epochs_{args.epochs}_' \
+              f'subset_{args.subset_size}_train_{args.train_frac}_val_{args.val_frac}_test_{args.test_frac}_' \
+              f'clip_{args.clip_grad}_maxnorm_{args.max_norm}_seed_{args.seed}_device_{args.device}_' \
+              f'{cur_datetime}'
+
+    writer = SummaryWriter(log_dir)
+
     # Train model
     train(**vars(args))
+
+    writer.close()

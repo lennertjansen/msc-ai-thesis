@@ -41,8 +41,9 @@ class TextClassificationLSTM(nn.Module):
         super(TextClassificationLSTM, self).__init__()
 
         # initialize embedding layer
-        self.embedding = nn.Embedding(num_embeddings = vocab_size,
-                                      embedding_dim = embedding_dim)
+        self.embedding = nn.Embedding(num_embeddings=vocab_size,
+                                      embedding_dim=embedding_dim,
+                                      padding_idx=0)
 
         # useful for later in forward function
         self.batch_first = batch_first

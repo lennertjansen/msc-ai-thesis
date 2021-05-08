@@ -126,6 +126,7 @@ class BlogDataset(Dataset):
                              + self.vocab.numericalize(blog)\
                              + [self.vocab.stoi["<BOS>"]]
 
+
         return torch.tensor(numericalized_blog), torch.tensor(label)
         # return numericalized_blog, label
 
