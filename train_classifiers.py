@@ -152,7 +152,7 @@ def train(seed,
     # TODO initialize the LSTM with the vocab of the training set alone, so you can see how the model handles unknown tokens during testing
 
     # get vocab size number of classes
-    vocab_size = len(train_dataset.vocab)
+    vocab_size = train_dataset.vocab_size
     num_classes = train_dataset.num_classes
 
     # create dataloaders with pre-specified batch size
@@ -359,6 +359,7 @@ def plot_performance(losses, accs, show=False, save=False):
 
 
 def hp_search():
+
     pass
 
 def parse_arguments(args = None):

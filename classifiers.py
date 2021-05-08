@@ -68,7 +68,7 @@ class TextClassificationLSTM(nn.Module):
         """ Performs forward pass of input text through classification module.
         Args
         ----
-        text (Tensor): Numericalized input text.
+        text (Tensor): Encoded input text.
             dim = [batch_size, sequence_length]
         text_lengths (Tensor or list(int)): pre-padding lengths of input
             sequences. dim = [batch_size]
@@ -78,7 +78,6 @@ class TextClassificationLSTM(nn.Module):
         output (Tensor): TODO: log probabilities.
             dim = [batch_size, num_classes]
         """
-
         # embed numericalized input text
         embedded = self.embedding(text)
         # embedded dims: [batch_size, sequence_length, embedding_dim]
@@ -89,6 +88,7 @@ class TextClassificationLSTM(nn.Module):
                                                             lengths = text_lengths,
                                                             batch_first = self.batch_first,
                                                             enforce_sorted = False)
+
 
         # Do forward pass through lstm model
         # NB: output tuple (hidden, cell) is ignored
