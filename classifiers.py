@@ -45,6 +45,9 @@ class TextClassificationLSTM(nn.Module):
                                       embedding_dim=embedding_dim,
                                       padding_idx=0)
 
+        # TODO: Try Glove and Word2Vec (pretrained) word embeddings
+
+
         # useful for later in forward function
         self.batch_first = batch_first
 

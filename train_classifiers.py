@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 
 from torch.utils.tensorboard import SummaryWriter # for logging
 
+from copy import deepcopy
+
 
 # General teuxdeuxs
 # TODO: .to(device) everything
@@ -34,7 +36,8 @@ def train_one_epoch(model,
                     max_norm,
                     log_interval,
                     losses,
-                    accs):
+                    accs,
+                    writer):
 
     # set model to train mode
     model.train()
@@ -106,6 +109,7 @@ def train_one_epoch(model,
 
 
 def train(seed,
+          mode,
           device,
           batch_size,
           embedding_dim,
@@ -115,13 +119,16 @@ def train(seed,
           dropout,
           batch_first,
           epochs,
+          lr,
           clip_grad,
           max_norm,
+          early_stopping_patience,
           train_frac,
           val_frac,
           test_frac,
           subset_size,
-          log_interval):
+          log_interval,
+          writer):
 
     # set seed for reproducibility on cpu or gpu based on availability
     torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
@@ -211,7 +218,7 @@ def train(seed,
     print(f'The model has {trainable_params} trainable parameters.')
 
     # set up optimizer and loss criterion
-    optimizer = optim.Adam(model.parameters())
+    optimizer = optim.Adam(params=model.parameters(), lr=lr)
     criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
 
     # initialize iterations at zero
@@ -219,8 +226,12 @@ def train(seed,
 
     # values for model selection
     best_val_loss = torch.tensor(np.inf, device=device)
+    best_val_accuracy = torch.tensor(-np.inf, device=device)
     best_epoch = None
     best_model = None
+
+    # Initialize patience for early stopping
+    patience = 0
 
     # metrics for losses
     train_losses = []
@@ -233,10 +244,13 @@ def train(seed,
             # set model to training mode. NB: in the actual training loop later on, this
             # statement goes at the beginning of each epoch.
             model.train()
-            iterations, train_losses, train_accs = train_one_epoch(model=model, data_loader=train_loader, criterion=criterion,
-                                         optimizer=optimizer, device=device, start_iteration=iterations,
-                                         clip_grad=clip_grad, max_norm=max_norm, log_interval=log_interval,
-                                         losses=train_losses, accs=train_accs)
+            iterations, train_losses, train_accs = train_one_epoch(model=model, data_loader=train_loader,
+                                                                   criterion=criterion,
+                                                                   optimizer=optimizer, device=device,
+                                                                   start_iteration=iterations,
+                                                                   clip_grad=clip_grad, max_norm=max_norm,
+                                                                   log_interval=log_interval,
+                                                                   losses=train_losses, accs=train_accs, writer=writer)
 
         except KeyboardInterrupt:
             print("Manually stopped current epoch")
@@ -245,32 +259,51 @@ def train(seed,
         print("Current epoch training took {}".format(datetime.now() - epoch_start_time))
 
         val_loss, val_accuracy = evaluate_performance(model=model,
-                                                        data_loader=val_loader,
-                                                        device=device,
-                                                        criterion=criterion)
+                                                      data_loader=val_loader,
+                                                      device=device,
+                                                      criterion=criterion)
 
         print(f"#######################################################################")
         print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
         print(f"#######################################################################")
 
+        # # update best performance
+        # if val_loss < best_val_loss:
+        #     best_val_loss = val_loss
+        #     best_val_accuracy = val_accuracy
+        #     best_model = model
+        #     best_epoch = epoch + 1
+
         # update best performance
-        if val_loss < best_val_loss:
+        if val_accuracy > best_val_accuracy:
             best_val_loss = val_loss
-            best_model = model
+            best_val_accuracy = val_accuracy
+            best_model = deepcopy(model)
+            best_optimizer = deepcopy(optimizer)
             best_epoch = epoch + 1
+            patience = 0
+        else:
+            patience +=1
+            if patience >= early_stopping_patience:
+                print("EARLY STOPPING")
+                break
 
     print(f"#######################################################################")
     print(f"Done training and validating. Best model from epoch {best_epoch}:")
     print(best_model)
     print(f"#######################################################################")
 
-    print("Starting testing...")
-    _, _ = evaluate_performance(model=best_model, data_loader=test_loader,
+    if mode == 'val':
+        return best_val_loss, best_val_accuracy, best_model, best_epoch, best_optimizer
+    elif mode == 'train':
+        print("Starting testing...")
+        _, _ = evaluate_performance(model=best_model, data_loader=test_loader,
                                                   device=device,
                                                   criterion=criterion,
                                                   set='test')
 
-    plot_performance(losses=train_losses, accs=train_accs)
+    # plot_performance(losses=train_losses, accs=train_accs)
+
 
 
 
@@ -358,13 +391,149 @@ def plot_performance(losses, accs, show=False, save=False):
         plt.show()
 
 
-def hp_search():
+def hp_search(seed,
+              mode,
+              device,
+              batch_size,
+              embedding_dim,
+              hidden_dim,
+              num_layers,
+              bidirectional,
+              dropout,
+              batch_first,
+              epochs,
+              lr,
+              clip_grad,
+              max_norm,
+              early_stopping_patience,
+              train_frac,
+              val_frac,
+              test_frac,
+              subset_size,
+              log_interval):
 
-    pass
+    # Set hyperparameters for grid search*
+    # seeds = [0, 1, 2]
+    # lrs = [1e-5, 1e-4, 1e-3, 1e-2]
+    lrs = [1e-5]
+    # embedding_dims = [32, 64, 128, 256]
+    embedding_dims = [32]
+    # hidden_dims = [128, 256, 512, 1024]
+    hidden_dims = [128]
+    # nums_layers = [1, 2, 4]
+    nums_layers = [1]
+    bidirectionals = [False, True]
+
+    # set holders for best performance metrics and corresponding hyperparameters
+    best_metrics = {'loss' : float("inf"),
+                    'acc' : float('-inf')}
+    best_hps = {'lr' : None,
+                'embedding_dim' : None,
+                'hidden_dim' : None,
+                'num_layers': None,
+                'bidirectional' : None}
+
+    best_model = None # TODO: what's the appropriate type for this?
+
+    #TODO: add tqdm's and print statements to these loops for progress monitoring
+
+    best_file_name = None
+    best_epoch = None
+
+    for lr_ in lrs:
+        for emb_dim in embedding_dims:
+            for hid_dim in hidden_dims:
+                # skip if hidden size not larger than embedding dim
+                if not hid_dim > emb_dim:
+                    continue
+
+                for n_layers in nums_layers:
+                    for bd in bidirectionals:
+
+                        # Create detailed experiment tag for tensorboard summary writer
+                        cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
+                        log_dir = 'runs/hp_search/'
+                        file_name = f'blog_lstm_emb_{emb_dim}_hid_{hid_dim}_l_{n_layers}_' \
+                                    f'bd_{bd}_drop_{dropout}_bs_{batch_size}_epochs_{epochs}_' \
+                                    f'lr_{lr_}_subset_{subset_size}_train_{train_frac}_val_{val_frac}_' \
+                                    f'test_{test_frac}_clip_{clip_grad}_maxnorm_{max_norm}' \
+                                    f'es_{early_stopping_patience}_seed_{seed}_device_{device}_dt_{cur_datetime}'
+
+                        # create summary writer instance for logging
+                        log_path = log_dir+file_name
+                        writer = SummaryWriter(log_path)
+
+                        # train model (in val mode)
+                        loss, acc, model, epoch, optimizer = train(mode=mode, seed=seed, device=device,
+                                                                            batch_size=batch_size,
+                                                                            embedding_dim=emb_dim,hidden_dim=hid_dim,
+                                                                            num_layers=n_layers, bidirectional=bd,
+                                                                            dropout=dropout, batch_first=batch_first,
+                                                                            epochs=epochs, lr=lr_, clip_grad=clip_grad,
+                                                                            max_norm=max_norm,
+                                                                            early_stopping_patience=early_stopping_patience,
+                                                                            train_frac=train_frac, val_frac=val_frac,
+                                                                            test_frac=test_frac,
+                                                                            subset_size=subset_size,
+                                                                            log_interval=log_interval,
+                                                                            writer=writer)
+
+                        # close tensorboard summary writer
+                        writer.close()
+
+                        # update best ...
+                        if acc > best_metrics['acc']:
+
+                            # ... metrics
+                            best_metrics['acc'] = acc
+                            best_metrics['loss'] = loss
+
+                            best_epoch = epoch
+
+                            # ... hyperparams
+                            best_hps['lr'] = lr_
+                            best_hps['embedding_dim'] = emb_dim
+                            best_hps['hidden_dim'] = hid_dim
+                            best_hps['num_layers'] = n_layers
+                            best_hps['bidirectional'] = bd
+
+                            # ... model
+                            best_model = deepcopy(model)
+
+                            # ... optimizer
+                            best_optimizer = deepcopy(optimizer)
+
+                            # filename
+                            best_file_name = file_name
+
+    model_dir = 'models/blog/lstm/'
+    model_path = model_dir + best_file_name + '.pt'
+    torch.save({
+        'epoch': best_epoch,
+        'model_state_dict': best_model.state_dict(),
+        'optimizer_state_dict': best_optimizer.state_dict(),
+        'loss': best_metrics['loss'],
+        'acc': best_metrics['acc']
+    }, model_path)
+
+    print("Finished hyperparameter search.")
+    print(f'Best hyperparameters: {best_hps}')
+    print(f'Best model: {best_model}')
+    print(f'Best metrics: {best_metrics}')
+
+
+
+
+
+
+
+
 
 def parse_arguments(args = None):
     parser = argparse.ArgumentParser(description="Train discriminator neural text classifiers.")
 
+    parser.add_argument('--mode', type=str, choices=['train', 'val', 'test'], default='train',
+                        help='Set script to training, development/validation, or test mode.')
     parser.add_argument("--seed", type=int, default=2021, help="Seed for reproducibility")
     parser.add_argument('--device', type=str, default=("cpu" if not torch.cuda.is_available() else "cuda"),
                         help="Device to run the model on.")
@@ -378,9 +547,12 @@ def parse_arguments(args = None):
     parser.add_argument('--batch_first', action='store_true', help='Assume batch size is first dimension of data.')
     parser.add_argument('--epochs', type=int, default=1,
                         help='Number of passes through entire dataset during training.')
+    parser.add_argument('--lr', type=float, default=1e-3, help='Adam optimizer learning rate.')
     parser.add_argument('--clip_grad', action='store_true',
                         help = 'Apply gradient clipping. Set to True if included in command line arguments.')
     parser.add_argument('--max_norm', type=float, default=10.0)
+    parser.add_argument('-es', '--early_stopping_patience', type=int, default=3,
+                        help="Early stopping patience. Default: 3")
     parser.add_argument('--train_frac', type=float, default=0.7,
                         help='Fraction of full dataset to separate for training.')
     parser.add_argument('--val_frac', type=float, default=0.1,
@@ -405,18 +577,29 @@ if __name__ == "__main__":
 
     print(f"Configuration: {args}")
 
-    # Create detailed experiment tag for tensorboard summary writer
+    if args.mode == 'train':
+        print("Starting training mode...")
+        # Create detailed experiment tag for tensorboard summary writer
+        cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
+        log_dir = f'runs/blog_lstm_emb_{args.embedding_dim}_hid_{args.hidden_dim}_l_{args.num_layers}_' \
+                  f'bd_{args.bidirectional}_drop_{args.dropout}_bs_{args.batch_size}_epochs_{args.epochs}_' \
+                  f'lr_{args.lr}_subset_{args.subset_size}_train_{args.train_frac}_val_{args.val_frac}_' \
+                  f'test_{args.test_frac}_clip_{args.clip_grad}_maxnorm_{args.max_norm}_' \
+                  f'es_{args.early_stopping_patience}_seed_{args.seed}_device_{args.device}_dt_{cur_datetime}'
 
-    cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
-    log_dir = f'runs/blog_lstm_emb_{args.embedding_dim}_hid_{args.hidden_dim}_l_{args.num_layers}_' \
-              f'bd_{args.bidirectional}_drop_{args.dropout}_bs_{args.batch_size}_epochs_{args.epochs}_' \
-              f'subset_{args.subset_size}_train_{args.train_frac}_val_{args.val_frac}_test_{args.test_frac}_' \
-              f'clip_{args.clip_grad}_maxnorm_{args.max_norm}_seed_{args.seed}_device_{args.device}_' \
-              f'{cur_datetime}'
+        writer = SummaryWriter(log_dir)
 
-    writer = SummaryWriter(log_dir)
+        # Train model
+        train(**vars(args), writer=writer)
 
-    # Train model
-    train(**vars(args))
+        # close tensorboard summary writer
+        writer.close()
 
-    writer.close()
+    elif args.mode == 'val':
+        print("Starting validation/development mode...")
+
+        # hyper parameter search
+        hp_search(**vars(args))
+
+    else:
+        pass
