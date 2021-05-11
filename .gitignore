@@ -4,3 +4,4 @@ figures/
 data/
 data_preprocessing/
 klad.py
+runs/

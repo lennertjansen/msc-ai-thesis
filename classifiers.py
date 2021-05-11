@@ -63,6 +63,8 @@ class TextClassificationLSTM(nn.Module):
         self.num_directions = 2 if bidirectional else 1
         self.fc = nn.Linear(hidden_dim * self.num_directions, num_classes)
 
+        self.dropout = nn.Dropout(p=dropout)
+
         # Activation function
         # TODO: figure out over which dimension to do this
         self.act = nn.ReLU()
@@ -118,6 +120,7 @@ class TextClassificationLSTM(nn.Module):
             # hidden dim: [batch_size, hidden_dim * num_directions]
 
             output = self.fc(hidden)
+            output = self.dropout(output)
             output = self.act(output)
 
             # # inverse operation of pack_padded_sequence(). i.e., unpacks packed

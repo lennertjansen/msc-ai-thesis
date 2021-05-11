@@ -131,45 +131,58 @@ def train(seed,
           test_frac,
           subset_size,
           log_interval,
-          writer):
+          writer,
+          train_dataset=None,
+          val_dataset=None,
+          test_dataset=None):
 
-    # set seed for reproducibility on cpu or gpu based on availability
-    torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
+    if mode =='train':
+        # set seed for reproducibility on cpu or gpu based on availability
+        torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
 
-    # set starting time of full training pipeline
-    start_time = datetime.now()
+        # set starting time of full training pipeline
+        start_time = datetime.now()
 
-    # set device
-    device = torch.device(device)
-    print(f"Device: {device}")
+        # set device
+        device = torch.device(device)
+        print(f"Device: {device}")
 
-    print("Starting data preprocessing ... ")
-    data_prep_start = datetime.now()
+        print("Starting data preprocessing ... ")
+        data_prep_start = datetime.now()
 
-    # Load data and create dataset instances
-    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=subset_size,
-                                                            train_frac=train_frac,
-                                                            val_frac=val_frac,
-                                                            test_frac=test_frac,
-                                                            seed=seed)
+        # Load data and create dataset instances
+        train_dataset, val_dataset, test_dataset = get_datasets(subset_size=subset_size,
+                                                                train_frac=train_frac,
+                                                                val_frac=val_frac,
+                                                                test_frac=test_frac,
+                                                                seed=seed)
 
-    # Train, val, and test splits
-    # train_size = int(train_frac * len(dataset))
-    # test_size = len(dataset) - train_size
-    # train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
+        # Train, val, and test splits
+        # train_size = int(train_frac * len(dataset))
+        # test_size = len(dataset) - train_size
+        # train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
 
-    # TODO: adapt the get_datasets() functions s.t. the dataset splits are instances of BlogDataset
-    # TODO initialize the LSTM with the vocab of the training set alone, so you can see how the model handles unknown tokens during testing
 
-    # get vocab size number of classes
-    vocab_size = train_dataset.vocab_size
-    num_classes = train_dataset.num_classes
+        # # get vocab size number of classes
+        # vocab_size = train_dataset.vocab_size
+        # num_classes = train_dataset.num_classes
 
-    # create dataloaders with pre-specified batch size
-    # data_loader = DataLoader(dataset=dataset,
-    #                          batch_size=batch_size,
-    #                          shuffle=True,
-    #                          collate_fn=PadSequence())
+        # create dataloaders with pre-specified batch size
+        # data_loader = DataLoader(dataset=dataset,
+        #                          batch_size=batch_size,
+        #                          shuffle=True,
+        #                          collate_fn=PadSequence())
+
+
+        print(f'Data preprocessing finished. Data prep took {datetime.now() - data_prep_start}.')
+
+        print('######### DATA STATS ###############')
+        print(f'Number of classes: {train_dataset.num_classes}')
+        print(f'Vocabulary size: {train_dataset.vocab_size}')
+        print(f'Training set size: {train_dataset.__len__()}')
+        print(f'Validation set size: {val_dataset.__len__()}')
+        print(f'Test set size: {test_dataset.__len__()}')
+        print(81 * '#')
 
     train_loader = DataLoader(dataset=train_dataset,
                               batch_size=batch_size,
@@ -177,32 +190,22 @@ def train(seed,
                               collate_fn=PadSequence())
 
     val_loader = DataLoader(dataset=val_dataset,
-                              batch_size=batch_size,
-                              shuffle=False,
-                              collate_fn=PadSequence())
+                            batch_size=batch_size,
+                            shuffle=False,
+                            collate_fn=PadSequence())
 
     test_loader = DataLoader(dataset=test_dataset,
-                              batch_size=batch_size,
-                              shuffle=False,
-                              collate_fn=PadSequence())
-
-    print(f'Data preprocessing finished. Data prep took {datetime.now() - data_prep_start}.')
-
-    print('######### DATA STATS ###############')
-    print(f'Number of classes: {num_classes}')
-    print(f'Vocabulary size: {vocab_size}')
-    print(f'Training set size: {train_dataset.__len__()}')
-    print(f'Validation set size: {val_dataset.__len__()}')
-    print(f'Test set size: {test_dataset.__len__()}')
-    print(81 * '#')
+                             batch_size=batch_size,
+                             shuffle=False,
+                             collate_fn=PadSequence())
 
     # initialize model
     print("Initializing model ...")
     model = TextClassificationLSTM(batch_size = batch_size,
-                                   vocab_size = vocab_size,
+                                   vocab_size = train_dataset.vocab_size,
                                    embedding_dim = embedding_dim,
                                    hidden_dim = hidden_dim,
-                                   num_classes = num_classes,
+                                   num_classes = train_dataset.num_classes,
                                    num_layers = num_layers,
                                    bidirectional = bidirectional,
                                    dropout = dropout,
@@ -419,12 +422,59 @@ def hp_search(seed,
               subset_size,
               log_interval):
 
+    # set seed for reproducibility on cpu or gpu based on availability
+    torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
+
+    # set starting time of full training pipeline
+    start_time = datetime.now()
+
+    # set device
+    device = torch.device(device)
+    print(f"Device: {device}")
+
+    print("Starting data preprocessing ... ")
+    data_prep_start = datetime.now()
+
+    # Load data and create dataset instances
+    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=subset_size,
+                                                            train_frac=train_frac,
+                                                            val_frac=val_frac,
+                                                            test_frac=test_frac,
+                                                            seed=seed)
+
+    # Train, val, and test splits
+    # train_size = int(train_frac * len(dataset))
+    # test_size = len(dataset) - train_size
+    # train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
+
+    # get vocab size number of classes
+    # vocab_size = train_dataset.vocab_size
+    # num_classes = train_dataset.num_classes
+
+    # create dataloaders with pre-specified batch size
+    # data_loader = DataLoader(dataset=dataset,
+    #                          batch_size=batch_size,
+    #                          shuffle=True,
+    #                          collate_fn=PadSequence())
+
+
+
+    print(f'Data preprocessing finished. Data prep took {datetime.now() - data_prep_start}.')
+
+    print('######### DATA STATS ###############')
+    print(f'Number of classes: {train_dataset.num_classes}')
+    print(f'Vocabulary size: {train_dataset.vocab_size}')
+    print(f'Training set size: {train_dataset.__len__()}')
+    print(f'Validation set size: {val_dataset.__len__()}')
+    print(f'Test set size: {test_dataset.__len__()}')
+    print(81 * '#')
+
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
-    lrs = [1e-5, 1e-4, 1e-3]
-    embedding_dims = [32, 64, 128, 256]
-    hidden_dims = [128, 256, 512, 1024]
-    nums_layers = [1, 2, 4]
+    lrs = [1e-3]
+    embedding_dims = [64, 128, 256]
+    hidden_dims = [128, 256, 512]
+    nums_layers = [1, 2]
     bidirectionals = [False, True]
 
 
@@ -458,6 +508,9 @@ def hp_search(seed,
                 for n_layers in tqdm(nums_layers, position=0, leave=True, desc='No. layers'):
                     for bd in tqdm(bidirectionals, position=0, leave=True, desc='Bidirectional'):
 
+                        print(f"Current config: lr: {lr_} | emb: {emb_dim} | hid_dim: {hid_dim} | n_layers: {n_layers} "
+                              f"| bd: {bd} | ")
+
                         # Create detailed experiment tag for tensorboard summary writer
                         cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
                         log_dir = 'runs/hp_search/'
@@ -473,18 +526,18 @@ def hp_search(seed,
 
                         # train model (in val mode)
                         loss, acc, model, epoch, optimizer = train(mode=mode, seed=seed, device=device,
-                                                                            batch_size=batch_size,
-                                                                            embedding_dim=emb_dim,hidden_dim=hid_dim,
-                                                                            num_layers=n_layers, bidirectional=bd,
-                                                                            dropout=dropout, batch_first=batch_first,
-                                                                            epochs=epochs, lr=lr_, clip_grad=clip_grad,
-                                                                            max_norm=max_norm,
-                                                                            early_stopping_patience=early_stopping_patience,
-                                                                            train_frac=train_frac, val_frac=val_frac,
-                                                                            test_frac=test_frac,
-                                                                            subset_size=subset_size,
-                                                                            log_interval=log_interval,
-                                                                            writer=writer)
+                                                                   batch_size=batch_size, embedding_dim=emb_dim,
+                                                                   hidden_dim=hid_dim, num_layers=n_layers,
+                                                                   bidirectional=bd, dropout=dropout,
+                                                                   batch_first=batch_first, epochs=epochs,
+                                                                   lr=lr_, clip_grad=clip_grad, max_norm=max_norm,
+                                                                   early_stopping_patience=early_stopping_patience,
+                                                                   train_frac=train_frac, val_frac=val_frac,
+                                                                   test_frac=test_frac, subset_size=subset_size,
+                                                                   log_interval=log_interval, writer=writer,
+                                                                   train_dataset=train_dataset, val_dataset=val_dataset,
+                                                                   test_dataset=test_dataset
+                                                                   )
 
                         # close tensorboard summary writer
                         writer.close()
