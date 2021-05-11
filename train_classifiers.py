@@ -18,13 +18,11 @@ import matplotlib.pyplot as plt
 from torch.utils.tensorboard import SummaryWriter # for logging
 
 from copy import deepcopy
+import shutil
 
 
 # General teuxdeuxs
 # TODO: .to(device) everything
-# TODO: Look into tensorboard logging.
-# TODO: Try WordTokenizer
-# Complete training/testing loop:
 
 def train_one_epoch(model,
                     data_loader,
@@ -415,13 +413,13 @@ def hp_search(seed,
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
     # lrs = [1e-5, 1e-4, 1e-3, 1e-2]
-    lrs = [1e-5]
+    lrs = [1e-3]
     # embedding_dims = [32, 64, 128, 256]
-    embedding_dims = [32]
+    embedding_dims = [32, 64, 128]
     # hidden_dims = [128, 256, 512, 1024]
-    hidden_dims = [128]
+    hidden_dims = [128, 256, 512]
     # nums_layers = [1, 2, 4]
-    nums_layers = [1]
+    nums_layers = [1, 2]
     bidirectionals = [False, True]
 
     # set holders for best performance metrics and corresponding hyperparameters
@@ -522,11 +520,10 @@ def hp_search(seed,
     print(f'Best metrics: {best_metrics}')
 
 
-
-
-
-
-
+def save_checkpoint(state, is_best, filename='checkpoint.pt'):
+    torch.save(state, filename)
+    if is_best:
+        shutil.copyfile(filename, 'model_best.pth.tar')
 
 
 def parse_arguments(args = None):
