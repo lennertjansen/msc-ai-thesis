@@ -1,2 +1,6 @@
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
+figures/
+data/
+data_preprocessing/
+klad.py
