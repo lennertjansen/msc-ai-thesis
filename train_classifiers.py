@@ -19,6 +19,7 @@ from torch.utils.tensorboard import SummaryWriter # for logging
 
 from copy import deepcopy
 import shutil
+from pathlib import Path
 
 
 # General teuxdeuxs
@@ -35,14 +36,16 @@ def train_one_epoch(model,
                     log_interval,
                     losses,
                     accs,
-                    writer):
+                    writer,
+                    disable_bars):
 
     # set model to train mode
     model.train()
 
     # print("\n Starting to train next epoch ... \n")
 
-    for iteration, (batch_inputs, batch_labels, batch_lengths) in tqdm(enumerate(data_loader, start=start_iteration)):
+    for iteration, (batch_inputs, batch_labels, batch_lengths) in tqdm(enumerate(data_loader, start=start_iteration),
+                                                                       disable=disable_bars):
 
 
 
@@ -235,7 +238,10 @@ def train(seed,
     train_losses = []
     train_accs = []
 
-    for epoch in tqdm(range(epochs)):
+    # disable tqdm progress bars in train and train_one_epoch if in validation mode
+    disable_bars = mode == 'val'
+
+    for epoch in tqdm(range(epochs), disable=disable_bars):
 
         epoch_start_time = datetime.now()
         try:
@@ -248,7 +254,8 @@ def train(seed,
                                                                    start_iteration=iterations,
                                                                    clip_grad=clip_grad, max_norm=max_norm,
                                                                    log_interval=log_interval,
-                                                                   losses=train_losses, accs=train_accs, writer=writer)
+                                                                   losses=train_losses, accs=train_accs, writer=writer,
+                                                                   disable_bars=disable_bars)
 
         except KeyboardInterrupt:
             print("Manually stopped current epoch")
@@ -412,14 +419,10 @@ def hp_search(seed,
 
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
-    # lrs = [1e-5, 1e-4, 1e-3, 1e-2]
-    lrs = [1e-3]
-    # embedding_dims = [32, 64, 128, 256]
-    embedding_dims = [32, 64, 128]
-    # hidden_dims = [128, 256, 512, 1024]
-    hidden_dims = [128, 256, 512]
-    # nums_layers = [1, 2, 4]
-    nums_layers = [1, 2]
+    lrs = [1e-5, 1e-4, 1e-3, 1e-2]
+    embedding_dims = [32, 64, 128, 256]
+    hidden_dims = [128, 256, 512, 1024]
+    nums_layers = [1, 2, 4]
     bidirectionals = [False, True]
 
     # set holders for best performance metrics and corresponding hyperparameters
@@ -438,15 +441,15 @@ def hp_search(seed,
     best_file_name = None
     best_epoch = None
 
-    for lr_ in lrs:
-        for emb_dim in embedding_dims:
-            for hid_dim in hidden_dims:
+    for lr_ in tqdm(lrs, position=0, leave=True, desc='Learning rates'):
+        for emb_dim in tqdm(embedding_dims, position=0, leave=True, desc='Embedding dims'):
+            for hid_dim in tqdm(hidden_dims, position=0, leave=True, desc='Hidden dims'):
                 # skip if hidden size not larger than embedding dim
                 if not hid_dim > emb_dim:
                     continue
 
-                for n_layers in nums_layers:
-                    for bd in bidirectionals:
+                for n_layers in tqdm(nums_layers, position=0, leave=True, desc='No. layers'):
+                    for bd in tqdm(bidirectionals, position=0, leave=True, desc='Bidirectional'):
 
                         # Create detailed experiment tag for tensorboard summary writer
                         cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
@@ -505,7 +508,9 @@ def hp_search(seed,
                             best_file_name = file_name
 
     model_dir = 'models/blog/lstm/'
+    Path(model_dir).mkdir(parents=True, exist_ok=True)
     model_path = model_dir + best_file_name + '.pt'
+
     torch.save({
         'epoch': best_epoch,
         'model_state_dict': best_model.state_dict(),
