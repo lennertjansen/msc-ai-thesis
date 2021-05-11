@@ -21,6 +21,8 @@ from copy import deepcopy
 import shutil
 from pathlib import Path
 
+import pandas as pd
+
 
 # General teuxdeuxs
 # TODO: .to(device) everything
@@ -419,11 +421,12 @@ def hp_search(seed,
 
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
-    lrs = [1e-5, 1e-4, 1e-3, 1e-2]
+    lrs = [1e-5, 1e-4, 1e-3]
     embedding_dims = [32, 64, 128, 256]
     hidden_dims = [128, 256, 512, 1024]
     nums_layers = [1, 2, 4]
     bidirectionals = [False, True]
+
 
     # set holders for best performance metrics and corresponding hyperparameters
     best_metrics = {'loss' : float("inf"),
@@ -440,6 +443,10 @@ def hp_search(seed,
 
     best_file_name = None
     best_epoch = None
+
+    # For keeping track of metrics for all configs
+    keys = ['lr', 'emb_dim', 'hid_dim', 'n_layers', 'bd', 'val_acc', 'val_loss']
+    df = pd.DataFrame(columns=keys)
 
     for lr_ in tqdm(lrs, position=0, leave=True, desc='Learning rates'):
         for emb_dim in tqdm(embedding_dims, position=0, leave=True, desc='Embedding dims'):
@@ -482,6 +489,12 @@ def hp_search(seed,
                         # close tensorboard summary writer
                         writer.close()
 
+
+                        # Update metric logging dataframe
+                        df.loc[0 if pd.isnull(df.index.max()) else df.index.max() + 1] = [lr_] + [emb_dim] + [hid_dim] \
+                                                                                         + [n_layers] + [bd] + [acc] + \
+                                                                                         [loss.item()]
+
                         # update best ...
                         if acc > best_metrics['acc']:
 
@@ -507,6 +520,13 @@ def hp_search(seed,
                             # filename
                             best_file_name = file_name
 
+    # Save metric logging dataframe to csv
+    df.to_csv(
+        'output/blog_lstm_hp_search_metrics.csv',
+        index=False
+    )
+
+    # Save best model checkpoint
     model_dir = 'models/blog/lstm/'
     Path(model_dir).mkdir(parents=True, exist_ok=True)
     model_path = model_dir + best_file_name + '.pt'
