@@ -419,17 +419,11 @@ def hp_search(seed,
 
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
-    # lrs = [1e-5, 1e-4, 1e-3, 1e-2]
-    # embedding_dims = [32, 64, 128, 256]
-    # hidden_dims = [128, 256, 512, 1024]
-    # nums_layers = [1, 2, 4]
-    # bidirectionals = [False, True]
-
-    lrs = [1e-5]
-    embedding_dims = [32]
-    hidden_dims = [128]
-    nums_layers = [1]
-    bidirectionals = [False]
+    lrs = [1e-5, 1e-4, 1e-3, 1e-2]
+    embedding_dims = [32, 64, 128, 256]
+    hidden_dims = [128, 256, 512, 1024]
+    nums_layers = [1, 2, 4]
+    bidirectionals = [False, True]
 
     # set holders for best performance metrics and corresponding hyperparameters
     best_metrics = {'loss' : float("inf"),
