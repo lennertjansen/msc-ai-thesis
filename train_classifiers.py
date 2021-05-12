@@ -81,7 +81,7 @@ def train_one_epoch(model,
         predictions = torch.argmax(log_probs, dim=1, keepdim=True)
         correct = predictions.eq(batch_labels.view_as(predictions)).sum().item()
         accuracy = correct / log_probs.size(0)
-        writer.add_scalar("Loss/train", loss, iteration)
+        # writer.add_scalar("Loss/train", loss, iteration)
 
         # print(loss.item())
         #
@@ -272,7 +272,9 @@ def train(seed,
         val_loss, val_accuracy = evaluate_performance(model=model,
                                                       data_loader=val_loader,
                                                       device=device,
-                                                      criterion=criterion)
+                                                      criterion=criterion,
+                                                      writer=writer,
+                                                      iteration=iterations)
 
         print(f"#######################################################################")
         print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
@@ -319,7 +321,7 @@ def train(seed,
 
 
 
-def evaluate_performance(model, data_loader, device, criterion, set='validation'):
+def evaluate_performance(model, data_loader, device, criterion, writer, iteration=0, set='validation'):
 
     # set model to evaluation mode
     model.eval()
@@ -354,6 +356,10 @@ def evaluate_performance(model, data_loader, device, criterion, set='validation'
                 set_loss, total_correct, len(data_loader.dataset), accuracy
             )
         )
+
+        if set == 'validation':
+            writer.add_scalar('Accuracy/val', accuracy, iteration)
+            writer.add_scalar('Loss/val', set_loss, iteration)
 
         return set_loss, accuracy
 
