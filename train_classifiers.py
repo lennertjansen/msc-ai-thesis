@@ -20,12 +20,13 @@ from torch.utils.tensorboard import SummaryWriter # for logging
 from copy import deepcopy
 import shutil
 from pathlib import Path
+import os, glob
 
 import pandas as pd
 
 
 # General teuxdeuxs
-# TODO: .to(device) everything
+
 
 def train_one_epoch(model,
                     data_loader,
@@ -498,6 +499,8 @@ def hp_search(seed,
     keys = ['lr', 'emb_dim', 'hid_dim', 'n_layers', 'bd', 'val_acc', 'val_loss']
     df = pd.DataFrame(columns=keys)
 
+    best_model_updates = -1
+
     for lr_ in tqdm(lrs, position=0, leave=True, desc='Learning rates'):
         for emb_dim in tqdm(embedding_dims, position=0, leave=True, desc='Embedding dims'):
             for hid_dim in tqdm(hidden_dims, position=0, leave=True, desc='Hidden dims'):
@@ -548,8 +551,16 @@ def hp_search(seed,
                                                                                          + [n_layers] + [bd] + [acc] + \
                                                                                          [loss.item()]
 
+                        # Save metric logging dataframe to csv
+                        df.to_csv(
+                            'output/blog_lstm_hp_search_metrics.csv',
+                            index=False
+                        )
+
                         # update best ...
                         if acc > best_metrics['acc']:
+
+                            best_model_updates +=1
 
                             # ... metrics
                             best_metrics['acc'] = acc
@@ -573,16 +584,39 @@ def hp_search(seed,
                             # filename
                             best_file_name = file_name
 
-    # Save metric logging dataframe to csv
-    df.to_csv(
-        'output/blog_lstm_hp_search_metrics.csv',
-        index=False
-    )
+                            # Delete previous current best model checkpoint file
+                            for filename in glob.glob("models/blog/lstm/cur_best_*"):
+                                os.remove(filename)
+
+                                # save current best model checkpoint
+                            # Save best model checkpoint
+                            model_dir = 'models/blog/lstm/'
+                            Path(model_dir).mkdir(parents=True, exist_ok=True)
+                            model_path = model_dir + 'cur_best_' + best_file_name + '.pt'
+
+                            torch.save({
+                                'epoch': best_epoch,
+                                'model_state_dict': best_model.state_dict(),
+                                'optimizer_state_dict': best_optimizer.state_dict(),
+                                'loss': best_metrics['loss'],
+                                'acc': best_metrics['acc']
+                            }, model_path)
+
+                            print("New current best model found.")
+                            print(f'Current best hyperparameters: {best_hps}')
+                            print(f'Current best model: {best_model}')
+                            print(f'Current best metrics: {best_metrics}')
+
+    # # Save metric logging dataframe to csv
+    # df.to_csv(
+    #     'output/blog_lstm_hp_search_metrics.csv',
+    #     index=False
+    # )
 
     # Save best model checkpoint
     model_dir = 'models/blog/lstm/'
     Path(model_dir).mkdir(parents=True, exist_ok=True)
-    model_path = model_dir + best_file_name + '.pt'
+    model_path = model_dir + 'best_' + best_file_name + '.pt'
 
     torch.save({
         'epoch': best_epoch,
@@ -596,6 +630,13 @@ def hp_search(seed,
     print(f'Best hyperparameters: {best_hps}')
     print(f'Best model: {best_model}')
     print(f'Best metrics: {best_metrics}')
+
+    # Delete equivalent cur_best file
+    for filename in glob.glob("models/blog/lstm/cur_best_*"):
+        os.remove(filename)
+
+    print(f"Best model updates: {best_model_updates}")
+
 
 
 def save_checkpoint(state, is_best, filename='checkpoint.pt'):
