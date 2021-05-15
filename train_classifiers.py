@@ -340,7 +340,7 @@ def train(seed,
 
 
 
-def evaluate_performance(model, data_loader, device, criterion, writer, iteration=0, set='validation'):
+def evaluate_performance(model, data_loader, device, criterion, writer=None, iteration=0, set='validation'):
 
     # set model to evaluation mode
     model.eval()
