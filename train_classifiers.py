@@ -218,7 +218,7 @@ def train(seed,
         model, _, _, _, _ = load_saved_model(model_class=TextClassificationLSTM, optimizer_class=optim.Adam, lr=lr,
                                              device=device, batch_size=batch_size, vocab_size=train_dataset.vocab_size,
                                              embedding_dim=embedding_dim, hidden_dim=hidden_dim,
-                                             num_classes=num_classes, num_layers=num_layers,
+                                             num_classes=train_dataset.num_classes, num_layers=num_layers,
                                              bidirectional=bidirectional, dropout=dropout, batch_first=batch_first)
 
 
