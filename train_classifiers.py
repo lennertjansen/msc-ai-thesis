@@ -320,9 +320,15 @@ def train(seed,
 
     if mode == 'val':
         return best_val_loss, best_val_accuracy, best_model, best_epoch, best_optimizer
-    elif mode == 'train' or mode == 'test':
+    elif mode == 'train':
         print("Starting testing...")
         _, _ = evaluate_performance(model=best_model, data_loader=test_loader,
+                                                  device=device,
+                                                  criterion=criterion,
+                                                  set='test')
+    elif mode == 'test':
+        print("Starting testing...")
+        _, _ = evaluate_performance(model=model, data_loader=test_loader,
                                                   device=device,
                                                   criterion=criterion,
                                                   set='test')
