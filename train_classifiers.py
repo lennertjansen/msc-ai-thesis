@@ -132,7 +132,7 @@ def train(seed,
           test_frac,
           subset_size,
           log_interval,
-          writer,
+          writer=None,
           train_dataset=None,
           val_dataset=None,
           test_dataset=None):
@@ -814,4 +814,4 @@ if __name__ == "__main__":
         hp_search(**vars(args))
 
     else:
-        pass
+        train(**vars(args))
