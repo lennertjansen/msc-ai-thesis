@@ -135,9 +135,10 @@ def train(seed,
           writer,
           train_dataset=None,
           val_dataset=None,
-          test_dataset=None):
+          test_dataset=None,
+          load_model):
 
-    if mode =='train':
+    if mode =='train' or mode == 'test':
         # set seed for reproducibility on cpu or gpu based on availability
         torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
 
@@ -200,18 +201,27 @@ def train(seed,
                              shuffle=False,
                              collate_fn=PadSequence())
 
-    # initialize model
-    print("Initializing model ...")
-    model = TextClassificationLSTM(batch_size = batch_size,
-                                   vocab_size = train_dataset.vocab_size,
-                                   embedding_dim = embedding_dim,
-                                   hidden_dim = hidden_dim,
-                                   num_classes = train_dataset.num_classes,
-                                   num_layers = num_layers,
-                                   bidirectional = bidirectional,
-                                   dropout = dropout,
-                                   device = device,
-                                   batch_first = batch_first)
+    if mode == 'train' or mode == 'val':
+
+        # initialize model
+        print("Initializing model ...")
+        model = TextClassificationLSTM(batch_size = batch_size,
+                                       vocab_size = train_dataset.vocab_size,
+                                       embedding_dim = embedding_dim,
+                                       hidden_dim = hidden_dim,
+                                       num_classes = train_dataset.num_classes,
+                                       num_layers = num_layers,
+                                       bidirectional = bidirectional,
+                                       dropout = dropout,
+                                       device = device,
+                                       batch_first = batch_first)
+    elif mode == 'test':
+        model, _, _, _, _ = load_saved_model(model_class=TextClassificationLSTM, optimizer_class=optim.Adam, lr=lr,
+                                             device=device, batch_size=batch_size, vocab_size=train_dataset.vocab_size,
+                                             embedding_dim=embedding_dim, hidden_dim=hidden_dim,
+                                             num_classes=num_classes, num_layers=num_layers,
+                                             bidirectional=bidirectional, dropout=dropout, batch_first=batch_first)
+
 
     # model to device
     model.to(device)
@@ -220,95 +230,97 @@ def train(seed,
     print("MODEL ARCHITECTURE:")
     print(model)
 
-    # count trainable parameters
-    trainable_params = sum(param.numel() for param in model.parameters() if param.requires_grad)
-    print(f'The model has {trainable_params} trainable parameters.')
+    if mode == 'train' or mode == 'val':
 
-    # set up optimizer and loss criterion
-    optimizer = optim.Adam(params=model.parameters(), lr=lr)
-    criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
+        # count trainable parameters
+        trainable_params = sum(param.numel() for param in model.parameters() if param.requires_grad)
+        print(f'The model has {trainable_params} trainable parameters.')
 
-    # initialize iterations at zero
-    iterations = 0
+        # set up optimizer and loss criterion
+        optimizer = optim.Adam(params=model.parameters(), lr=lr)
+        criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
 
-    # values for model selection
-    best_val_loss = torch.tensor(np.inf, device=device)
-    best_val_accuracy = torch.tensor(-np.inf, device=device)
-    best_epoch = None
-    best_model = None
+        # initialize iterations at zero
+        iterations = 0
 
-    # Initialize patience for early stopping
-    patience = 0
+        # values for model selection
+        best_val_loss = torch.tensor(np.inf, device=device)
+        best_val_accuracy = torch.tensor(-np.inf, device=device)
+        best_epoch = None
+        best_model = None
 
-    # metrics for losses
-    train_losses = []
-    train_accs = []
+        # Initialize patience for early stopping
+        patience = 0
 
-    # disable tqdm progress bars in train and train_one_epoch if in validation mode
-    disable_bars = mode == 'val'
+        # metrics for losses
+        train_losses = []
+        train_accs = []
 
-    for epoch in tqdm(range(epochs), disable=disable_bars):
+        # disable tqdm progress bars in train and train_one_epoch if in validation mode
+        disable_bars = mode == 'val'
 
-        epoch_start_time = datetime.now()
-        try:
-            # set model to training mode. NB: in the actual training loop later on, this
-            # statement goes at the beginning of each epoch.
-            model.train()
-            iterations, train_losses, train_accs = train_one_epoch(model=model, data_loader=train_loader,
-                                                                   criterion=criterion,
-                                                                   optimizer=optimizer, device=device,
-                                                                   start_iteration=iterations,
-                                                                   clip_grad=clip_grad, max_norm=max_norm,
-                                                                   log_interval=log_interval,
-                                                                   losses=train_losses, accs=train_accs, writer=writer,
-                                                                   disable_bars=disable_bars)
+        for epoch in tqdm(range(epochs), disable=disable_bars):
 
-        except KeyboardInterrupt:
-            print("Manually stopped current epoch")
-            __import__('pdb').set_trace()
+            epoch_start_time = datetime.now()
+            try:
+                # set model to training mode. NB: in the actual training loop later on, this
+                # statement goes at the beginning of each epoch.
+                model.train()
+                iterations, train_losses, train_accs = train_one_epoch(model=model, data_loader=train_loader,
+                                                                       criterion=criterion,
+                                                                       optimizer=optimizer, device=device,
+                                                                       start_iteration=iterations,
+                                                                       clip_grad=clip_grad, max_norm=max_norm,
+                                                                       log_interval=log_interval,
+                                                                       losses=train_losses, accs=train_accs, writer=writer,
+                                                                       disable_bars=disable_bars)
 
-        print("Current epoch training took {}".format(datetime.now() - epoch_start_time))
+            except KeyboardInterrupt:
+                print("Manually stopped current epoch")
+                __import__('pdb').set_trace()
 
-        val_loss, val_accuracy = evaluate_performance(model=model,
-                                                      data_loader=val_loader,
-                                                      device=device,
-                                                      criterion=criterion,
-                                                      writer=writer,
-                                                      iteration=iterations)
+            print("Current epoch training took {}".format(datetime.now() - epoch_start_time))
+
+            val_loss, val_accuracy = evaluate_performance(model=model,
+                                                          data_loader=val_loader,
+                                                          device=device,
+                                                          criterion=criterion,
+                                                          writer=writer,
+                                                          iteration=iterations)
+
+            print(f"#######################################################################")
+            print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
+            print(f"#######################################################################")
+
+            # # update best performance
+            # if val_loss < best_val_loss:
+            #     best_val_loss = val_loss
+            #     best_val_accuracy = val_accuracy
+            #     best_model = model
+            #     best_epoch = epoch + 1
+
+            # update best performance
+            if val_accuracy > best_val_accuracy:
+                best_val_loss = val_loss
+                best_val_accuracy = val_accuracy
+                best_model = deepcopy(model)
+                best_optimizer = deepcopy(optimizer)
+                best_epoch = epoch + 1
+                patience = 0
+            else:
+                patience +=1
+                if patience >= early_stopping_patience:
+                    print("EARLY STOPPING")
+                    break
 
         print(f"#######################################################################")
-        print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
+        print(f"Done training and validating. Best model from epoch {best_epoch}:")
+        print(best_model)
         print(f"#######################################################################")
-
-        # # update best performance
-        # if val_loss < best_val_loss:
-        #     best_val_loss = val_loss
-        #     best_val_accuracy = val_accuracy
-        #     best_model = model
-        #     best_epoch = epoch + 1
-
-        # update best performance
-        if val_accuracy > best_val_accuracy:
-            best_val_loss = val_loss
-            best_val_accuracy = val_accuracy
-            best_model = deepcopy(model)
-            best_optimizer = deepcopy(optimizer)
-            best_epoch = epoch + 1
-            patience = 0
-        else:
-            patience +=1
-            if patience >= early_stopping_patience:
-                print("EARLY STOPPING")
-                break
-
-    print(f"#######################################################################")
-    print(f"Done training and validating. Best model from epoch {best_epoch}:")
-    print(best_model)
-    print(f"#######################################################################")
 
     if mode == 'val':
         return best_val_loss, best_val_accuracy, best_model, best_epoch, best_optimizer
-    elif mode == 'train':
+    elif mode == 'train' or mode == 'test':
         print("Starting testing...")
         _, _ = evaluate_performance(model=best_model, data_loader=test_loader,
                                                   device=device,
@@ -427,7 +439,8 @@ def hp_search(seed,
               val_frac,
               test_frac,
               subset_size,
-              log_interval):
+              log_interval,
+              load_model):
 
     # set seed for reproducibility on cpu or gpu based on availability
     torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
@@ -650,40 +663,122 @@ def save_checkpoint(state, is_best, filename='checkpoint.pt'):
     if is_best:
         shutil.copyfile(filename, 'model_best.pth.tar')
 
+def load_saved_model(model_class, optimizer_class, lr, device, batch_size, vocab_size, embedding_dim, hidden_dim,
+                     num_classes, num_layers, bidirectional, dropout, batch_first):
+
+    checkpoint_path = 'models/blog/lstm/best_blog_lstm_emb_128_hid_256_l_2_bd_True_drop_0_bs_64_epochs_5_lr_0.001_' \
+                      'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_' \
+                      'device_cuda_dt_13_May_2021_16_25_34.pt'
+
+    # initialize model instance
+    model = model_class(batch_size=batch_size, vocab_size=vocab_size, embedding_dim=embedding_dim,
+                        hidden_dim=hidden_dim, num_classes=num_classes, num_layers=num_layers,
+                        bidirectional=bidirectional, dropout=dropout, device=device, batch_first=batch_first)
+
+    # model to device
+    model.to(device)
+
+    # initialize optimizer
+    optimizer = optimizer_class(params=model.parameters(), lr=lr)
+
+    # load checkpoint
+    checkpoint = torch.load(checkpoint_path)
+
+    # {
+    #     'epoch': best_epoch,
+    #     'model_state_dict': best_model.state_dict(),
+    #     'optimizer_state_dict': best_optimizer.state_dict(),
+    #     'loss': best_metrics['loss'],
+    #     'acc': best_metrics['acc']
+
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    epoch = checkpoint['epoch']
+    loss = checkpoint['loss']
+    acc = checkpoint['acc']
+
+    # set_trace()
+
+    return model, optimizer, epoch, loss, acc
+
+
+
+
+
+
+
 
 def parse_arguments(args = None):
     parser = argparse.ArgumentParser(description="Train discriminator neural text classifiers.")
 
-    parser.add_argument('--mode', type=str, choices=['train', 'val', 'test'], default='train',
-                        help='Set script to training, development/validation, or test mode.')
-    parser.add_argument("--seed", type=int, default=2021, help="Seed for reproducibility")
-    parser.add_argument('--device', type=str, default=("cpu" if not torch.cuda.is_available() else "cuda"),
-                        help="Device to run the model on.")
-    parser.add_argument('--batch_size', type=int, default=1, help="Number of datapoints to simultaneously process.")  # TODO: set to reasonable default after batching problem fixed.
-    parser.add_argument('--embedding_dim', type=int, default=16, help="Dimensionality of embedding.")
-    parser.add_argument('--hidden_dim', type=int, default=32, help="Size in LSTM hidden layer.")
-    parser.add_argument('--num_layers', type=int, default=1, help='Number of hidden layers in LSTM')
-    parser.add_argument('--bidirectional', action='store_true',
-                        help='Create a bidirectional LSTM. LSTM will be unidirectional if omitted.')
-    parser.add_argument('--dropout', type=float, default=0, help='Probability of applying dropout in final LSTM layer.')
-    parser.add_argument('--batch_first', action='store_true', help='Assume batch size is first dimension of data.')
-    parser.add_argument('--epochs', type=int, default=1,
-                        help='Number of passes through entire dataset during training.')
-    parser.add_argument('--lr', type=float, default=1e-3, help='Adam optimizer learning rate.')
-    parser.add_argument('--clip_grad', action='store_true',
-                        help = 'Apply gradient clipping. Set to True if included in command line arguments.')
-    parser.add_argument('--max_norm', type=float, default=10.0)
-    parser.add_argument('-es', '--early_stopping_patience', type=int, default=3,
-                        help="Early stopping patience. Default: 3")
-    parser.add_argument('--train_frac', type=float, default=0.7,
-                        help='Fraction of full dataset to separate for training.')
-    parser.add_argument('--val_frac', type=float, default=0.1,
-                        help='Fraction of full dataset to separate for training.')
-    parser.add_argument('--test_frac', type=float, default=0.2,
-                        help='Fraction of full dataset to separate for testing.')
-    parser.add_argument('--subset_size', type=int, default=None,
-                        help='Number of datapoints to take as subset. If None, full dataset is taken.')
-    parser.add_argument('--log_interval', type=int, default=5, help="Number of iterations between printing metrics.")
+    parser.add_argument(
+        '--mode', type=str, choices=['train', 'val', 'test'], default='train',
+        help='Set script to training, development/validation, or test mode.'
+    )
+    parser.add_argument(
+        "--seed", type=int, default=2021, help="Seed for reproducibility"
+    )
+    parser.add_argument(
+        '--device', type=str, default=("cpu" if not torch.cuda.is_available() else "cuda"),
+        help="Device to run the model on."
+    )
+    parser.add_argument(
+        '--batch_size', type=int, default=1, help="Number of datapoints to simultaneously process."
+    )  # TODO: set to reasonable default after batching problem fixed.
+    parser.add_argument(
+        '--embedding_dim', type=int, default=16, help="Dimensionality of embedding."
+    )
+    parser.add_argument(
+        '--hidden_dim', type=int, default=32, help="Size in LSTM hidden layer."
+    )
+    parser.add_argument(
+        '--num_layers', type=int, default=1, help='Number of hidden layers in LSTM'
+    )
+    parser.add_argument(
+        '--bidirectional', action='store_true',
+        help='Create a bidirectional LSTM. LSTM will be unidirectional if omitted.'
+    )
+    parser.add_argument(
+        '--dropout', type=float, default=0, help='Probability of applying dropout in final LSTM layer.'
+    )
+    parser.add_argument(
+        '--batch_first', action='store_true', help='Assume batch size is first dimension of data.'
+    )
+    parser.add_argument(
+        '--epochs', type=int, default=1, help='Number of passes through entire dataset during training.'
+    )
+    parser.add_argument(
+        '--lr', type=float, default=1e-3, help='Adam optimizer learning rate.'
+    )
+    parser.add_argument(
+        '--clip_grad', action='store_true',
+        help = 'Apply gradient clipping. Set to True if included in command line arguments.'
+    )
+    parser.add_argument(
+        '--max_norm', type=float, default=10.0
+    )
+    parser.add_argument(
+        '-es', '--early_stopping_patience', type=int, default=3, help="Early stopping patience. Default: 3"
+    )
+    parser.add_argument(
+        '--train_frac', type=float, default=0.7, help='Fraction of full dataset to separate for training.'
+    )
+    parser.add_argument(
+        '--val_frac', type=float, default=0.1, help='Fraction of full dataset to separate for training.'
+    )
+    parser.add_argument(
+        '--test_frac', type=float, default=0.2, help='Fraction of full dataset to separate for testing.'
+    )
+    parser.add_argument(
+        '--subset_size', type=int, default=None,
+        help='Number of datapoints to take as subset. If None, full dataset is taken.'
+    )
+    parser.add_argument(
+        '--log_interval', type=int, default=5, help="Number of iterations between printing metrics."
+    )
+    parser.add_argument(
+        '--load_model', action='store_true', help='Load pretrained model.'
+    )
     # parser.add_argument('--padding_index', type=int, default=0,
     #                     help="Pos. int. value to use as padding when collating input batches.")
 
