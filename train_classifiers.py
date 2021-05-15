@@ -135,8 +135,7 @@ def train(seed,
           writer,
           train_dataset=None,
           val_dataset=None,
-          test_dataset=None,
-          load_model):
+          test_dataset=None):
 
     if mode =='train' or mode == 'test':
         # set seed for reproducibility on cpu or gpu based on availability
@@ -439,8 +438,7 @@ def hp_search(seed,
               val_frac,
               test_frac,
               subset_size,
-              log_interval,
-              load_model):
+              log_interval):
 
     # set seed for reproducibility on cpu or gpu based on availability
     torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
@@ -775,9 +773,6 @@ def parse_arguments(args = None):
     )
     parser.add_argument(
         '--log_interval', type=int, default=5, help="Number of iterations between printing metrics."
-    )
-    parser.add_argument(
-        '--load_model', action='store_true', help='Load pretrained model.'
     )
     # parser.add_argument('--padding_index', type=int, default=0,
     #                     help="Pos. int. value to use as padding when collating input batches.")
