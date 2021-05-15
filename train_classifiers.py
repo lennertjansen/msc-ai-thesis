@@ -689,7 +689,6 @@ def load_saved_model(model_class, optimizer_class, lr, device, batch_size, vocab
     #     'optimizer_state_dict': best_optimizer.state_dict(),
     #     'loss': best_metrics['loss'],
     #     'acc': best_metrics['acc']
-    pdb.set_trace()
     model.load_state_dict(checkpoint['model_state_dict'])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
     epoch = checkpoint['epoch']
