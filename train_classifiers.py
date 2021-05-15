@@ -230,6 +230,8 @@ def train(seed,
     print("MODEL ARCHITECTURE:")
     print(model)
 
+    criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
+
     if mode == 'train' or mode == 'val':
 
         # count trainable parameters
@@ -238,7 +240,6 @@ def train(seed,
 
         # set up optimizer and loss criterion
         optimizer = optim.Adam(params=model.parameters(), lr=lr)
-        criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
 
         # initialize iterations at zero
         iterations = 0
