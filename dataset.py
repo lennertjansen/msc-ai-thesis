@@ -32,70 +32,22 @@ class BlogDataset(Dataset):
     Text dataset type. Inherits functionality from data.Dataset.
     '''
 
-    def __init__(self, df, tokenizer, transform = None, freq_threshold = 4):
+    def __init__(self, df, tokenizer):
         """
-        Args:
-            file_path (string): Path to csv file with blogtext data and labels.
-            transform (callable, optional): Optional transform to be applied on
-                a sample.
-            freq_threshold (int): Required number of occurrences of a token for
-                it to be added to the vocabulary
+        ...
         """
-
-        # self.df = df
-        # self.data_size = len(self.df)
-        # self.transform = transform
         #
         # #TODO Pre-processing steps happen here -- implement them st the less
         # # standard ones can be switched on and off to evaluate their impact on
         # # performance:
         # # Remove all non-alphabetical characters
-        # self.df['clean_text'] = self.df['text'].apply(lambda x: re.sub(r'[^A-Za-z]+',' ', x))
-        #
-        # # make all letters lowercase
-        # self.df['clean_text'] = self.df['clean_text'].apply(lambda x: x.lower())
-        #
-        # # remove whitespaces from beginning or ending
-        # self.df['clean_text'] = self.df['clean_text'].apply(lambda x: x.strip())
-        #
-        # # remove stop words
-        # stopwords_dict = set(stopwords.words('english')) # use set (hash table) data structure for faster lookup
-        # self.df['clean_text'] = self.df['clean_text'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords_dict]))
-        #
-        # # Remove instances empty strings
-        # self.df.drop(self.df[self.df.clean_text == ''].index, inplace = True)
+
         #
         # # TODO: filter out non-English
         #
         # # TODO: mask age-disclosing utterances
-        #
-        # # number of datapoints removed by all pre-processing steps
-        # self.dropped_instances = self.data_size - len(self.df)
-        # self.data_size = len(self.df)
-        #
-        #
-        #
-        # # initialize vocabulary and build vocab
-        # self.vocab = Vocabulary(freq_threshold)
-        # self.vocab.build_vocabulary(self.df.clean_text)
-        #
-        # # Add labels for age categories
-        # def age_to_cat(age):
-        #     '''Returns age category label for given age number.'''
-        #
-        #     if 13 <= int(age) <= 17:
-        #         return 0 #'13-17'
-        #     elif 23 <= int(age) <= 27:
-        #         return 1 #'23-27'
-        #     elif 33 <= int(age):
-        #         return 2 #'33-47'
-        #     else:
-        #         raise ValueError("Given age not in one of pre-defined age groups.")
-        #
-        # self.df['age_cat'] = self.df['age'].apply(age_to_cat)
-        #
-        # self.blogs = df.clean_text
-        # self.age_cats = df.age_cat
+
+
         self.df = df
         self.tokenizer = tokenizer
 
@@ -103,17 +55,11 @@ class BlogDataset(Dataset):
         self.num_classes = 3
         self.vocab_size = tokenizer.vocab_size
 
-
-
-
-
-
     def __len__(self):
         '''
         Overrides the inherited method s.t. len(dataset) returns the size of the
         data set.
         '''
-        # return self.data_size
         return len(self.df)
 
     def __getitem__(self, index):
@@ -128,24 +74,57 @@ class BlogDataset(Dataset):
         if is_tensor(index):
             index = index.tolist()
 
-        # # get blog at desired index
-        # blog = self.df.clean_text.iloc[index]
-        # # target = self.df.age[index]
-        # label = self.df.age_cat.iloc[index]
-        #
-        # # start and end numericalized/embedded blog with respective special
-        # # tokens. Numericalize content
-        # numericalized_blog = [self.vocab.stoi["<BOS>"]] \
-        #                      + self.vocab.numericalize(blog)\
-        #                      + [self.vocab.stoi["<BOS>"]]
-        #
-        #
-        # return torch.tensor(numericalized_blog), torch.tensor(label)
-        # return numericalized_blog, label
-
         encoded_input = self.tokenizer.encode(self.df.clean_text.iloc[index], add_special_tokens=True)
         label = self.df.age_cat.iloc[index]
 
+        return torch.tensor(encoded_input), torch.tensor(label)
+
+class BncDataset(Dataset):
+
+    def __init__(self, df, tokenizer):
+        """
+        ...
+        """
+        #
+        # #TODO Pre-processing steps happen here -- implement them st the less
+        # # standard ones can be switched on and off to evaluate their impact on
+        # # performance:
+        # # Remove all non-alphabetical characters
+
+        #
+        # # TODO: filter out non-English
+        #
+        # # TODO: mask age-disclosing utterances
+
+
+        self.df = df
+        self.tokenizer = tokenizer
+
+        # # TODO: make this dynamic.
+        self.num_classes = 2
+        self.vocab_size = tokenizer.vocab_size
+
+    def __len__(self):
+        '''
+        Overrides the inherited method s.t. len(dataset) returns the size of the
+        data set.
+        '''
+        return len(self.df)
+
+    def __getitem__(self, index):
+        '''
+        Overrides the inherited method s.t. indexing dataset[i] will get the
+        i-th sample. Also handles reading of examples (as opposed to init()),
+        which is more memory efficient, as all examples are not stored in
+        memory at once, but as they are required.
+        '''
+
+        # Convert index to list if its a tensor
+        if is_tensor(index):
+            index = index.tolist()
+
+        encoded_input = self.tokenizer.encode(self.df.clean_text.iloc[index], add_special_tokens=True)
+        label = self.df.age_cat.iloc[index]
 
         return torch.tensor(encoded_input), torch.tensor(label)
 
@@ -203,7 +182,8 @@ def get_datasets(subset_size=None,
                  train_frac = 0.7,
                  test_frac = 0.2,
                  val_frac = 0.1,
-                 seed=2021):
+                 seed=2021,
+                 data='blog'):
 
     """
     :param subset_size: (int) number of datapoints to take as subset. If None, full dataset is taken.
@@ -233,6 +213,7 @@ def get_datasets(subset_size=None,
     assert os.path.splitext(file_path)[1] == ".csv"  # check if file csv format
     df = pd.read_csv(file_path, encoding="utf-8")  # to keep no. unique chars consistent across platforms
     df = df.sample(frac=1, random_state=seed).reset_index(drop=True)  # shuffle data set before subsampling
+
     if subset_size:
         df = df.iloc[:subset_size]
         df.reset_index(drop=True, inplace=True)  # Reset index after subsetting
@@ -251,17 +232,22 @@ def get_datasets(subset_size=None,
     # 3) Pass one tokenizer/vocab built on training data to all three Dataset types
     # 4)
 
-    train_preprocessed = preprocess_df(train_df)
-    val_preprocessed = preprocess_df(val_df)
-    test_preprocessed = preprocess_df(test_df)
+    train_preprocessed = preprocess_df(train_df, data=data)
+    val_preprocessed = preprocess_df(val_df, data=data)
+    test_preprocessed = preprocess_df(test_df, data=data)
 
     tokenizer = WordTokenizer(train_preprocessed.clean_text)
 
-
-    # return the three splits as BlogDataset types
-    train_dataset = BlogDataset(df = train_df, tokenizer=tokenizer)
-    val_dataset = BlogDataset(df=val_df, tokenizer=tokenizer)
-    test_dataset = BlogDataset(df=test_df, tokenizer=tokenizer)
+    if data == 'blog':
+        # return the three splits as BlogDataset types
+        train_dataset = BlogDataset(df=train_preprocessed, tokenizer=tokenizer)
+        val_dataset = BlogDataset(df=val_preprocessed, tokenizer=tokenizer)
+        test_dataset = BlogDataset(df=test_preprocessed, tokenizer=tokenizer)
+    elif data == 'bnc':
+        # return the three splits as BlogDataset types
+        train_dataset = BncDataset(df=train_preprocessed, tokenizer=tokenizer)
+        val_dataset = BncDataset(df=val_preprocessed, tokenizer=tokenizer)
+        test_dataset = BncDataset(df=test_preprocessed, tokenizer=tokenizer)
 
     return train_dataset, val_dataset, test_dataset
 
@@ -276,6 +262,6 @@ if __name__ == "__main__":
     #
     # for a in islice(data_loader, 10):
     #     print(a)
-    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=10000)
-
-    # set_trace()
+    bnc_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv'
+    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=10000, file_path=bnc_path, data='bnc')
+    input, label = train_dataset[34]

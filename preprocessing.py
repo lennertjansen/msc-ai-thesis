@@ -2,7 +2,7 @@ from nltk.corpus import stopwords
 import pandas as pd
 import re
 
-def preprocess_df(df):
+def preprocess_df(df, data='blog'):
 
     data_size = len(df)
 
@@ -34,20 +34,38 @@ def preprocess_df(df):
     data_size = len(df)
 
 
+    if data == 'blog':
+        # Add labels for age categories
+        def age_to_cat(age):
+            '''Returns age category label for given age number.'''
 
-    # Add labels for age categories
-    def age_to_cat(age):
-        '''Returns age category label for given age number.'''
+            if 13 <= int(age) <= 17:
+                return 0 #'13-17'
+            elif 23 <= int(age) <= 27:
+                return 1 #'23-27'
+            elif 33 <= int(age):
+                return 2 #'33-47'
+            else:
+                raise ValueError("Given age not in one of pre-defined age groups.")
 
-        if 13 <= int(age) <= 17:
-            return 0 #'13-17'
-        elif 23 <= int(age) <= 27:
-            return 1 #'23-27'
-        elif 33 <= int(age):
-            return 2 #'33-47'
-        else:
-            raise ValueError("Given age not in one of pre-defined age groups.")
+        df['age_cat'] = df['age'].apply(age_to_cat)
 
-    df['age_cat'] = df['age'].apply(age_to_cat)
+    elif data == 'bnc':
+
+        # Add labels for age categories
+        def age_to_cat(label):
+            '''Returns age category label for given age number.'''
+
+            if label == '19_29':
+                return 0  # '13-17'
+            elif label == '50_plus':
+                return 1  # '23-27'
+            else:
+                raise ValueError("Given age not in one of pre-defined age groups.")
+
+        df['age_cat'] = df['label'].apply(age_to_cat)
+
+        # # rename column
+        # df.rename(columns={'label': 'age_cat'}, inplace=True)
 
     return df[['clean_text', 'age_cat']]

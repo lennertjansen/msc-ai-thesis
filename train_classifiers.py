@@ -114,6 +114,7 @@ def train_one_epoch(model,
 
 
 def train(seed,
+          data,
           mode,
           device,
           batch_size,
@@ -138,9 +139,12 @@ def train(seed,
           val_dataset=None,
           test_dataset=None):
 
+
     if mode =='train' or mode == 'test':
         # set seed for reproducibility on cpu or gpu based on availability
         torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
+
+        data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
 
         # set starting time of full training pipeline
         start_time = datetime.now()
@@ -154,10 +158,12 @@ def train(seed,
 
         # Load data and create dataset instances
         train_dataset, val_dataset, test_dataset = get_datasets(subset_size=subset_size,
+                                                                file_path=data_path,
                                                                 train_frac=train_frac,
                                                                 val_frac=val_frac,
                                                                 test_frac=test_frac,
-                                                                seed=seed)
+                                                                seed=seed,
+                                                                data=data)
 
         # Train, val, and test splits
         # train_size = int(train_frac * len(dataset))
@@ -428,6 +434,7 @@ def plot_performance(losses, accs, show=False, save=False):
 
 
 def hp_search(seed,
+              data,
               mode,
               device,
               batch_size,
@@ -458,15 +465,19 @@ def hp_search(seed,
     device = torch.device(device)
     print(f"Device: {device}")
 
+    data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
+
     print("Starting data preprocessing ... ")
     data_prep_start = datetime.now()
 
     # Load data and create dataset instances
     train_dataset, val_dataset, test_dataset = get_datasets(subset_size=subset_size,
+                                                            file_path=data_path,
                                                             train_frac=train_frac,
                                                             val_frac=val_frac,
                                                             test_frac=test_frac,
-                                                            seed=seed)
+                                                            seed=seed,
+                                                            data=data)
 
     # Train, val, and test splits
     # train_size = int(train_frac * len(dataset))
@@ -707,15 +718,13 @@ def load_saved_model(model_class, optimizer_class, lr, device, batch_size, vocab
     return model, optimizer, epoch, loss, acc
 
 
-
-
-
-
-
-
 def parse_arguments(args = None):
     parser = argparse.ArgumentParser(description="Train discriminator neural text classifiers.")
 
+    parser.add_argument(
+        '--data', type=str, choices=['blog', 'bnc'], default='blog',
+        help='Choose dataset to work with. Either blog corpus or BNC.'
+    )
     parser.add_argument(
         '--mode', type=str, choices=['train', 'val', 'test'], default='train',
         help='Set script to training, development/validation, or test mode.'
@@ -766,13 +775,13 @@ def parse_arguments(args = None):
         '-es', '--early_stopping_patience', type=int, default=3, help="Early stopping patience. Default: 3"
     )
     parser.add_argument(
-        '--train_frac', type=float, default=0.7, help='Fraction of full dataset to separate for training.'
+        '--train_frac', type=float, default=0.75, help='Fraction of full dataset to separate for training.'
     )
     parser.add_argument(
-        '--val_frac', type=float, default=0.1, help='Fraction of full dataset to separate for training.'
+        '--val_frac', type=float, default=0.15, help='Fraction of full dataset to separate for training.'
     )
     parser.add_argument(
-        '--test_frac', type=float, default=0.2, help='Fraction of full dataset to separate for testing.'
+        '--test_frac', type=float, default=0.10, help='Fraction of full dataset to separate for testing.'
     )
     parser.add_argument(
         '--subset_size', type=int, default=None,
@@ -800,7 +809,8 @@ if __name__ == "__main__":
         print("Starting training mode...")
         # Create detailed experiment tag for tensorboard summary writer
         cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
-        log_dir = f'runs/blog_lstm_emb_{args.embedding_dim}_hid_{args.hidden_dim}_l_{args.num_layers}_' \
+
+        log_dir = f'runs/{args.data}/lstm_emb_{args.embedding_dim}_hid_{args.hidden_dim}_l_{args.num_layers}_' \
                   f'bd_{args.bidirectional}_drop_{args.dropout}_bs_{args.batch_size}_epochs_{args.epochs}_' \
                   f'lr_{args.lr}_subset_{args.subset_size}_train_{args.train_frac}_val_{args.val_frac}_' \
                   f'test_{args.test_frac}_clip_{args.clip_grad}_maxnorm_{args.max_norm}_' \
