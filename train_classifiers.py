@@ -236,7 +236,16 @@ def train(seed,
     print("MODEL ARCHITECTURE:")
     print(model)
 
-    criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
+    if data == 'bnc':
+        n_samples = [train_dataset.df['age_cat'].value_counts()[0],
+                    train_dataset.df['age_cat'].value_counts()[1]]
+        normed_weights = [1 - (x / sum(n_samples)) for x in n_samples]
+        weights = [1, 4]
+        normed_weights = torch.FloatTensor(weights).to(device)
+
+        criterion = torch.nn.CrossEntropyLoss(weight=normed_weights)  # combines LogSoftmax and NLL
+    else:
+        criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
 
     if mode == 'train' or mode == 'val':
 
@@ -479,6 +488,14 @@ def hp_search(seed,
                                                             seed=seed,
                                                             data=data)
 
+    print(100*"{}")
+    print('BASELINES//VALUE COUNTS')
+    print('Train')
+    print(train_dataset.df['age_cat'].value_counts(normalize=True))
+    print('Validation')
+    print(val_dataset.df['age_cat'].value_counts(normalize=True))
+    print(100 * "{}")
+
     # Train, val, and test splits
     # train_size = int(train_frac * len(dataset))
     # test_size = len(dataset) - train_size
@@ -508,9 +525,9 @@ def hp_search(seed,
 
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
-    lrs = [1e-3]
-    embedding_dims = [64, 128]
-    hidden_dims = [128, 256]
+    lrs = [1e-5, 1e-3, 1e-1]
+    embedding_dims = [64, 256, 512]
+    hidden_dims = [128, 512, 1024]
     nums_layers = [1, 2]
     bidirectionals = [False, True]
 
@@ -552,8 +569,8 @@ def hp_search(seed,
 
                         # Create detailed experiment tag for tensorboard summary writer
                         cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
-                        log_dir = 'runs/hp_search/'
-                        file_name = f'blog_lstm_emb_{emb_dim}_hid_{hid_dim}_l_{n_layers}_' \
+                        log_dir = f'runs/hp_search/{data}/'
+                        file_name = f'lstm_emb_{emb_dim}_hid_{hid_dim}_l_{n_layers}_' \
                                     f'bd_{bd}_drop_{dropout}_bs_{batch_size}_epochs_{epochs}_' \
                                     f'lr_{lr_}_subset_{subset_size}_train_{train_frac}_val_{val_frac}_' \
                                     f'test_{test_frac}_clip_{clip_grad}_maxnorm_{max_norm}' \
@@ -564,7 +581,7 @@ def hp_search(seed,
                         writer = SummaryWriter(log_path)
 
                         # train model (in val mode)
-                        loss, acc, model, epoch, optimizer = train(mode=mode, seed=seed, device=device,
+                        loss, acc, model, epoch, optimizer = train(mode=mode, data=data, seed=seed, device=device,
                                                                    batch_size=batch_size, embedding_dim=emb_dim,
                                                                    hidden_dim=hid_dim, num_layers=n_layers,
                                                                    bidirectional=bd, dropout=dropout,
@@ -589,7 +606,7 @@ def hp_search(seed,
 
                         # Save metric logging dataframe to csv
                         df.to_csv(
-                            'output/blog_lstm_hp_search_metrics.csv',
+                            f'output/{data}_lstm_hp_search_metrics.csv',
                             index=False
                         )
 
@@ -621,12 +638,12 @@ def hp_search(seed,
                             best_file_name = file_name
 
                             # Delete previous current best model checkpoint file
-                            for filename in glob.glob("models/blog/lstm/cur_best_*"):
+                            for filename in glob.glob(f"models/{data}/lstm/cur_best_*"):
                                 os.remove(filename)
 
                                 # save current best model checkpoint
                             # Save best model checkpoint
-                            model_dir = 'models/blog/lstm/'
+                            model_dir = f'models/{data}/lstm/'
                             Path(model_dir).mkdir(parents=True, exist_ok=True)
                             model_path = model_dir + 'cur_best_' + best_file_name + '.pt'
 
@@ -650,7 +667,7 @@ def hp_search(seed,
     # )
 
     # Save best model checkpoint
-    model_dir = 'models/blog/lstm/'
+    model_dir = f'models/{data}/lstm/'
     Path(model_dir).mkdir(parents=True, exist_ok=True)
     model_path = model_dir + 'best_' + best_file_name + '.pt'
 

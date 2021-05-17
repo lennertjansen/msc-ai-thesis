@@ -263,5 +263,5 @@ if __name__ == "__main__":
     # for a in islice(data_loader, 10):
     #     print(a)
     bnc_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv'
-    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=10000, file_path=bnc_path, data='bnc')
+    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=None, file_path=bnc_path, data='bnc')
     input, label = train_dataset[34]
