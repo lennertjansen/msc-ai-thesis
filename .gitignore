@@ -1,7 +1,7 @@
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 figures/
-data/
+#data/
 data_preprocessing/
 klad.py
 runs/
