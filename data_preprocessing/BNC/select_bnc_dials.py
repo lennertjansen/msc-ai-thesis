@@ -54,66 +54,69 @@ def main(args):
     #     index=False
     # )
 
-    # for age_cat in ["11_18", "19_29", "30_39", "40_49", "50_59", "60_69", "70_79"]:
-    #
-    #         for conv_id, conv in corpus.conversations.items():
-    #             if conv.n_speakers == N:
-    #                 age_ranges_list = list(conv.speakers_age_ranges.values())
-    #                 if age_ranges_list[0] == age_cat and age_ranges_list[1] == age_cat2:
-    #                     relevant_conversation_ids.append(conv_id)
-            # for conv_id in relevant_conversation_ids:
-            #     print(100 * "=")
-            #     print('|' + 98 * " " + "|")
-            #     print('|' + 98 * " " + "|")
-            #     print('|' + 98 * " " + "|")
-            #     print('|' + 98 * " " + "|")
-            #     print(100 * "=")
-            #     print(f"Speaker age ranges: {corpus.conversations[conv_id].speakers_age_ranges}")
-            #     for u in corpus.conversations[conv_id].utterances:
-            #         print(u.sentence)
-
-    keys = ["conv_id", "n_utterances", "n_tokens", "topics", "type", 'speaker1_id', "speaker1_age_cat", 'speaker1_gender',
-            'speaker1_educ', 'speaker2_id', "speaker2_age_cat", 'speaker2_gender', 'speaker2_educ']
-    df = pd.DataFrame(columns=keys)
-
-    def age_to_range(age):
-        pass
-
-
+    # for age_cat in ["11_18", "19_29", "30_39", "40_49", "50_59", "60_69", "70_79", '80_89', '90_99']:
+    #     for age_cat2 in ["11_18", "19_29", "30_39", "40_49", "50_59", "60_69", "70_79", '80_89', '90_99']:
 
     for conv_id, conv in corpus.conversations.items():
         if conv.n_speakers == N:
-            dial_meta_dict = {}
-            dial_meta_dict.fromkeys(keys)
             # age_ranges_list = list(conv.speakers_age_ranges.values())
+            # if age_ranges_list[0] == age_cat and age_ranges_list[1] == age_cat2:
+            relevant_conversation_ids.append(conv_id)
+            pdb.set_trace()
+    for conv_id in relevant_conversation_ids:
+        print(100 * "=")
+        print('|' + 98 * " " + "|")
+        print('|' + 98 * " " + "|")
+        print('|' + 98 * " " + "|")
+        print('|' + 98 * " " + "|")
+        print(100 * "=")
+        print(f"Speaker age ranges: {corpus.conversations[conv_id].speakers_age_ranges}")
+        for u in corpus.conversations[conv_id].utterances:
+            print(u.sentence)
 
-            speaker1_id = conv.speaker_ids[0]
-            speaker2_id = conv.speaker_ids[1]
 
-            speaker1_age_range = corpus.speakers[speaker1_id].age_range
-            speaker2_age_range = corpus.speakers[speaker2_id].age_range
+    if args.meta:
 
-            speaker1_gender = corpus.speakers[speaker1_id].gender
-            speaker2_gender = corpus.speakers[speaker2_id].gender
+        keys = ["conv_id", "n_utterances", "n_tokens", "topics", "type", 'speaker1_id', "speaker1_age_cat",
+                'speaker1_gender',
+                'speaker1_educ', 'speaker2_id', "speaker2_age_cat", 'speaker2_gender', 'speaker2_educ']
+        df = pd.DataFrame(columns=keys)
 
-            speaker1_education = corpus.speakers[speaker1_id].education
-            speaker2_education = corpus.speakers[speaker2_id].education
+        for conv_id, conv in corpus.conversations.items():
+            if conv.n_speakers == N:
+                dial_meta_dict = {}
+                dial_meta_dict.fromkeys(keys)
+                # age_ranges_list = list(conv.speakers_age_ranges.values())
 
-            df.loc[0 if pd.isnull(df.index.max()) else df.index.max() + 1] = [conv_id] + [conv.n_utterances] +\
-                                                                             [conv.n_tokens] + [conv.topics] + \
-                                                                             [conv.type] + [speaker1_id] + \
-                                                                             [speaker1_age_range] + \
-                                                                             [speaker1_gender] + [speaker1_education]+\
-                                                                             [speaker2_id] + \
-                                                                             [speaker2_age_range] + [speaker2_gender] +\
-                                                                             [speaker2_education]
+                speaker1_id = conv.speaker_ids[0]
+                speaker2_id = conv.speaker_ids[1]
 
-    # pdb.set_trace()
+                speaker1_age_range = corpus.speakers[speaker1_id].age_range
+                speaker2_age_range = corpus.speakers[speaker2_id].age_range
 
-    df.to_csv(
-        'dialogs_metadata.csv',
-        index=False
-    )
+                speaker1_gender = corpus.speakers[speaker1_id].gender
+                speaker2_gender = corpus.speakers[speaker2_id].gender
+
+                speaker1_education = corpus.speakers[speaker1_id].education
+                speaker2_education = corpus.speakers[speaker2_id].education
+
+                df.loc[0 if pd.isnull(df.index.max()) else df.index.max() + 1] = [conv_id] + [conv.n_utterances] +\
+                                                                                 [conv.n_tokens] + [conv.topics] + \
+                                                                                 [conv.type] + [speaker1_id] + \
+                                                                                 [speaker1_age_range] + \
+                                                                                 [speaker1_gender] + [speaker1_education]+\
+                                                                                 [speaker2_id] + \
+                                                                                 [speaker2_age_range] + [speaker2_gender] +\
+                                                                                 [speaker2_education]
+
+
+        if args.no_files == 0:
+            args.no_files = 'all'
+
+        df.to_csv(
+            f'data_preprocessing/BNC/metadata/metadata_nfiles_{args.no_files}_nspeakers_{args.no_speakers}.csv',
+            index=False
+        )
 
 
 
@@ -123,7 +126,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        '--age_cat', type = str, default = '30-39',
+        '--age_cat', type = str, default = '30_39',
         choices = ["11_18", "19_29", "30_39", "40_49", "50_59", "60_69", "70_79"],
         help = "Desired age category of all speakers in queried conversations."
     )
@@ -136,8 +139,12 @@ if __name__ == "__main__":
         help = "Maximum number of files to load. 0: all"
     )
     parser.add_argument(
-        '--data_path', type = str, default = '../../data/bnc2014spoken-xml/spoken/'
+        '--data_path', type = str, default = 'data/bnc2014spoken-xml/spoken/'
     )
+    parser.add_argument(
+        '--meta', action='store_true', help='Output metadata .csv file.'
+    )
+
 
     args = parser.parse_args()
 
