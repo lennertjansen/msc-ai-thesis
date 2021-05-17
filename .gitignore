@@ -2,8 +2,7 @@
 */.ipynb_checkpoints/*
 figures/
 data/
-!data_preprocessing/*
-data_preprocessing/*
-!data_preprocessing/BNC/bnc_subsetter.py
+#data_preprocessing/
+#!data_preprocessing/BNC/bnc_subsetter.py
 klad.py
 runs/
