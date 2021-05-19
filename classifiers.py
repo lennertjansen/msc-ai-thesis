@@ -30,7 +30,7 @@ class TextClassificationLSTM(nn.Module):
         ----------------
         For inspiration:
             https://www.analyticsvidhya.com/blog/2020/01/first-text-classification-in-pytorch/
-            https://towardsdatascience.com/lstm-text-classification-using-pytorch-2c6c657f8fc0
+            https://towardsdatascience.com/lstm-text-classification-using-pytorch-2c6c657f8fc0 (GOEIE)
             https://towardsdatascience.com/text-classification-with-pytorch-7111dae111a6
             https://towardsdatascience.com/multiclass-text-classification-using-lstm-in-pytorch-eac56baed8df
 
@@ -151,6 +151,7 @@ class TextClassificationLogit(nn.Module):
 class TextClassificationBERT():
     """
     For inspiration: https://towardsdatascience.com/bert-text-classification-using-pytorch-723dfb8b6b5b
+    Also check out this one by the same author about LSTM text classification: https://towardsdatascience.com/lstm-text-classification-using-pytorch-2c6c657f8fc0
     """
     pass
 

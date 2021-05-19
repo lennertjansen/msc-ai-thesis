@@ -1,6 +1,7 @@
 import argparse
 import pdb
 from datetime import datetime
+import time
 from pdb import set_trace
 from tqdm import tqdm
 
@@ -41,18 +42,15 @@ def train_one_epoch(model,
                     losses,
                     accs,
                     writer,
-                    disable_bars):
+                    disable_bars,
+                    epoch):
 
     # set model to train mode
     model.train()
 
     # print("\n Starting to train next epoch ... \n")
-
-    for iteration, (batch_inputs, batch_labels, batch_lengths) in tqdm(enumerate(data_loader, start=start_iteration),
-                                                                       disable=disable_bars):
-
-
-
+    batch_index = 0
+    for iteration, (batch_inputs, batch_labels, batch_lengths) in enumerate(data_loader, start=start_iteration):
 
         # move everything to device
         batch_inputs, batch_labels, batch_lengths = batch_inputs.to(device), batch_labels.to(device), \
@@ -100,14 +98,20 @@ def train_one_epoch(model,
 
 
         if iteration % log_interval == 0:
+            # TODO: See this tutorials prettier logging -- https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html
+            # print(
+            #     "\n [{}] Iteration {} | Batch size = {} |"
+            #     "Average loss = {:.6f} | Accuracy = {:.4f}".format(
+            #         datetime.now().strftime("%Y-%m-%d %H:%M"), iteration,
+            #         batch_labels.size(0), loss.item(), accuracy
+            #     )
+            # )
 
-            print(
-                "\n [{}] Iteration {} | Batch size = {} |"
-                "Average loss = {:.6f} | Accuracy = {:.4f}".format(
-                    datetime.now().strftime("%Y-%m-%d %H:%M"), iteration,
-                    batch_labels.size(0), loss.item(), accuracy
-                )
-            )
+            print('| epoch {:3d} | {:5d}/{:5d} batches '
+                  '| loss {:8.5f} '
+                  '| accuracy {:8.5f} '.format(epoch, batch_index, len(data_loader), loss.item(), accuracy))
+
+        batch_index+=1
 
     return iteration, losses, accs
 
@@ -182,6 +186,7 @@ def train(seed,
         #                          collate_fn=PadSequence())
 
 
+        print('-' * 91)
         print(f'Data preprocessing finished. Data prep took {datetime.now() - data_prep_start}.')
 
         print('######### DATA STATS ###############')
@@ -190,7 +195,7 @@ def train(seed,
         print(f'Training set size: {train_dataset.__len__()}')
         print(f'Validation set size: {val_dataset.__len__()}')
         print(f'Test set size: {test_dataset.__len__()}')
-        print(81 * '#')
+        print(91 * '-')
 
     train_loader = DataLoader(dataset=train_dataset,
                               batch_size=batch_size,
@@ -232,9 +237,12 @@ def train(seed,
     # model to device
     model.to(device)
 
+
     # Print model architecture and trainable parameters
+    print('-' * 91)
     print("MODEL ARCHITECTURE:")
     print(model)
+    print('-' * 91)
 
     if data == 'bnc':
         n_samples = [train_dataset.df['age_cat'].value_counts()[0],
@@ -275,9 +283,11 @@ def train(seed,
         # disable tqdm progress bars in train and train_one_epoch if in validation mode
         disable_bars = mode == 'val'
 
-        for epoch in tqdm(range(epochs), disable=disable_bars):
+        # for epoch in tqdm(range(epochs), disable=disable_bars):
+        for epoch in range(epochs):
 
             epoch_start_time = datetime.now()
+            # epoch_start_time = time.time()
             try:
                 # set model to training mode. NB: in the actual training loop later on, this
                 # statement goes at the beginning of each epoch.
@@ -289,24 +299,32 @@ def train(seed,
                                                                        clip_grad=clip_grad, max_norm=max_norm,
                                                                        log_interval=log_interval,
                                                                        losses=train_losses, accs=train_accs, writer=writer,
-                                                                       disable_bars=disable_bars)
+                                                                       disable_bars=disable_bars,
+                                                                       epoch=epoch)
 
             except KeyboardInterrupt:
                 print("Manually stopped current epoch")
                 __import__('pdb').set_trace()
 
-            print("Current epoch training took {}".format(datetime.now() - epoch_start_time))
-
+            # print("Current epoch training took {}".format(datetime.now() - epoch_start_time))
             val_loss, val_accuracy = evaluate_performance(model=model,
                                                           data_loader=val_loader,
                                                           device=device,
                                                           criterion=criterion,
                                                           writer=writer,
-                                                          iteration=iterations)
+                                                          global_iteration=iterations,
+                                                          print_metrics=False)
+            # TODO: See this tutorials prettier logging -- https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html
+            # print(f"#######################################################################")
+            # print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
+            # print(f"#######################################################################")
 
-            print(f"#######################################################################")
-            print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
-            print(f"#######################################################################")
+            print('-' * 91)
+            print('| end of epoch {:3d} | time: {} | '
+                  'valid loss {:8.5f} | valid accuracy {:8.3f} '.format(epoch + 1,
+                                                                        (datetime.now() - epoch_start_time),
+                                                                        val_loss, val_accuracy))
+            print('-' * 91)
 
             # # update best performance
             # if val_loss < best_val_loss:
@@ -328,11 +346,11 @@ def train(seed,
                 if patience >= early_stopping_patience:
                     print("EARLY STOPPING")
                     break
-
-        print(f"#######################################################################")
+        # TODO: See this tutorials prettier logging -- https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html
+        print('-' * 91)
         print(f"Done training and validating. Best model from epoch {best_epoch}:")
         print(best_model)
-        print(f"#######################################################################")
+        print('-' * 91)
 
     if mode == 'val':
         return best_val_loss, best_val_accuracy, best_model, best_epoch, best_optimizer
@@ -355,7 +373,8 @@ def train(seed,
 
 
 
-def evaluate_performance(model, data_loader, device, criterion, writer=None, iteration=0, set='validation'):
+def evaluate_performance(model, data_loader, device, criterion, writer=None, global_iteration=0, set='validation',
+                         print_metrics=True):
 
     # set model to evaluation mode
     model.eval()
@@ -363,6 +382,9 @@ def evaluate_performance(model, data_loader, device, criterion, writer=None, ite
     # initialize loss and number of correct predictions
     set_loss = 0
     total_correct = 0
+
+    # start eval timer
+    eval_start_time = datetime.now()
 
     with torch.no_grad():
         for iteration, (batch_inputs, batch_labels, batch_lengths) in tqdm(enumerate(data_loader)):
@@ -383,17 +405,20 @@ def evaluate_performance(model, data_loader, device, criterion, writer=None, ite
         # average losses and accuracy
         set_loss /= len(data_loader.dataset)
         accuracy = total_correct / len(data_loader.dataset)
-
-        print(
-            "Performance on " + set + " set: "
-            "Average loss: {:.4f}, Accuracy: {}/{} ({:.4f})".format(
-                set_loss, total_correct, len(data_loader.dataset), accuracy
+        if print_metrics:
+            print('-' * 91)
+            print(
+                "| " + set + " set "
+                "| time {}"
+                "| loss: {:.5f} | Accuracy: {}/{} ({:.5f})".format(
+                    datetime.now() - eval_start_time, set_loss, total_correct, len(data_loader.dataset), accuracy
+                )
             )
-        )
+            print('-' * 91)
 
         if set == 'validation':
-            writer.add_scalar('Accuracy/val', accuracy, iteration)
-            writer.add_scalar('Loss/val', set_loss, iteration)
+            writer.add_scalar('Accuracy/val', accuracy, global_iteration)
+            writer.add_scalar('Loss/val', set_loss, global_iteration)
 
         return set_loss, accuracy
 
@@ -488,13 +513,13 @@ def hp_search(seed,
                                                             seed=seed,
                                                             data=data)
 
-    print(100*"{}")
+    print('-' * 91)
     print('BASELINES//VALUE COUNTS')
     print('Train')
     print(train_dataset.df['age_cat'].value_counts(normalize=True))
     print('Validation')
     print(val_dataset.df['age_cat'].value_counts(normalize=True))
-    print(100 * "{}")
+    print('-' * 91)
 
     # Train, val, and test splits
     # train_size = int(train_frac * len(dataset))
@@ -511,8 +536,7 @@ def hp_search(seed,
     #                          shuffle=True,
     #                          collate_fn=PadSequence())
 
-
-
+    print('-' * 91)
     print(f'Data preprocessing finished. Data prep took {datetime.now() - data_prep_start}.')
 
     print('######### DATA STATS ###############')
@@ -521,7 +545,7 @@ def hp_search(seed,
     print(f'Training set size: {train_dataset.__len__()}')
     print(f'Validation set size: {val_dataset.__len__()}')
     print(f'Test set size: {test_dataset.__len__()}')
-    print(81 * '#')
+    print('-' * 91)
 
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
@@ -554,18 +578,20 @@ def hp_search(seed,
 
     best_model_updates = -1
 
-    for lr_ in tqdm(lrs, position=0, leave=True, desc='Learning rates'):
-        for emb_dim in tqdm(embedding_dims, position=0, leave=True, desc='Embedding dims'):
-            for hid_dim in tqdm(hidden_dims, position=0, leave=True, desc='Hidden dims'):
+    for lr_ in lrs:
+        for emb_dim in embedding_dims:
+            for hid_dim in hidden_dims:
                 # skip if hidden size not larger than embedding dim
                 if not hid_dim > emb_dim:
                     continue
 
-                for n_layers in tqdm(nums_layers, position=0, leave=True, desc='No. layers'):
-                    for bd in tqdm(bidirectionals, position=0, leave=True, desc='Bidirectional'):
+                for n_layers in nums_layers:
+                    for bd in bidirectionals:
 
-                        print(f"Current config: lr: {lr_} | emb: {emb_dim} | hid_dim: {hid_dim} | n_layers: {n_layers} "
+                        print('-' * 91)
+                        print(f"| Current config: lr: {lr_} | emb: {emb_dim} | hid_dim: {hid_dim} | n_layers: {n_layers} "
                               f"| bd: {bd} | ")
+                        print('-' * 91)
 
                         # Create detailed experiment tag for tensorboard summary writer
                         cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
