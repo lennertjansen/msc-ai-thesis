@@ -26,6 +26,10 @@ import os, glob
 
 import pandas as pd
 
+# for detailed evaluation
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+import seaborn as sns
+
 
 # General teuxdeuxs
 
@@ -146,6 +150,7 @@ def train(seed,
           subset_size,
           log_interval,
           no_tb,
+          w_loss,
           writer=None,
           train_dataset=None,
           val_dataset=None,
@@ -197,13 +202,21 @@ def train(seed,
         print('-' * 91)
         print(f'Data preprocessing finished. Data prep took {datetime.now() - data_prep_start}.')
 
-        print('######### DATA STATS ###############')
+        print(31*'-' + ' DATASET STATS AND BASELINES ' + '-'*31)
         print(f'Number of classes: {train_dataset.num_classes}')
         print(f'Vocabulary size: {train_dataset.vocab_size}')
         print(f'Training set size: {train_dataset.__len__()}')
         print(f'Validation set size: {val_dataset.__len__()}')
         print(f'Test set size: {test_dataset.__len__()}')
         print(91 * '-')
+        print('Baselines')
+        print('Train')
+        print(train_dataset.df['age_cat'].value_counts(normalize=True))
+        print('Validation')
+        print(val_dataset.df['age_cat'].value_counts(normalize=True))
+        print('Test')
+        print(test_dataset.df['age_cat'].value_counts(normalize=True))
+        print('-' * 91)
 
     train_loader = DataLoader(dataset=train_dataset,
                               batch_size=batch_size,
@@ -252,14 +265,23 @@ def train(seed,
     print(model)
     print('-' * 91)
 
-    if data == 'bnc':
-        n_samples = [train_dataset.df['age_cat'].value_counts()[0],
-                    train_dataset.df['age_cat'].value_counts()[1]]
-        normed_weights = [1 - (x / sum(n_samples)) for x in n_samples]
-        weights = [1, 4]
-        normed_weights = torch.FloatTensor(weights).to(device)
+    if w_loss:
+        # Apply frequency-based weighted loss for highly imbalanced data
+        n_samples = [train_dataset.df['age_cat'].value_counts()[label] for label in range(train_dataset.num_classes)]
 
-        criterion = torch.nn.CrossEntropyLoss(weight=normed_weights)  # combines LogSoftmax and NLL
+        # Weight option 1
+        weights = [1 - (x / sum(n_samples)) for x in n_samples]
+        weights = torch.FloatTensor(weights).to(device)
+
+
+        # OR 2) have the weights sum up to 1??
+        # weights = torch.tensor(n_samples, dtype=torch.float32).to(device)
+        # weights = weights / weights.sum()
+        # weights = 1.0 / weights
+        # weights = weights / weights.sum()
+
+
+        criterion = torch.nn.CrossEntropyLoss(weight=weights)  # combines LogSoftmax and NLL
     else:
         criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
 
@@ -497,7 +519,8 @@ def hp_search(seed,
               test_frac,
               subset_size,
               log_interval,
-              no_tb):
+              no_tb,
+              w_loss):
 
     # set seed for reproducibility on cpu or gpu based on availability
     torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
@@ -639,7 +662,7 @@ def hp_search(seed,
                                                                    test_frac=test_frac, subset_size=subset_size,
                                                                    log_interval=log_interval, writer=writer,
                                                                    train_dataset=train_dataset, val_dataset=val_dataset,
-                                                                   test_dataset=test_dataset, no_tb=no_tb
+                                                                   test_dataset=test_dataset, no_tb=no_tb, w_loss=w_loss
                                                                    )
 
                         if not no_tb:
@@ -858,6 +881,10 @@ def parse_arguments(args = None):
     )
     parser.add_argument(
         '--no_tb', action='store_true', help='Turns off Tensorboard logging if included.'
+    )
+    parser.add_argument(
+        '--w_loss', action='store_true', help='Applies frequency based weights to loss criterion '
+                                              'if True (i.e., if included).'
     )
     # parser.add_argument('--padding_index', type=int, default=0,
     #                     help="Pos. int. value to use as padding when collating input batches.")
