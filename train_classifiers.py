@@ -65,7 +65,11 @@ def train_one_epoch(model,
         # Evaluate loss, gradients, and update network parameters
         loss = criterion(log_probs, batch_labels)
 
-        writer.add_scalar("Loss/train", loss, iteration)
+
+        if writer:
+            # Add current batch's loss to tensorboard logger
+            writer.add_scalar("Loss/train", loss, iteration)
+
         # Reset gradients for next iteration
         optimizer.zero_grad()
         loss.backward()
@@ -94,7 +98,10 @@ def train_one_epoch(model,
 
         losses.append(loss.item())
         accs.append(accuracy)
-        writer.add_scalar('Accuracy/train', accuracy, iteration)
+
+        if writer:
+            # Add current batch's accuracy to tensorboard logger
+            writer.add_scalar('Accuracy/train', accuracy, iteration)
 
 
         if iteration % log_interval == 0:
@@ -138,6 +145,7 @@ def train(seed,
           test_frac,
           subset_size,
           log_interval,
+          no_tb,
           writer=None,
           train_dataset=None,
           val_dataset=None,
@@ -416,9 +424,10 @@ def evaluate_performance(model, data_loader, device, criterion, writer=None, glo
             )
             print('-' * 91)
 
-        if set == 'validation':
-            writer.add_scalar('Accuracy/val', accuracy, global_iteration)
-            writer.add_scalar('Loss/val', set_loss, global_iteration)
+        if writer:
+            if set == 'validation':
+                writer.add_scalar('Accuracy/val', accuracy, global_iteration)
+                writer.add_scalar('Loss/val', set_loss, global_iteration)
 
         return set_loss, accuracy
 
@@ -487,7 +496,8 @@ def hp_search(seed,
               val_frac,
               test_frac,
               subset_size,
-              log_interval):
+              log_interval,
+              no_tb):
 
     # set seed for reproducibility on cpu or gpu based on availability
     torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
@@ -595,16 +605,27 @@ def hp_search(seed,
 
                         # Create detailed experiment tag for tensorboard summary writer
                         cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
-                        log_dir = f'runs/hp_search/{data}/'
                         file_name = f'lstm_emb_{emb_dim}_hid_{hid_dim}_l_{n_layers}_' \
                                     f'bd_{bd}_drop_{dropout}_bs_{batch_size}_epochs_{epochs}_' \
                                     f'lr_{lr_}_subset_{subset_size}_train_{train_frac}_val_{val_frac}_' \
                                     f'test_{test_frac}_clip_{clip_grad}_maxnorm_{max_norm}' \
                                     f'es_{early_stopping_patience}_seed_{seed}_device_{device}_dt_{cur_datetime}'
 
-                        # create summary writer instance for logging
-                        log_path = log_dir+file_name
-                        writer = SummaryWriter(log_path)
+                        if not no_tb:
+                            # # Create detailed experiment tag for tensorboard summary writer
+                            # cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
+                            log_dir = f'runs/hp_search/{data}/'
+                            # file_name = f'lstm_emb_{emb_dim}_hid_{hid_dim}_l_{n_layers}_' \
+                            #             f'bd_{bd}_drop_{dropout}_bs_{batch_size}_epochs_{epochs}_' \
+                            #             f'lr_{lr_}_subset_{subset_size}_train_{train_frac}_val_{val_frac}_' \
+                            #             f'test_{test_frac}_clip_{clip_grad}_maxnorm_{max_norm}' \
+                            #             f'es_{early_stopping_patience}_seed_{seed}_device_{device}_dt_{cur_datetime}'
+
+                            # create summary writer instance for logging
+                            log_path = log_dir+file_name
+                            writer = SummaryWriter(log_path)
+                        else:
+                            writer = None
 
                         # train model (in val mode)
                         loss, acc, model, epoch, optimizer = train(mode=mode, data=data, seed=seed, device=device,
@@ -618,11 +639,12 @@ def hp_search(seed,
                                                                    test_frac=test_frac, subset_size=subset_size,
                                                                    log_interval=log_interval, writer=writer,
                                                                    train_dataset=train_dataset, val_dataset=val_dataset,
-                                                                   test_dataset=test_dataset
+                                                                   test_dataset=test_dataset, no_tb=no_tb
                                                                    )
 
-                        # close tensorboard summary writer
-                        writer.close()
+                        if not no_tb:
+                            # close tensorboard summary writer
+                            writer.close()
 
 
                         # Update metric logging dataframe
@@ -631,9 +653,10 @@ def hp_search(seed,
                                                                                          [loss.item()]
 
                         # Save metric logging dataframe to csv
+                        cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
                         df.to_csv(
-                            f'output/{data}_lstm_hp_search_metrics.csv',
-                            index=False
+                            f'output/{data}_lstm_hp_search_metrics_'
+                            f'dt_{cur_datetime}.csv', index=False
                         )
 
                         # update best ...
@@ -833,6 +856,9 @@ def parse_arguments(args = None):
     parser.add_argument(
         '--log_interval', type=int, default=5, help="Number of iterations between printing metrics."
     )
+    parser.add_argument(
+        '--no_tb', action='store_true', help='Turns off Tensorboard logging if included.'
+    )
     # parser.add_argument('--padding_index', type=int, default=0,
     #                     help="Pos. int. value to use as padding when collating input batches.")
 
@@ -850,22 +876,28 @@ if __name__ == "__main__":
 
     if args.mode == 'train':
         print("Starting training mode...")
-        # Create detailed experiment tag for tensorboard summary writer
-        cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
 
-        log_dir = f'runs/{args.data}/lstm_emb_{args.embedding_dim}_hid_{args.hidden_dim}_l_{args.num_layers}_' \
-                  f'bd_{args.bidirectional}_drop_{args.dropout}_bs_{args.batch_size}_epochs_{args.epochs}_' \
-                  f'lr_{args.lr}_subset_{args.subset_size}_train_{args.train_frac}_val_{args.val_frac}_' \
-                  f'test_{args.test_frac}_clip_{args.clip_grad}_maxnorm_{args.max_norm}_' \
-                  f'es_{args.early_stopping_patience}_seed_{args.seed}_device_{args.device}_dt_{cur_datetime}'
+        if not args.no_tb:
+            # Create detailed experiment tag for tensorboard summary writer
+            cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
 
-        writer = SummaryWriter(log_dir)
+            log_dir = f'runs/{args.data}/lstm_emb_{args.embedding_dim}_hid_{args.hidden_dim}_l_{args.num_layers}_' \
+                      f'bd_{args.bidirectional}_drop_{args.dropout}_bs_{args.batch_size}_epochs_{args.epochs}_' \
+                      f'lr_{args.lr}_subset_{args.subset_size}_train_{args.train_frac}_val_{args.val_frac}_' \
+                      f'test_{args.test_frac}_clip_{args.clip_grad}_maxnorm_{args.max_norm}_' \
+                      f'es_{args.early_stopping_patience}_seed_{args.seed}_device_{args.device}_dt_{cur_datetime}'
 
-        # Train model
-        train(**vars(args), writer=writer)
 
-        # close tensorboard summary writer
-        writer.close()
+            writer = SummaryWriter(log_dir)
+
+            # Train model
+            train(**vars(args), writer=writer)
+
+            # close tensorboard summary writer
+            writer.close()
+        else:
+            train(**vars(args))
+
 
     elif args.mode == 'val':
         print("Starting validation/development mode...")
