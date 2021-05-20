@@ -343,7 +343,8 @@ def train(seed,
                                                           criterion=criterion,
                                                           writer=writer,
                                                           global_iteration=iterations,
-                                                          print_metrics=False)
+                                                          print_metrics=False,
+                                                          data=data)
             # TODO: See this tutorials prettier logging -- https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html
             # print(f"#######################################################################")
             # print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
@@ -389,13 +390,17 @@ def train(seed,
         _, _ = evaluate_performance(model=best_model, data_loader=test_loader,
                                                   device=device,
                                                   criterion=criterion,
-                                                  set='test')
+                                                  set='test',
+                                                  data=data,
+                                                  plot_cm=True)
     elif mode == 'test':
         print("Starting testing...")
         _, _ = evaluate_performance(model=model, data_loader=test_loader,
                                                   device=device,
                                                   criterion=criterion,
-                                                  set='test')
+                                                  set='test',
+                                                  data=data,
+                                                  plot_cm=True)
 
     # plot_performance(losses=train_losses, accs=train_accs)
 
@@ -403,8 +408,11 @@ def train(seed,
 
 
 
-def evaluate_performance(model, data_loader, device, criterion, writer=None, global_iteration=0, set='validation',
-                         print_metrics=True):
+def evaluate_performance(model, data_loader, device, criterion, data, writer=None, global_iteration=0, set='validation',
+                         print_metrics=True, plot_cm=False):
+    # For Confucius matrix
+    y_pred = []
+    y_true = []
 
     # set model to evaluation mode
     model.eval()
@@ -430,6 +438,10 @@ def evaluate_performance(model, data_loader, device, criterion, writer=None, glo
             set_loss += criterion(log_probs, batch_labels)
 
             predictions = torch.argmax(log_probs, dim=1, keepdim=True)
+            batch_pred = [int(item[0]) for item in predictions.tolist()]
+            y_pred.extend(batch_pred)
+            y_true.extend(batch_labels.tolist())
+
             total_correct += predictions.eq(batch_labels.view_as(predictions)).sum().item()
 
         # average losses and accuracy
@@ -450,6 +462,36 @@ def evaluate_performance(model, data_loader, device, criterion, writer=None, glo
             if set == 'validation':
                 writer.add_scalar('Accuracy/val', accuracy, global_iteration)
                 writer.add_scalar('Loss/val', set_loss, global_iteration)
+
+        print(91 * '-')
+        print(34 * '-' + ' Classification Report ' + 34 * '-')
+        labels = [label for label in range(data_loader.dataset.num_classes)]
+        print(classification_report(y_true, y_pred, labels=labels, digits=5, zero_division=0))
+
+        cm = confusion_matrix(y_true, y_pred, labels=labels, normalize='all')
+        print(cm * len(y_true))
+
+        if plot_cm:
+            ax = plt.subplot()
+            sns.heatmap(cm, annot=True, ax=ax, cmap='Blues', fmt='.3f')
+
+            ax.set_title('Confusion Matrix')
+
+            ax.set_xlabel('Predicted Labels')
+            ax.set_ylabel('True Labels')
+
+
+            if data == 'bnc':
+                tick_labels = ['19_29', '50_plus']
+                ax.xaxis.set_ticklabels(tick_labels)
+                ax.yaxis.set_ticklabels(tick_labels)
+            elif data == 'blog':
+                tick_labels = ['13-17', '23-27', '33-47']
+                ax.xaxis.set_ticklabels(tick_labels)
+                ax.yaxis.set_ticklabels(tick_labels)
+
+            plt.show()
+
 
         return set_loss, accuracy
 
