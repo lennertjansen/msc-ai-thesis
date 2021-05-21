@@ -50,7 +50,7 @@ def preprocess_df(df, data='blog'):
 
         df['age_cat'] = df['age'].apply(age_to_cat)
 
-    elif data == 'bnc':
+    elif data == 'bnc' or data == 'bnc_rb':
 
         # Add labels for age categories
         def age_to_cat(label):

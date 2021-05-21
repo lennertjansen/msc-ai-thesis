@@ -13,7 +13,7 @@ import torch.optim as optim
 from classifiers import TextClassificationLSTM
 
 from dataset import get_datasets, padded_collate, PadSequence
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, WeightedRandomSampler
 
 import matplotlib.pyplot as plt
 
@@ -29,9 +29,13 @@ import pandas as pd
 # for detailed evaluation
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import seaborn as sns
+from utils import make_confusion_matrix
 
 
-# General teuxdeuxs
+# Global variables
+# figure saving destiation and dimensions
+FIGDIR = 'figures/'
+FIGSIZE = (15, 8)
 
 
 def train_one_epoch(model,
@@ -120,7 +124,7 @@ def train_one_epoch(model,
 
             print('| epoch {:3d} | {:5d}/{:5d} batches '
                   '| loss {:8.5f} '
-                  '| accuracy {:8.5f} '.format(epoch, batch_index, len(data_loader), loss.item(), accuracy))
+                  '| accuracy {:8.5f} '.format(epoch + 1, batch_index, len(data_loader), loss.item(), accuracy))
 
         batch_index+=1
 
@@ -151,6 +155,7 @@ def train(seed,
           log_interval,
           no_tb,
           w_loss,
+          w_sampling,
           writer=None,
           train_dataset=None,
           val_dataset=None,
@@ -161,7 +166,14 @@ def train(seed,
         # set seed for reproducibility on cpu or gpu based on availability
         torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
 
-        data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
+        # data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
+        # data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0_rand_balanced.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
+        if data == 'bnc':
+            data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv'
+        elif data == 'bnc_rb':
+            data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0_rand_balanced.csv'
+        else:
+            data_path = 'data/blogs_kaggle/blogtext.csv'
 
         # set starting time of full training pipeline
         start_time = datetime.now()
@@ -218,10 +230,37 @@ def train(seed,
         print(test_dataset.df['age_cat'].value_counts(normalize=True))
         print('-' * 91)
 
-    train_loader = DataLoader(dataset=train_dataset,
-                              batch_size=batch_size,
-                              shuffle=True,
-                              collate_fn=PadSequence())
+
+    if w_sampling:
+        # Apply weighted sampling.
+
+        # Inspired by: https://towardsdatascience.com/address-class-imbalance-easily-with-pytorch-e2d4fa208627
+
+        # TODO: isn't this a bit redundant? Doesn't torch.tensor(train_dataset.df['age_cat'], dtype=torch.long) do the same?
+        all_label_ids = torch.tensor([label for label in train_dataset.df['age_cat']], dtype=torch.long)
+
+        # Class weighting
+        labels_unique, counts = np.unique(train_dataset.df['age_cat'], return_counts=True)
+        print(f'Unique labels: {labels_unique}')
+
+        class_weights = [sum(counts) / c for c in counts] # [#{class_0}, {#class_1}, etc.]
+
+        # Assign weights to each input sample
+        sampler_weights = [class_weights[label] for label in train_dataset.df['age_cat']]
+        sampler = WeightedRandomSampler(weights=sampler_weights, num_samples=len(train_dataset.df['age_cat']), replacement=True)
+
+        # Note that sampler option is mutually exclusive with shuffle. So shuffle not needed here.
+        train_loader = DataLoader(dataset=train_dataset,
+                                  batch_size=batch_size,
+                                  shuffle=False,
+                                  collate_fn=PadSequence(),
+                                  sampler=sampler)
+    else:
+
+        train_loader = DataLoader(dataset=train_dataset,
+                                  batch_size=batch_size,
+                                  shuffle=True,
+                                  collate_fn=PadSequence())
 
     val_loader = DataLoader(dataset=val_dataset,
                             batch_size=batch_size,
@@ -266,6 +305,7 @@ def train(seed,
     print('-' * 91)
 
     if w_loss:
+
         # Apply frequency-based weighted loss for highly imbalanced data
         n_samples = [train_dataset.df['age_cat'].value_counts()[label] for label in range(train_dataset.num_classes)]
 
@@ -409,7 +449,7 @@ def train(seed,
 
 
 def evaluate_performance(model, data_loader, device, criterion, data, writer=None, global_iteration=0, set='validation',
-                         print_metrics=True, plot_cm=False):
+                         print_metrics=True, plot_cm=False, save_fig=True, show_fig=False, model_type='lstm'):
     # For Confucius matrix
     y_pred = []
     y_true = []
@@ -425,7 +465,7 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
     eval_start_time = datetime.now()
 
     with torch.no_grad():
-        for iteration, (batch_inputs, batch_labels, batch_lengths) in tqdm(enumerate(data_loader)):
+        for iteration, (batch_inputs, batch_labels, batch_lengths) in enumerate(tqdm(data_loader)):
 
             # move everything to device
             batch_inputs, batch_labels, batch_lengths = batch_inputs.to(device), batch_labels.to(device), \
@@ -468,29 +508,58 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
         labels = [label for label in range(data_loader.dataset.num_classes)]
         print(classification_report(y_true, y_pred, labels=labels, digits=5, zero_division=0))
 
-        cm = confusion_matrix(y_true, y_pred, labels=labels, normalize='all')
-        print(cm * len(y_true))
+        print(91 * '-')
+        print('| Confusion Matrix |')
+        # cm = confusion_matrix(y_true, y_pred, labels=labels, normalize='all')
+        cm = confusion_matrix(y_true, y_pred, labels=labels)
+
+        # df_confusion = pd.DataFrame(cm * len(y_true))
+        df_confusion = pd.DataFrame(cm)
+        print("    Predicted")
+        print(df_confusion)
+        print("True -->")
+
+        # print(cm * len(y_true))
 
         if plot_cm:
-            ax = plt.subplot()
-            sns.heatmap(cm, annot=True, ax=ax, cmap='Blues', fmt='.3f')
 
-            ax.set_title('Confusion Matrix')
-
-            ax.set_xlabel('Predicted Labels')
-            ax.set_ylabel('True Labels')
-
-
-            if data == 'bnc':
+            if data == 'bnc' or 'bnc_rb':
                 tick_labels = ['19_29', '50_plus']
-                ax.xaxis.set_ticklabels(tick_labels)
-                ax.yaxis.set_ticklabels(tick_labels)
             elif data == 'blog':
                 tick_labels = ['13-17', '23-27', '33-47']
-                ax.xaxis.set_ticklabels(tick_labels)
-                ax.yaxis.set_ticklabels(tick_labels)
+            make_confusion_matrix(cf=cm, categories=tick_labels, title=f'Confusion Matrix for {data} on {set} set',
+                                  num_labels=labels, y_true=y_true, y_pred=y_pred, figsize=FIGSIZE)
 
-            plt.show()
+            if save_fig:
+                cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
+                plt.savefig(f"{FIGDIR}{data}/cm_{model_type}_{set}_dt_{cur_datetime}.png",
+                            bbox_inches='tight')
+            if show_fig:
+                plt.show()
+
+
+        # if plot_cm:
+        #     #TODO: implement this function make_confusion_matrix
+        #     # link: https://github.com/DTrimarchi10/confusion_matrix/blob/master/cf_matrix.py
+        #     ax = plt.subplot()
+        #     sns.heatmap(cm, annot=True, ax=ax, cmap='Blues', fmt='.3f')
+        #
+        #     ax.set_title('Confusion Matrix')
+        #
+        #     ax.set_xlabel('Predicted Labels')
+        #     ax.set_ylabel('True Labels')
+        #
+        #
+        #     if data == 'bnc':
+        #         tick_labels = ['19_29', '50_plus']
+        #         ax.xaxis.set_ticklabels(tick_labels)
+        #         ax.yaxis.set_ticklabels(tick_labels)
+        #     elif data == 'blog':
+        #         tick_labels = ['13-17', '23-27', '33-47']
+        #         ax.xaxis.set_ticklabels(tick_labels)
+        #         ax.yaxis.set_ticklabels(tick_labels)
+        #
+        #     plt.show()
 
 
         return set_loss, accuracy
@@ -562,7 +631,8 @@ def hp_search(seed,
               subset_size,
               log_interval,
               no_tb,
-              w_loss):
+              w_loss,
+              w_sampling):
 
     # set seed for reproducibility on cpu or gpu based on availability
     torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
@@ -574,7 +644,14 @@ def hp_search(seed,
     device = torch.device(device)
     print(f"Device: {device}")
 
-    data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
+    # data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
+
+    if data == 'bnc':
+        data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv'
+    elif data == 'bnc_rb':
+        data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0_rand_balanced.csv'
+    else:
+        data_path = 'data/blogs_kaggle/blogtext.csv'
 
     print("Starting data preprocessing ... ")
     data_prep_start = datetime.now()
@@ -704,8 +781,8 @@ def hp_search(seed,
                                                                    test_frac=test_frac, subset_size=subset_size,
                                                                    log_interval=log_interval, writer=writer,
                                                                    train_dataset=train_dataset, val_dataset=val_dataset,
-                                                                   test_dataset=test_dataset, no_tb=no_tb, w_loss=w_loss
-                                                                   )
+                                                                   test_dataset=test_dataset, no_tb=no_tb, w_loss=w_loss,
+                                                                   w_sampling=w_sampling)
 
                         if not no_tb:
                             # close tensorboard summary writer
@@ -853,8 +930,9 @@ def parse_arguments(args = None):
     parser = argparse.ArgumentParser(description="Train discriminator neural text classifiers.")
 
     parser.add_argument(
-        '--data', type=str, choices=['blog', 'bnc'], default='blog',
-        help='Choose dataset to work with. Either blog corpus or BNC.'
+        '--data', type=str, choices=['blog', 'bnc', 'bnc_rb'], default='blog',
+        help='Choose dataset to work with. Either blog corpus, BNC (NB: highly imbalanced. '
+             'Activate w_loss or w_sampling), or BNC randomly balanced (bnc_rb).'
     )
     parser.add_argument(
         '--mode', type=str, choices=['train', 'val', 'test'], default='train',
@@ -927,6 +1005,10 @@ def parse_arguments(args = None):
     parser.add_argument(
         '--w_loss', action='store_true', help='Applies frequency based weights to loss criterion '
                                               'if True (i.e., if included).'
+    )
+    parser.add_argument(
+        '--w_sampling', action='store_true', help='Applies weighted random sampling '
+                                                  'during training to deal with imbalanced data.'
     )
     # parser.add_argument('--padding_index', type=int, default=0,
     #                     help="Pos. int. value to use as padding when collating input batches.")

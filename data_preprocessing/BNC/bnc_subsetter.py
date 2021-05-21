@@ -50,7 +50,23 @@ def main(args):
                                                                                      [len(u.tokens)] + [args.label2]
 
 
+    # Balance out dataset
+    # Option 0) Remove 19_29 utterances until no. 19_29 utterances == no. 50_plus utterances, without taking into account
+    # unique SID's
 
+    # Randomly drop 19_29 rows until dataset is balanced
+    while df['label'].value_counts()['19_29'] != df['label'].value_counts()['50_plus']:
+        df = df.drop(df[df['label'] == '19_29'].sample(n=1).index)
+
+    print(f"Df length after balancing: {len(df)}")
+    nu_19 = df[df.label == '19_29']['speaker_id'].nunique()
+    nu_50 = df[df.label == '50_plus']['speaker_id'].nunique()
+    print(f'No. unique speakers in range 19_29: {nu_19}')
+    print(f'No. unique speakers in range 50_plus: {nu_50}')
+
+
+
+    pdb.set_trace()
 
     # Save dataframe to csv
     df.to_csv(

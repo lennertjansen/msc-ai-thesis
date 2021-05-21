@@ -243,7 +243,7 @@ def get_datasets(subset_size=None,
         train_dataset = BlogDataset(df=train_preprocessed, tokenizer=tokenizer)
         val_dataset = BlogDataset(df=val_preprocessed, tokenizer=tokenizer)
         test_dataset = BlogDataset(df=test_preprocessed, tokenizer=tokenizer)
-    elif data == 'bnc':
+    elif data == 'bnc' or data == 'bnc_rb':
         # return the three splits as BlogDataset types
         train_dataset = BncDataset(df=train_preprocessed, tokenizer=tokenizer)
         val_dataset = BncDataset(df=val_preprocessed, tokenizer=tokenizer)
