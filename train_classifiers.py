@@ -554,6 +554,7 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
                 tick_labels = ['19_29', '50_plus']
             elif data == 'blog':
                 tick_labels = ['13-17', '23-27', '33-47']
+            pdb.set_trace()
             make_confusion_matrix(cf=cm, categories=tick_labels, title=f'Confusion Matrix for {data} on {set} set',
                                   num_labels=labels, y_true=y_true, y_pred=y_pred, figsize=FIGSIZE)
 
