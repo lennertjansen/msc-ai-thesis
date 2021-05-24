@@ -180,7 +180,8 @@ def train(seed,
         # set seed for reproducibility on cpu or gpu based on availability
         torch.manual_seed(seed) if device == 'cpu' else torch.cuda.manual_seed(seed)
 
-        # data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
+        # data_path = '
+        # /bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
         # data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0_rand_balanced.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
         if data == 'bnc':
             data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv'
@@ -927,9 +928,9 @@ def load_saved_model(model_class, optimizer_class, lr, device, batch_size, vocab
                       'device_cuda_dt_13_May_2021_16_25_34.pt'
 
     # w_loss
-    # checkpoint_path = 'models/bnc/lstm/best_lstm_emb_256_hid_512_l_1_bd_True_drop_0_bs_64_epochs_15_lr_0.0001_' \
-    #                   'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_device_cuda_' \
-    #                   'dt_23_May_2021_01_00_29.pt'
+    checkpoint_path = 'models/bnc/lstm/best_lstm_emb_256_hid_512_l_1_bd_True_drop_0_bs_64_epochs_15_lr_0.0001_' \
+                      'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_device_cuda_' \
+                      'dt_23_May_2021_01_00_29.pt'
 
     # w_sampling
     # checkpoint_path = 'models/bnc/lstm/best_lstm_emb_256_hid_1024_l_1_bd_False_drop_0_bs_64_epochs_15_lr_0.0001_' \
