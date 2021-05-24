@@ -499,13 +499,20 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
             batch_inputs, batch_labels, batch_lengths = batch_inputs.to(device), batch_labels.to(device), \
                                                         batch_lengths.to(device)
 
-            # forward pass through model
-            log_probs = model(batch_inputs, batch_lengths)  # log_probs shape: (batch_size, num_classes)
+            if model_type == 'lstm':
+                # forward pass through model
+                log_probs = model(batch_inputs, batch_lengths)  # log_probs shape: (batch_size, num_classes)
 
-            # compute and sum up batch loss and correct predictions
-            set_loss += criterion(log_probs, batch_labels)
+                # compute and sum up batch loss and correct predictions
+                set_loss += criterion(log_probs, batch_labels)
 
-            predictions = torch.argmax(log_probs, dim=1, keepdim=True)
+                predictions = torch.argmax(log_probs, dim=1, keepdim=True)
+            elif model_type == 'bert':
+                loss, text_fea = model(batch_inputs, batch_labels)
+                set_loss += loss
+
+                predictions = torch.argmax(text_fea, 1)
+
             batch_pred = [int(item[0]) for item in predictions.tolist()]
             y_pred.extend(batch_pred)
             y_true.extend(batch_labels.tolist())
@@ -555,7 +562,6 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
                 tick_labels = ['19_29', '50_plus']
             elif data == 'blog':
                 tick_labels = ['13-17', '23-27', '33-47']
-            pdb.set_trace()
             make_confusion_matrix(cf=cm, categories=tick_labels, title=f'Confusion Matrix for {data} on {set} set',
                                   num_labels=labels, y_true=y_true, y_pred=y_pred, figsize=FIGSIZE)
 
