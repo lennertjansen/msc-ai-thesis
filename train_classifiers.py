@@ -10,7 +10,7 @@ import numpy as np
 import torch
 import torch.optim as optim
 
-from classifiers import TextClassificationLSTM
+from classifiers import TextClassificationLSTM, TextClassificationBERT
 
 from dataset import get_datasets, padded_collate, PadSequence
 from torch.utils.data import DataLoader, WeightedRandomSampler
@@ -39,6 +39,7 @@ FIGSIZE = (15, 8)
 
 
 def train_one_epoch(model,
+                    model_type,
                     data_loader,
                     criterion,
                     optimizer,
@@ -67,11 +68,15 @@ def train_one_epoch(model,
         # zero the parameter gradients
         # optimizer.zero_grad()
 
-        # forward pass through model
-        log_probs = model(batch_inputs, batch_lengths)  # log_probs shape: (batch_size, num_classes)
+        if model_type == 'lstm':
+            # forward pass through model
+            log_probs = model(batch_inputs, batch_lengths)  # log_probs shape: (batch_size, num_classes)
 
-        # Evaluate loss, gradients, and update network parameters
-        loss = criterion(log_probs, batch_labels)
+            # Evaluate loss, gradients, and update network parameters
+            loss = criterion(log_probs, batch_labels)
+        elif model_type == 'bert':
+            output = model(batch_inputs, batch_labels)
+            loss, text_fea = output
 
 
         if writer:
@@ -89,9 +94,17 @@ def train_one_epoch(model,
 
         optimizer.step()
 
-        predictions = torch.argmax(log_probs, dim=1, keepdim=True)
-        correct = predictions.eq(batch_labels.view_as(predictions)).sum().item()
-        accuracy = correct / log_probs.size(0)
+        if model_type == 'lstm':
+            predictions = torch.argmax(log_probs, dim=1, keepdim=True)
+            correct = predictions.eq(batch_labels.view_as(predictions)).sum().item()
+            accuracy = correct / log_probs.size(0)
+        elif model_type == 'bert':
+            # predictions = torch.argmax(text_fea, 1).tolist()
+            predictions = torch.argmax(text_fea, 1)
+            correct = predictions.eq(batch_labels.view_as(predictions)).sum().item()
+            accuracy = correct / batch_labels.size(0)
+
+
         # writer.add_scalar("Loss/train", loss, iteration)
 
         # print(loss.item())
@@ -134,6 +147,7 @@ def train_one_epoch(model,
 
 def train(seed,
           data,
+          model_type,
           mode,
           device,
           batch_size,
@@ -192,7 +206,8 @@ def train(seed,
                                                                 val_frac=val_frac,
                                                                 test_frac=test_frac,
                                                                 seed=seed,
-                                                                data=data)
+                                                                data=data,
+                                                                model_type=model_type)
 
         # Train, val, and test splits
         # train_size = int(train_frac * len(dataset))
@@ -274,24 +289,32 @@ def train(seed,
 
     if mode == 'train' or mode == 'val':
 
-        # initialize model
-        print("Initializing model ...")
-        model = TextClassificationLSTM(batch_size = batch_size,
-                                       vocab_size = train_dataset.vocab_size,
-                                       embedding_dim = embedding_dim,
-                                       hidden_dim = hidden_dim,
-                                       num_classes = train_dataset.num_classes,
-                                       num_layers = num_layers,
-                                       bidirectional = bidirectional,
-                                       dropout = dropout,
-                                       device = device,
-                                       batch_first = batch_first)
+        if model_type == 'lstm':
+            # initialize model
+            print("Initializing model ...")
+            model = TextClassificationLSTM(batch_size = batch_size,
+                                           vocab_size = train_dataset.vocab_size,
+                                           embedding_dim = embedding_dim,
+                                           hidden_dim = hidden_dim,
+                                           num_classes = train_dataset.num_classes,
+                                           num_layers = num_layers,
+                                           bidirectional = bidirectional,
+                                           dropout = dropout,
+                                           device = device,
+                                           batch_first = batch_first)
+        elif model_type == 'bert':
+            model = TextClassificationBERT()
+
     elif mode == 'test':
-        model, _, _, _, _ = load_saved_model(model_class=TextClassificationLSTM, optimizer_class=optim.Adam, lr=lr,
-                                             device=device, batch_size=batch_size, vocab_size=train_dataset.vocab_size,
-                                             embedding_dim=embedding_dim, hidden_dim=hidden_dim,
-                                             num_classes=train_dataset.num_classes, num_layers=num_layers,
-                                             bidirectional=bidirectional, dropout=dropout, batch_first=batch_first)
+        if model_type == 'lstm':
+            model, _, _, _, _ = load_saved_model(model_class=TextClassificationLSTM, optimizer_class=optim.Adam, lr=lr,
+                                                 device=device, batch_size=batch_size, vocab_size=train_dataset.vocab_size,
+                                                 embedding_dim=embedding_dim, hidden_dim=hidden_dim,
+                                                 num_classes=train_dataset.num_classes, num_layers=num_layers,
+                                                 bidirectional=bidirectional, dropout=dropout, batch_first=batch_first)
+        elif model_type == 'bert':
+            model = TextClassificationBERT()
+
 
 
     # model to device
@@ -332,7 +355,10 @@ def train(seed,
         print(f'The model has {trainable_params} trainable parameters.')
 
         # set up optimizer and loss criterion
-        optimizer = optim.Adam(params=model.parameters(), lr=lr)
+        if model_type == 'lstm':
+            optimizer = optim.Adam(params=model.parameters(), lr=lr)
+        elif model_type == 'bert':
+            optimizer = optim.Adam(model.parameters(), lr=2e-5) #TODO: CHANGE THIS BACK!!!!!!!
 
         # initialize iterations at zero
         iterations = 0
@@ -362,7 +388,8 @@ def train(seed,
                 # set model to training mode. NB: in the actual training loop later on, this
                 # statement goes at the beginning of each epoch.
                 model.train()
-                iterations, train_losses, train_accs = train_one_epoch(model=model, data_loader=train_loader,
+                iterations, train_losses, train_accs = train_one_epoch(model=model, model_type=model_type,
+                                                                       data_loader=train_loader,
                                                                        criterion=criterion,
                                                                        optimizer=optimizer, device=device,
                                                                        start_iteration=iterations,
@@ -611,6 +638,7 @@ def plot_performance(losses, accs, show=False, save=False):
 
 def hp_search(seed,
               data,
+              model_type,
               mode,
               device,
               batch_size,
@@ -892,13 +920,20 @@ def save_checkpoint(state, is_best, filename='checkpoint.pt'):
 def load_saved_model(model_class, optimizer_class, lr, device, batch_size, vocab_size, embedding_dim, hidden_dim,
                      num_classes, num_layers, bidirectional, dropout, batch_first):
 
+    # blog lstm
     # checkpoint_path = 'models/blog/lstm/best_blog_lstm_emb_128_hid_256_l_2_bd_True_drop_0_bs_64_epochs_5_lr_0.001_' \
     #                   'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_' \
     #                   'device_cuda_dt_13_May_2021_16_25_34.pt'
 
-    checkpoint_path = 'models/bnc/lstm/best_lstm_emb_256_hid_1024_l_1_bd_False_drop_0_bs_64_epochs_15_lr_0.0001_' \
-                      'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_' \
-                      'device_cuda_dt_22_May_2021_01_31_46.pt'
+    # w_loss
+    checkpoint_path = 'models/bnc/lstm/best_lstm_emb_256_hid_512_l_1_bd_True_drop_0_bs_64_epochs_15_lr_0.0001_' \
+                      'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_device_cuda_' \
+                      'dt_23_May_2021_01_00_29.pt'
+
+    # w_sampling
+    # checkpoint_path = 'models/bnc/lstm/best_lstm_emb_256_hid_1024_l_1_bd_False_drop_0_bs_64_epochs_15_lr_0.0001_' \
+    #                   'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_' \
+    #                   'device_cuda_dt_22_May_2021_01_31_46.pt'
 
     # initialize model instance
     model = model_class(batch_size=batch_size, vocab_size=vocab_size, embedding_dim=embedding_dim,
@@ -938,6 +973,10 @@ def parse_arguments(args = None):
         '--data', type=str, choices=['blog', 'bnc', 'bnc_rb'], default='blog',
         help='Choose dataset to work with. Either blog corpus, BNC (NB: highly imbalanced. '
              'Activate w_loss or w_sampling), or BNC randomly balanced (bnc_rb).'
+    )
+    parser.add_argument(
+        '--model_type', type=str, choices=['lstm', 'bert', 'unigram'], default='lstm',
+        help='Model type/class to use.'
     )
     parser.add_argument(
         '--mode', type=str, choices=['train', 'val', 'test'], default='train',

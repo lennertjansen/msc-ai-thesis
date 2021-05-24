@@ -12,6 +12,7 @@
 
 
 # Import statements
+import pdb
 from pdb import set_trace # for easier debugging
 import os # for path file reading/loading
 import numpy as np # for linear algebra and numerical methods
@@ -26,6 +27,8 @@ from custom_tokenizers import Vocabulary, WordTokenizer
 from itertools import islice
 from tokenizers import Tokenizer
 from preprocessing import preprocess_df
+
+from transformers import BertTokenizer
 
 class BlogDataset(Dataset):
     '''
@@ -183,7 +186,8 @@ def get_datasets(subset_size=None,
                  test_frac = 0.2,
                  val_frac = 0.1,
                  seed=2021,
-                 data='blog'):
+                 data='blog',
+                 model_type='lstm'):
 
     """
     :param subset_size: (int) number of datapoints to take as subset. If None, full dataset is taken.
@@ -236,7 +240,10 @@ def get_datasets(subset_size=None,
     val_preprocessed = preprocess_df(val_df, data=data)
     test_preprocessed = preprocess_df(test_df, data=data)
 
-    tokenizer = WordTokenizer(train_preprocessed.clean_text)
+    if model_type == 'lstm':
+        tokenizer = WordTokenizer(train_preprocessed.clean_text)
+    elif model_type == 'bert':
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
     if data == 'blog':
         # return the three splits as BlogDataset types
@@ -263,5 +270,8 @@ if __name__ == "__main__":
     # for a in islice(data_loader, 10):
     #     print(a)
     bnc_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv'
-    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=None, file_path=bnc_path, data='bnc')
+    bnc_rb_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0_rand_balanced.csv'
+    train_dataset, val_dataset, test_dataset = get_datasets(subset_size=None, file_path=bnc_rb_path, data='bnc_rb',
+                                                            model_type='bert')
     input, label = train_dataset[34]
+    pdb.set_trace()

@@ -1,6 +1,10 @@
+import pdb
+
 import torch.nn as nn
 import torch
 from pdb import set_trace
+
+from transformers import BertForSequenceClassification
 
 class TextClassificationLSTM(nn.Module):
 
@@ -148,12 +152,22 @@ class TextClassificationLogit(nn.Module):
 
         return out
 
-class TextClassificationBERT():
+class TextClassificationBERT(nn.Module):
     """
     For inspiration: https://towardsdatascience.com/bert-text-classification-using-pytorch-723dfb8b6b5b
     Also check out this one by the same author about LSTM text classification: https://towardsdatascience.com/lstm-text-classification-using-pytorch-2c6c657f8fc0
     """
-    pass
+
+    def __init__(self):
+        super(TextClassificationBERT, self).__init__()
+
+        options_name = "bert-base-uncased"
+        self.encoder = BertForSequenceClassification.from_pretrained(options_name)
+
+    def forward(self, text, label):
+        loss, text_fea = self.encoder(text, labels=label)[:2]
+
+        return loss, text_fea
 
 if __name__ == "__main__":
 
