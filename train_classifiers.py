@@ -412,7 +412,8 @@ def train(seed,
                                                           writer=writer,
                                                           global_iteration=iterations,
                                                           print_metrics=False,
-                                                          data=data)
+                                                          data=data,
+                                                          model_type=model_type)
             # TODO: See this tutorials prettier logging -- https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html
             # print(f"#######################################################################")
             # print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
@@ -460,7 +461,8 @@ def train(seed,
                                                   criterion=criterion,
                                                   set='test',
                                                   data=data,
-                                                  plot_cm=True)
+                                                  plot_cm=True,
+                                                  model_type=model_type)
     elif mode == 'test':
         print("Starting testing...")
         _, _ = evaluate_performance(model=model, data_loader=test_loader,
@@ -468,7 +470,8 @@ def train(seed,
                                                   criterion=criterion,
                                                   set='test',
                                                   data=data,
-                                                  plot_cm=True)
+                                                  plot_cm=True,
+                                                  model_type=model_type)
 
     # plot_performance(losses=train_losses, accs=train_accs)
 
