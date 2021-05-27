@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch
 from pdb import set_trace
 
-from transformers import BertForSequenceClassification
+from transformers import BertForSequenceClassification, BertConfig
 
 class TextClassificationLSTM(nn.Module):
 
@@ -162,6 +162,8 @@ class TextClassificationBERT(nn.Module):
         super(TextClassificationBERT, self).__init__()
 
         options_name = "bert-base-uncased"
+        # config = BertConfig.from_pretrained(options_name)
+        # config.max_position_embeddings = 1024
         self.encoder = BertForSequenceClassification.from_pretrained(options_name)
 
     def forward(self, text, label):

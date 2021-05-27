@@ -513,6 +513,7 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
 
                 predictions = torch.argmax(text_fea, 1)
 
+
             batch_pred = [int(item[0]) for item in predictions.tolist()]
             y_pred.extend(batch_pred)
             y_true.extend(batch_labels.tolist())
