@@ -85,7 +85,7 @@ class WordTokenizer:
     def vocab_size(self):
         return len(self.w2i)
 
-    def encode(self, x, add_special_tokens=True):
+    def encode(self, x, add_special_tokens=True, truncation=False, max_length=512):
         """
         Turn a sentence into a list of tokens. if add_special_tokens is True,
         add a start and stop token.
@@ -99,8 +99,17 @@ class WordTokenizer:
             list: list of integers.
         """
         encoded = [self.w2i.get(w, self.unk_token_id) for w in x.split()]
+
         if add_special_tokens:
+            if truncation:
+               if len(encoded) > (max_length - 2):
+                   encoded = encoded[:(max_length - 2)] # take into account the two special tokens BOS and EOS
+
             encoded = [self.bos_token_id] + encoded + [self.eos_token_id]
+        else:
+            if truncation:
+                if len(encoded) > max_length:
+                    encoded = encoded[:max_length]
         return encoded
 
     def decode(self, x, skip_special_tokens=True):

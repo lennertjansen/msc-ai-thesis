@@ -509,7 +509,10 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
                 # compute and sum up batch loss and correct predictions
                 set_loss += criterion(log_probs, batch_labels)
 
-                predictions = torch.argmax(log_probs, dim=1, keepdim=True)
+
+
+                # predictions = torch.argmax(log_probs, dim=1, keepdim=True)
+                predictions = torch.argmax(log_probs, dim=1)
             elif model_type == 'bert':
                 loss, text_fea = model(batch_inputs, batch_labels)
                 set_loss += loss
@@ -517,8 +520,9 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
                 predictions = torch.argmax(text_fea, 1)
 
 
-            batch_pred = [int(item[0]) for item in predictions.tolist()]
-            y_pred.extend(batch_pred)
+            # batch_pred = [int(item[0]) for item in predictions.tolist()]
+            # batch_pred = predictions.tolist()
+            y_pred.extend(predictions.tolist())
             y_true.extend(batch_labels.tolist())
 
             total_correct += predictions.eq(batch_labels.view_as(predictions)).sum().item()
