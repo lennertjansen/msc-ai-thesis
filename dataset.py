@@ -126,7 +126,7 @@ class BncDataset(Dataset):
         if is_tensor(index):
             index = index.tolist()
 
-        encoded_input = self.tokenizer.encode(self.df.clean_text.iloc[index], add_special_tokens=True, truncate=True, max_length=512)
+        encoded_input = self.tokenizer.encode(self.df.clean_text.iloc[index], add_special_tokens=True, truncation=True, max_length=512)
         label = self.df.age_cat.iloc[index]
 
         return torch.tensor(encoded_input), torch.tensor(label)
