@@ -243,7 +243,8 @@ def get_datasets(subset_size=None,
     if model_type == 'lstm':
         tokenizer = WordTokenizer(train_preprocessed.clean_text)
     elif model_type == 'bert':
-        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', truncation=True) # truncation only considers sequences of max 512 tokens (same as original BERT implementation)
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', truncation=True,
+                                                  max_length=500) # truncation only considers sequences of max 512 tokens (same as original BERT implementation)
 
     if data == 'blog':
         # return the three splits as BlogDataset types
