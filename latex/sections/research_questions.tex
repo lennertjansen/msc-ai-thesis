@@ -1,0 +1,29 @@
+\begin{enumerate}
+    \item To what extent can a classifier detect age-related linguistic differences in natural language? And which features are most helpful in age-group detection?
+    \begin{enumerate}
+        \item Do they (i.e., the linguistic or latent features exploited by the classifier) match the age-related informative features reported in previous work?
+        \begin{itemize}
+            \item \textbf{Hypothesis:} I expect the age-group of a text's producer to be very detectable. Also, I predict efficacy of the models to increase with their complexity. Based on \cite{pennebaker2003words}, my expectations say that complexity of word use increases with age, self-references decreases with seniority, along with the use of negative affect words. Furthermore, I also expect the importance for determining of people's linguistic characteristics to vary with the type of text. Namely, I expect the differences in word use between more formally written texts (such as blogs or articles), and usually informal discourse, to be reflected in the importance of linguistic features.
+            \item \textbf{Implications:} This question aims to lay the foundation of the later research objectives by first establishing whether a discriminator can successfully categorise discourse into correct user age brackets (this is somewhat of a redundant question, because lots of literature suggests the positive). I plan to build increasingly complex classifiers, starting from a simple BoW-model, progressing to embedding-based architectures. The next entailed goal is to investigate which aspects of users' word use seem to play a role in determining the corresponding age groups. NB: these salient characteristics could also express themselves in the latent spaces of neural classifiers. Finding and understanding such features will not only help me better understand the relationship between age-group and word use, but also provide guidelines for the development of controllable conversational response generators later in the project.
+        \end{itemize}
+    \end{enumerate}
+    
+    \item Can large-scale language models (LMs), e.g. GPT-2, be leveraged for text generation, controlled for age-groups?
+    \begin{enumerate}
+        \item What role does the used data play in the differences in output and performance between regular GPT-2 and controllable GPT-2?
+        \begin{itemize}
+            \item \textbf{Hypothesis:} Based on \cite{dathathri2019plug, pennebaker2003words}, I expect they can. Assuming that age-group is distinctive enough a trait of word use for it to notably affect writing style when controlled for (see previous hypothesis), age then simply becomes a topic or writing style input that neatly fits in the the Plug-and-Play setup proposed by \citeauthor{dathathri2019plug}. 
+            \item \textbf{Implications:} \textbf{TODO: EXPAND} to confirm the PPLM setup with age as an attribute input. First step in achieving adaptive dialogue generation, as "vanilla" text generation is much less restrictive.
+        \end{itemize}
+    \end{enumerate}
+    \item To what degree is such a controlled text generation (CTG) model successful in dialogue that is adaptive w.r.t. age, such that it has a detectable effect on the perception of the user?
+    \begin{itemize}
+        \item \textbf{Hypothesis:} Yes, based on PPLM and DialoGPT paper and previous hypothesis
+        \item \textbf{Implications:} \textbf{TODO: expand} this is in alignment with the objectives of the Human(e) AI research project. The ultimate challenge of this thesis will be to leverage the grammatical fluency of GPT-2 and the inexpensive tunability of \citeauthor{dathathri2019plug}'s PPLM setup for a novel application: adaptive neural conversational response generation.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{What is novel or contributing about your research?}
+\begin{itemize}
+    \item \textit{To the best of my knowledge, there is no work on controllable text generation for dialogue responses. Moreover, I also haven't found instances of neural conversational response systems adapting word use to the user's age.}
+\end{itemize}

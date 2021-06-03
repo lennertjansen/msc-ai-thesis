@@ -1,0 +1,207 @@
+\textit{This is where you position your research in the relevant background and related research.}
+
+\subsection{Background}
+
+\textit{What is the relevant theoretical background material to cover?}
+\begin{itemize}
+    \item Language modelling.
+    \item (Controllable) Text Generation.
+    \item GPT-x.
+    \item Transformers.
+    \item Dialogue Modelling.
+    \begin{itemize}
+        \item Adaptive dialogue systems.
+    \end{itemize}
+    \item Age and language.
+    \begin{itemize}
+        \item The theoretical relationship between age and language.
+        \item Age(-group) detection from text.
+    \end{itemize}
+\end{itemize}
+
+\textit{Writing goals of this subsection:}
+\begin{itemize}
+    \item Position my research (i.e., dialogue response generation that is adaptive to age-groups) in its relevant background.
+    \item Explain concepts that must be understood to grasp my research topic (i.e., give theoretical background information for the rest of your thesis).
+\end{itemize}
+
+Controllable dialogue generation encompasses several concepts in natural language processing and linguistics that must be understood to approach the problem. This subsection highlights these topics and positions the central problem of this thesis in its relevant theoretical background.
+
+\paragraph{Language Models}
+
+Language modelling is central to many NLP tasks. A language model is a probability distribution over words in a sentence or document. They are trained to predict the probability of the next word in an sentence, given the preceding sequence of words. The language modelling task is formulated as an unsupervised distribution estimation problem of datapoints $\{\textbf{x}_1, ..., \textbf{x}_N\}$ (e.g., documents), each representing sequences (of e.g., symbols or tokens) of varying lengths $(s_{i, 1}, ..., s_{i, n}), i \in \{1, ..., N\}$. Note that $N$ denotes the corpus size, and $n$ the sequence length of datapoint $i$. To avoid cluttered notation, the subscript $i$ will sometimes be omitted when discussing an arbitrary datapoint. The probability distribution over an observation $\textbf{x}$  (i.e., the joint probability of an ordered sequence) can then be factorised as the product of its constituent conditionals \citep{radford2019language}:
+
+\begin{equation}
+    p(\textbf{x}) = \prod_{j = 1}^n  p(s_j | s_1, ..., s_{j - 1}).
+\end{equation}
+
+This task allows language models to detect and learn patterns in language. The learned representations of these patterns can then be used for a plethora of applications, such as classification, and text generation. Moreover, this results in a framework for tractable sampling from the unconditional language model $p(\textbf{x})$. $p(\textbf{x})$ can therefore be seen a base generative model that can generate sample sentences \citep{dathathri2019plug}.
+
+In recent years, the attention-based models, Transformers \citep{vaswani2017attention}, have replaced recurrent neural networks (RNNs) as the dominant architecture for LMs, with major improvements in distribution estimation, long-range dependency handling, and sample diversity.
+
+Another recent development in language modelling is that of pre-training LMs on massive corpora. So-called large-scale general purpose LMs have demonstrated significant improvements in downstream tasks (i.e., other NLP tasks for which the model was not specifically trained or fine-tuned). Most famously the OpenAI's series of Generative Pre-trained Transformer (GPT) models have improved numerous NLP benchmarks \citep{radford2018improving,radford2019language, brown2020language}. 
+
+
+
+\begin{itemize}
+    \item What are language models? / What is language modelling?
+    \item Why is it important for many NLP tasks?
+    \item How is it typically formulated or approached (very brief mathematical explanation)?
+    \item Why is it important (to understand this) for my research?
+    \begin{itemize}
+        \item Tractable sampling from the joint $\rightarrow$ (text) generation.
+    \end{itemize}
+    \item Introduce pre-trained language models.
+    \item Briefly introduce the Transformer (but not in too much technical detail, as it could be necessary to explain it in Methods).
+    \item Same for GPT-2.
+\end{itemize}
+
+\paragraph{(Controllable) Text Generation}
+
+\begin{itemize}
+    \item Describe the text generation task.
+    \item What is controllability in text generation? Why is it challenging?
+    \item One of the main challenges in CTG using large-scale LMs is the cost of fine-tuning. Expand on this. How can this be solved?
+\end{itemize}
+
+In text generation, a LM $p(\textbf{x})$ is asked to produce text $\textbf{x}$ given a primer text by using the language model to sample from the distribution of words that are assigned the highest likelihood of following the primer text.
+
+Text generation in itself is the task of generating a piece of text given a primer/input text. This process can be seen as sampling from a conditional distribution. Controllable text generation refers to the more restrictive problem of enforcing higher-level linguistic features on the generated text during sampling. This can be seen as a sub-problem of vanilla text generation, because the conditioning factor for the produced test is further constrained to also include some predefined textual attribute. This attribute can be many things: sentiment, topic, writing style, etc. 
+
+\begin{itemize}
+    \item base language model $p(\textbf{x})$
+    \item attribute model $p(a | \textbf{x})$
+    \item CTG model $p(\textbf{x} | a ) \propto p(a | \textbf{x})p(\textbf{x})$
+\end{itemize}
+
+Controllable text generation or CTG is a more challenging problem than vanilla text generation for a number of reasons. First, defining the desired attribute to be controlled for in a manner that is intelligible for a machine is a challenge in self. Second, like many and NLP problems, there do not exist many parallel corpora for which accurate attribute labelling is available. Furthermore, the measure of attribute coherence is a very vague and ambiguous concept. Namely, a text can be written in an extremely positive sentiment in multiple formulations, all of which adhere to the positive sentiment. That is, evaluating the level of attribute coherence is challenging. Another important hurdle for controllable text generation, especially when CTG is combined to leverage the linguistic power of large-scale language models, is that the cost of fine-tuning or pretraining a model to control for a linguistic attribute can be very high. PPLM is an example of a recent work that has the primary focus of leveraging powerful large-scale language models and making them controllable for a wide variety of linguistic attributes, all while avoiding incurring significant costs of fine-tuning. Nevertheless avoiding these costs is anything but trivial.
+
+The plug and play set up of the PPLM model forms one of the main theoretical foundations of this work. It is both logical and promising for every day engineers to be able to leverage the grammatical fluency of pre-trained language models for more discriminative specific downstream tasks, e.g., specifying linguistic characteristic to enforce on an automatically written text. Their setup consist of a symbiosis of GPT-2 as their powerful large-scale language model (of course any large-scale generative language model can be used and the set up is not limited to a transformer based model see OPTIMUS reference), and a significantly smaller and therefore easier to train and fine-tune attribute model. This attribute model is often a small classifier or discriminator model, and can range in complexity from e.g. a simple bag of words model with a logistic classifier to a more complicated transformer encoder head. The main benefit of this setup is the extensibility it brings with it. Namely, such large-scale language models are open-source and available online and can be tailored to their specific needs using a significantly easier to train attribute model of your own liking.
+
+They demonstrate the applicability of their model by beating numerous relevant state-of-the-art results as well as showing its applicability on a wide variety of tasks ranging from text style transfer to language detoxification (all of which can be seen as sub problems of controllable text generation). 
+
+This also has a wide variety of applications in the real world, for instance, being able to automatically re-write or adjust a draft text for an editorial, automatic generation of brand specific vacancy ads, or personalised chatbot assistance or even personalised education.
+
+What this work also provides is a starting point for new applications, namely controllable dialogue generation.
+
+
+\paragraph{Transformers}
+
+The transformer architecture in recent years has dominated numerous NLP tasks and has for the basis for many of the state of the art architecture is in natural language processing. Its masked self-attention and compatibility with parallel processing have made it both effective and handling long-range dependencies in texts, as well attractive in terms of training time. This ability to handle long-range dependencies is exploited in particular in the domain of pretraining large language models. Namely this allows for transformer models to be pre-trained by applying language modelling objectives to long stretches of texts that contain longer range dependencies compared to e.g. tweets or short reviews. 
+
+The transformer architecture mainly consists of a encoder and decoder structure. Where the encoder processes the embedded text inputs and produces a hidden state using self attention mechanisms and fully connected layers. This hidden state is then passed to the decoder layer which Produces an output which contains a distribution over the vocabulary and can be used for next word prediction.
+
+\paragraph{GPT}
+
+Following the success of open AI's pre-trained transformer model they went on to produce a series of generative pre-train transformers that I have been trained in a unsupervised language modelling session.
+
+\paragraph{Dialogue Response Generation}
+\textbf{TODO: add references to eg dialogpt}
+The domain of text generation encapsulates a number of sub-tasks, e.g., machine translation, abstractive summarisation, and paraphrasing. Dialogue response generation is also a special case of language generation. It can be seen as language generation where the prompt is a turn in a dialogue session. Conversational response generation shares open-domain text generation's overarching objective of producing grammatically correct fluent text that is distinct from any training instance, while remaining relevant to the prompt. However, computational dialogue modelling distinguishes itself from most NLP domains due to the challenges associated with modelling human conversation: informal, noisy, unstructured, and even erroneous real-world responses, possibly competing goals of interlocutors, or an inherently more diverse set of acceptable responses. The last point also emphasises that neural response generation has a much more $1$\textit{-to-many} nature than most text generation tasks.
+
+Despite these differences, conversational response generation can be modelled in similar ways to open-domain text generation. \cite{zeng-etal-2020-meddialog} suggest to either formulate it in terms of source-target pairs, much like neural machine translation, or as a language modelling objective, where the next token or utterance is conditioned on the dialogue history. To remain close to the training objectives of my baseline models (GPT-2 and DialoGPT), I choose to adopt the language modelling formulation for conversation modelling. I.e., concatenate all dialogue turns in a multi-turn dialogue session into a long text: $x_1, ..., x_N$. Denote the source sentence or dialogue history as $S = x_1, ..., x_m$ and the target sentence (ground truth response) as $T = x_{m + 1}, ..., x_N$. The conditional probability of dialogue continuation given its history $P(T | S)$ can be written as
+
+\begin{equation}
+    p(T | S) = \prod_{n = m + 1}^N p(x_n | x_1, ..., x_{n - 1}).
+\end{equation}
+
+A multi-turn dialogue session $T_1, ..., T_K$ can be written as $p(T_K, ..., T_2 | T_1)$ which is essentially the product of all source-target pairs probabilities $p(T_i | T_1, ..., T_{i - 1})$. This formulation also shows that optimising the single objective $p(T_K, ..., T_2 | T_1)$ is equivalent to optimising all source-target pair probabilities.
+
+
+\begin{itemize}
+    \item What is (computational) dialogue modeling?
+    \item What do we aim to understand with CDM?
+    \item How is (controllable) text generation related to CDM?
+    \item Is dialogue generation ``simply'' a special case of text generation? If so, explain what are the conditions that constitute this special case.
+\end{itemize}
+
+\paragraph{Controllable dialogue generation}
+
+Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI. This objective is difficult to reach because of the challenge of representing personality traits via language expression and the lack of large-scale persona-labeled dialogue datasets \citep{zheng2019personalized}.
+
+Assuming an encoder-decoder setup, \cite{zheng2019personalized} argue that most personalized neural conversation models can be classified as one of two types: implicit and explicit personalisation models. For implicit personalization models, each speaker has its own vector representation, which implicitly captures the speaking style of the speaker in the decoding process. These models enjoy the benefit of having a more granular and realistic representation of speaking style, as opposed to a simple discrete set of traits (as is the case for explicit personalization models). On the other hand, it is unclear how speaker style is captured and should be interpreted, as all the information about a speaker's style is encoded in a real-valued vector. Furthermore, these methods suffer from a data sparsity issue, because each dialogue should be tagged with a speaker identifier and there should be sufficient dialogues from each trait-group to train a reliable trait-adaptive model. This last drawback is a bigger hurdle for the \cite{zheng2019personalized} than it is for mine, as their work deals with personalization for intersections of multiple traits, whereas my work focuses on adaptation to a small number of age groups. (\textbf{Todo: or should this sentence be in Related Work?})
+
+For explicit personalization models, the generated responses are conditioned either on a given personal profile, text-described persona, or simply an attribute label. I.e., speaker traits are represented as key-value pairs or descriptions about age, gender, etc. So this can be seen as conditioning the decoder's output on an attribute $a$, much like the PPLM setup of \cite{dathathri2019plug}. Speakers with same set of personality traits can share attribute representations. So it does not require a speaker-specific representation vector. Such structured character descriptions are more explicit, straight-forward, and interpretable. However, explicit personalization models require manually labeled or crowdsourced datasets for development, making it difficult to scale these models to large-scale dialogue datasets.
+
+% \begin{enumerate}
+%     \item \textit{Implicit personalization models}
+%         \begin{itemize}
+%             \item Each speaker has its own vector representation, and this vector is fed into the decoder to capture the speaking style of the speaker implicitly.
+%             \item \textbf{Pros}: more granular and realistic representation of speaking style, as opposed to a simple discrete set of traits.
+%             \item \textbf{Cons}: (1) It is unclear how personality is captured and how it can be interpreted as all the information about a speaker's style is encoded in a real-valued vector. (2) These methods suffer from a data sparsity issue: each dialogue should be tagged with a speaker identifier and there should be sufficient dialogues from each speaker to train a reliable user-specific model.
+%         \end{itemize}
+%     \item \textit{Explicit personalisation models}
+%         \begin{itemize}
+%             \item The generated responses are conditioned either on a given personal profile or a text-described persona. I.e., personality is represented via key-value pairs or natural language descriptions about age, gender, etc. So this can be seen as conditioning the decoder's output on an attribute $a$, which represents one of the descriptions in the previous two sentences.
+%             \item \textbf{Pros:} (1) The persona of a speaker can be viewed as a composite of diversified personality traits, suggesting that this approach is a sensible approximation of reality. (2) Data sparsity problem is solved. Speakers with same set of personality traits can share attribute representations. So it does not require a speaker-specific representation vector. (3) Such structured personality descriptions are more explicit, straight-forward, and interpretable.
+%             \item \textbf{Cons:} (1) These methods are limited to either manually-labelled data or crowdsourced dialogues, and thereby not scalable to large-scale dialogue datasets.
+%         \end{itemize}
+% \end{enumerate}
+
+\paragraph{Language and speaker age.}
+
+\begin{itemize}
+    \item What is known about the relationship between a speaker's (or author's) age and their linguistic characteristics? I.e., how does language use develop with age according to the existing literature?
+    \item How can we automatically detect a speaker's age(-group) from their utterances using machine learning?
+\end{itemize}
+
+\subsection{Related work}
+
+\paragraph{Controllable language generation}
+\begin{itemize}
+    \item PPLM \cite{dathathri2019plug}
+    \item Optimus \citep{li-etal-2020-optimus}
+\end{itemize}
+
+\cite{dathathri2019plug} Achieve controllable language generation using a plug and play model set up.Their architecture uses GPT to as their base language model which provides grammatical fluency, combined with a significantly easier to train attribute model (i.e., a simple BoW or single-layer classifier). Using gradient updates from the much smaller attribute model that are back propagated through the large pre-trained bass language model they manage to generate language combines (some of) the fluency of GPT-2 with the stylistic control of the attribute model, without the cost of retraining a specialised architecture.
+
+They demonstrate desirable fluency as measured by perplexity with respect to GPT as well as measurable attribute control. Their architecture is applied to among other Tasks controlled story writing and language detoxification. They also show a clear trade-off between attribute control and grammatical correctness and diversity.
+
+Dialogue generation is not explored as an application of PPLM, nor is their tested with more complex attribute models to hopefully allow for less deterioration of fluency as attribute control increases.
+
+\textbf{OPTIMUS}
+
+\paragraph{Writing-style Transfer}
+\begin{itemize}
+    \item \cite{dai2019style}
+\end{itemize}
+
+Writing-style transfer is a closely related problem to controllable language generation. It involves rewriting an input text with a different style of writing than it originally had. More formally, given a text $\textbf{x}$, its corresponding style $\textbf{s}^{(i)}$, the number of different styles $K$ over which there exists a distribution, and a desired style $\hat{\textbf{s}} \in \{\textbf{s}^{(i)}\}_{i = 1}^{K}$, the goal of style transfer is to rewrite the input sentence to $\hat{\textbf{x}}$ with style $\hat{\textbf{s}}$, while preserving the information content of $\textbf{x}$. Using a trained model to rewrite the positively formulated input sentence ``\textit{I like fish sticks}'' as it negative equivalent ``\textit{I do not like fish sticks}'' is an example of writing-style transfer. Writing-style transfer can also be seen as a special case of (abstractive) summarization, for which Transformers have also demonstrated applicability \citep{baan-etal-2019-abstractive}.
+
+\cite{dai-etal-2019-style} introduce the Style Transformer, an alternative to the previous RNN-based encoder-decoder frameworks for text style transfer. In previous work, neural text style transfer was done by passing input text through an encoder, yielding a style-dependent latent representation $z$. These previous approaches then attempt to ``disentangle'' $z$ into a style-independent content representation and a latent representation of the stylistic properties of the input text. The following decoder then receives the content representation and a new latent style variable as input, to ultimately produce a style-altered output text with unchanged content.
+
+\begin{enumerate}
+    \item It is difficult to evaluate the quality of disentanglement of the latent space.
+    \item Disentanglement is unnecessary, as contemporary work by \cite{lample2018multipleattribute} has shown a good decoder can perform controllable text generation from an entangled latent representation by ``overwriting'' the original style.
+    \item It is hard to capture rich semantic information in the latent representation due to limited capacity of vector representations (especially for long texts).
+    \item To disentangle style and content in the latent representations, all previous approaches have to assume all input texts can be encoded by a fixed-size latent vector.
+    \item Since most previous approaches use RNN-based encoder-decoder frameworks, they have problems capturing long-range dependencies in the input sentences.
+\end{enumerate}
+
+These aforementioned problems are address by \citeauthor{dai-etal-2019-style} using Transformers \cite{vaswani2017attention} as the building block for text style transfer. The authors' approach does not require any manipulation (i.e., disentanglement) of the latent space, eliminates the need for a fixed-size vector representation of the input, and handles long-range dependencies better due to Transformers' attention mechanism. Aside from this being the first application of Transformers for text style transfer, the work contributes a novel training algorithm for such models, and boasts significant improvements of results on two text style transfer datasets.
+
+\paragraph{Dialogue Generation}
+\begin{itemize}
+    \item DialoGPT
+\end{itemize}
+
+In \cite{zhang2019dialogpt}, the authors introduce DialoGPT, a tunable large-scale language model for generation of conversational responses, trained on Reddit discussion chain data. DialoGPT therefore extends GPT-2 \cite{radford2019language} to address a more restrictive sub-category of text generation, i.e., conversational response generation.  
+
+DialoGPT inherits from GPT-2 a 12-to-48 layer transformer with layer normalisation, a custom initialisation scheme that accounts for model depth, and byte pair encodings \cite{sennrich-etal-2016-neural} as a tokeniser.
+
+The generation task remains framed as language modelling, where a multi-turn dialogue session is modelled as a long text. 
+
+To address the well-known problem of open-domain text generation models producing bland and uninformative samples, \citeauthor{zhang2019dialogpt} implement a maximum mutual information (MMI) scoring function. MMI uses a pre-trained backward model to predict $P(\text{Source} | \text{target})$: i.e., the source sentences (dialogue history) given the target (responses, dialogue continuation). 
+
+First, top-K sampling is used to generate a set of hypotheses. Then the probability $P(\text{Source} | \text{Hypothesis})$ is used to re-rank all hypotheses. As frequent and repetitive hypotheses can be associated with many possible queries/sources (i.e., a hypothesis that frequently occurs is one that is apparently applicable to many queries), and maximising backward model likelihood penalises repetitive hypotheses, MMI yields a lower probability for any specific query, thereby reducing blandness and promoting diversity.
+
+DialoGPT is evaluated on the Dialog System Technology Challenge (DSTC) 7 track; an end-to-end conversational modelling task in which the goal is to generate conversation responses that go beyond chitchat by injecting information that is grounded in external knowledge. The model achieves state-of-the-art results on both the human and automatic evaluation results, by achieving near human-like responses that are diverse, relevant to the prompt, much like GPT-2 for open-domain language generation. They train 3 models of parameter sizes 117M, 345M, and 762M. The medium-sized 345M model achieves the best automatic evaluation results across most metrics, and is used as a baseline in later experiments in this work. Their Hugging Face PyTorch implementation can be tested here: https://huggingface.co/microsoft/DialoGPT-medium.
+
+
+\paragraph{Adaptive Dialogue Generation}
+\begin{itemize}
+    \item \texttt{PersonalDialogue}
+    \item MedDialog(?)
+\end{itemize}
+
+\cite{zheng2019personalized} investigate the problem of incorporating explicit personal characteristics in dialogue generation to deliver personalised (i.e., adaptive) conversation. They introduce \texttt{PersonalDialog}, a large-scale multi-turn dialogue dataset with personality trait labelling (i.e., \texttt{Age}, \texttt{Gender}, \texttt{Location}, \texttt{Interest Tags}, etc.) for a large number of speakers. They propose persona-aware adaptive dialogue generation models within the sequence-to-sequence learning framework. During the decoding process, they suggest two novel techniques: \textit{persona-aware attention} and \textit{persona-aware bias}.

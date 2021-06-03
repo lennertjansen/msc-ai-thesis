@@ -1,0 +1,68 @@
+\textit{The experiments of this study are divided into two phases: (1) automated age detection from written texts or dialogue transcriptions, and (2) age-adaptive dialogue generation.}
+
+\subsection{Automated age-detection from text}
+
+Three classes of architectures are trained for the task of predicting a writer's or speaker's age given a written text or speech transcription; (1) logistic $n$-gram models, (2) recurrent neural networks (RNNs), specifically, long short-term memory (LSTM), and (3) attention-based BERT encoders.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c c c}
+    \hline
+    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1$\\
+    \hline
+    Baseline (predict majority class) & 0.4704 & ...\\
+    unigram & 0.6058 & ...\\
+    bigram & 0.6247 & ...\\
+    trigram & 0.6207 & ...\\
+    (2 layer bi-)LSTM & 0.7194 & ...\\
+    BERT & ... & ...\\
+    \hline
+    \end{tabular}
+    \caption{Blog corpus age classifiers}
+    \label{tab:blog_classification}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c c c}
+    \hline
+    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1$\\
+    \hline
+    Baseline (predict majority class) & 0.500 & ...\\
+    unigram & ... & ...\\
+    bigram & ... & ...\\
+    trigram & ... & ...\\
+    LSTM & 0.701 & ...\\
+    BERT & 0.716 & ...\\
+    \hline
+    \end{tabular}
+    \caption{BNC (balanced) age classifiers}
+    \label{tab:bnc_classification}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/cm_bert_test_dt_27_May_2021.png}
+    \caption{Confusion matrix BERT age classifier on balanced BNC test set.}
+    \label{fig:cm_bert_bnc_rb}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c c c}
+    \hline
+    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1$\\
+    \hline
+    Baseline (predict majority class) & 0.807 & ...\\
+    unigram & ... & ...\\
+    bigram & ... & ...\\
+    trigram & ... & ...\\
+    LSTM & 0.776 & ...\\
+    BERT & 0.786 & ...\\
+    \hline
+    \end{tabular}
+    \caption{BNC age classifiers}
+    \label{tab:bnc_classification}
+\end{table}
+
+\subsection{Age-adaptive conversational response generation}

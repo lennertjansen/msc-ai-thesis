@@ -1,0 +1,36 @@
+% \textbf{Things to keep in mind when writing this section:}
+% \begin{itemize}
+%     \item Doesn't have to be longer than 1 page.
+%     \item (optional): anecdotal opener to draw attention.
+%     \item Brief introduction to the topic of controllable text generation and adaptive dialogue systems.
+%     \item Description of the research problem and your questions.
+%     \item Placeholder for my contributions and approach.
+%     \item Placeholder for overview of remainder of paper.
+%     \item \textit{For consistency, maybe start it off with an introduction that you can re-use for your final version. Of course, this will be rewritten for later versions to include findings.}
+%     \item The three most important papers to keep in mind for this section are: PPLM, DialoGPT, and Personalized Dialogue Generation with Diversified Traits
+% \end{itemize}
+
+
+ 
+
+In recent years, we have witnessed promising advances in downstream natural language processing (NLP) tasks, such as language modeling, reading comprehension, machine translation, controllable text generation, and conversational response generation (\textbf{TODO: ADD REFERENCES TO SOME OF THESE ADVANCES}). \citeauthor{vaswani2017attention}'s Transformer architecture plays a central role in many of the state of the art (SotA) solutions to these problems, emerging as the succession to recurrent neural network (RNN) models for NLP tasks. Transformer-based language models (LMs) pre-trained on massive amounts of textual data, most famously OpenAI's GPT-2 \citep{radford2019language}, have demonstrated their usefulness for several of the aforementioned NLP tasks. For instance, controllable text generation and producing dialogue responses have improved greatly because of GPT-based hybrid models. Given the non-trivial requirements for sufficiently massive training corpora and computational resources, GPT-based solutions are worth considering for these two problems.
+
+Controllable text generation (CTG) tries to enforce abstract properties, like writing style, on the passages being produced. Fine-tuning large-scale LMs for writing-style adaptation is extremely expensive, but \cite{dathathri2019plug} and \cite{li-etal-2020-optimus} propose methods that both excel at the task, while bypassing significant retraining costs. Dialogue response generation is concerned with producing replies to a conversational agent's prompts, in a manner that relevant to the course of the conversation. \cite{zhang2019dialogpt} also manage to leverage GPT-2's powerful fluency for dialogue tasks, by framing them as language modelling tasks where multi-turn dialogue sessions are seen as long texts.
+
+CTG and dialogue response generation share the overarching objective of producing grammatically correct text that is distinct from any training instance. A blend of these two tasks, i.e., controllable dialogue response generation, is an interesting and only partially explored route. It is interesting because it ties closely to one of Artificial Intelligence's long-standing goals of achieving human-like conversation with machines, as humans are known to adapt their language use to the characteristics of their interlocutor (\textbf{TODO: FIND A REFERENCE FOR THIS STATEMENT}). 
+
+Adaptive dialogue generation is difficult due to the challenge of representing traits, like age or gender, via language expression, and the lack of persona trait labelled dialogue datasets. \cite{zheng2019personalized} explore the problem of personalized dialogue generation, and introduced \texttt{PersonalDialog} a large-scale multi-turn Chinese Mandarin dialogue dataset with personality trait labelling, and persona-aware adaptive dialogue generation models using RNNs and attention mechanisms. 
+
+\subsection{Research Objectives}
+\textbf{TODO: incorporate the hypotheses of every research question in this paragraph.}
+In this thesis, I investigate the problem of controllable dialogue generation, with a focus on adapting responses to users' age. As a preliminary research objective, I aim to study to what extent a classifier can detect age-related linguistic differences in natural language And which features are most helpful in age-group detection? Do they (i.e., the linguistic or latent features exploited by the classifier) match the age-related informative features reported in previous work? 
+After empirically confirming that speaker age detection is possible, I explore whether large-scale LMs, e.g. GPT-2, can be leveraged for text generation, controlled for age-groups. And what role does the used data play in the differences in output and performance between regular GPT-2 and controllable GPT-2?
+Finally, and most importantly, my research focuses on the degree to which such a CTG model is successful in generating dialogue that is adaptive w.r.t. age, such that it has a detectable effect on the perception of the user.
+
+\subsection{Contributions}
+
+\textbf{TODO: contribute something to the field. No pressure.}
+
+The main contributions of this paper are ...
+
+The remainder of this work is structured as follows, ...
