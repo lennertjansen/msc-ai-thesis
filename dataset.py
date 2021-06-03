@@ -28,7 +28,7 @@ from itertools import islice
 from tokenizers import Tokenizer
 from preprocessing import preprocess_df
 
-from transformers import BertTokenizer
+from transformers import BertTokenizer, BertTokenizerFast
 
 class BlogDataset(Dataset):
     '''
@@ -77,7 +77,8 @@ class BlogDataset(Dataset):
         if is_tensor(index):
             index = index.tolist()
 
-        encoded_input = self.tokenizer.encode(self.df.clean_text.iloc[index], add_special_tokens=True)
+        encoded_input = self.tokenizer.encode(self.df.clean_text.iloc[index], add_special_tokens=True, truncation=True, max_length=512)
+                                              max_length=512)  # prev 512
         label = self.df.age_cat.iloc[index]
 
         return torch.tensor(encoded_input), torch.tensor(label)
@@ -126,7 +127,7 @@ class BncDataset(Dataset):
         if is_tensor(index):
             index = index.tolist()
 
-        encoded_input = self.tokenizer.encode(self.df.clean_text.iloc[index], add_special_tokens=True, truncation=True, max_length=128) # prev 512
+        encoded_input = self.tokenizer.encode(self.df.clean_text.iloc[index], add_special_tokens=True, truncation=True, max_length=512) # prev 512
         label = self.df.age_cat.iloc[index]
 
         return torch.tensor(encoded_input), torch.tensor(label)
