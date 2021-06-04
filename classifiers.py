@@ -163,7 +163,7 @@ class TextClassificationBERT(nn.Module):
 
         options_name = "bert-base-uncased"
         config = BertConfig.from_pretrained(options_name)
-        config.num_labels =
+        config.num_labels = num_classes
         # config.max_position_embeddings = 1024
         self.encoder = BertForSequenceClassification.from_pretrained(options_name, config=config)
 
