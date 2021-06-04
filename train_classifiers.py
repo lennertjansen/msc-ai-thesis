@@ -304,7 +304,7 @@ def train(seed,
                                            device = device,
                                            batch_first = batch_first)
         elif model_type == 'bert':
-            model = TextClassificationBERT()
+            model = TextClassificationBERT(num_classes = train_dataset.num_classes,)
 
     elif mode == 'test':
         if model_type == 'lstm':

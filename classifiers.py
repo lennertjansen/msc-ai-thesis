@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch
 from pdb import set_trace
 
-from transformers import BertForSequenceClassification, BertConfig
+from transformers import BertForSequenceClassification, BertConfig, AutoModel
 
 class TextClassificationLSTM(nn.Module):
 
@@ -158,11 +158,12 @@ class TextClassificationBERT(nn.Module):
     Also check out this one by the same author about LSTM text classification: https://towardsdatascience.com/lstm-text-classification-using-pytorch-2c6c657f8fc0
     """
 
-    def __init__(self):
+    def __init__(self, num_classes):
         super(TextClassificationBERT, self).__init__()
 
         options_name = "bert-base-uncased"
-        # config = BertConfig.from_pretrained(options_name)
+        config = BertConfig.from_pretrained(options_name)
+        config.num_labels =
         # config.max_position_embeddings = 1024
         self.encoder = BertForSequenceClassification.from_pretrained(options_name)
 
@@ -170,6 +171,52 @@ class TextClassificationBERT(nn.Module):
         loss, text_fea = self.encoder(text, labels=label)[:2]
 
         return loss, text_fea
+
+
+class FrozenBERT(nn.Module):
+    """
+    Based on this tutorial: https://www.analyticsvidhya.com/blog/2020/07/transfer-learning-for-nlp-fine-tuning-bert-for-text-classification/
+    """
+
+    def __init__(self, bert):
+        super(BERT_Arch, self).__init__()
+
+        # import BERT-base pretrained model
+        self.bert = AutoModel.from_pretrained('bert-base-uncased')
+
+        # dropout layer
+        self.dropout = nn.Dropout(0.1)
+
+        # relu activation function
+        self.relu = nn.ReLU()
+
+        # dense layer 1
+        self.fc1 = nn.Linear(768, 512)
+
+        # dense layer 2 (Output layer)
+        self.fc2 = nn.Linear(512, 2)
+
+        # softmax activation function
+        self.softmax = nn.LogSoftmax(dim=1)
+
+    # define the forward pass
+    def forward(self, sent_id, mask):
+        # pass the inputs to the model
+        _, cls_hs = self.bert(sent_id, attention_mask=mask)
+
+        x = self.fc1(cls_hs)
+
+        x = self.relu(x)
+
+        x = self.dropout(x)
+
+        # output layer
+        x = self.fc2(x)
+
+        # apply softmax activation
+        x = self.softmax(x)
+
+        return x
 
 if __name__ == "__main__":
 
