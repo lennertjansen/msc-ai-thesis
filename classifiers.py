@@ -165,7 +165,7 @@ class TextClassificationBERT(nn.Module):
         config = BertConfig.from_pretrained(options_name)
         config.num_labels =
         # config.max_position_embeddings = 1024
-        self.encoder = BertForSequenceClassification.from_pretrained(options_name)
+        self.encoder = BertForSequenceClassification.from_pretrained(options_name, config=config)
 
     def forward(self, text, label):
         loss, text_fea = self.encoder(text, labels=label)[:2]
