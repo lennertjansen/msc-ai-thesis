@@ -178,8 +178,8 @@ class FrozenBERT(nn.Module):
     Based on this tutorial: https://www.analyticsvidhya.com/blog/2020/07/transfer-learning-for-nlp-fine-tuning-bert-for-text-classification/
     """
 
-    def __init__(self, bert):
-        super(BERT_Arch, self).__init__()
+    def __init__(self, num_classes):
+        super(FrozenBERT, self).__init__()
 
         # import BERT-base pretrained model
         self.bert = AutoModel.from_pretrained('bert-base-uncased')
@@ -194,7 +194,7 @@ class FrozenBERT(nn.Module):
         self.fc1 = nn.Linear(768, 512)
 
         # dense layer 2 (Output layer)
-        self.fc2 = nn.Linear(512, 2)
+        self.fc2 = nn.Linear(512, num_classes)
 
         # softmax activation function
         self.softmax = nn.LogSoftmax(dim=1)

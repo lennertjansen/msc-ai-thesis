@@ -10,7 +10,7 @@ import numpy as np
 import torch
 import torch.optim as optim
 
-from classifiers import TextClassificationLSTM, TextClassificationBERT
+from classifiers import TextClassificationLSTM, TextClassificationBERT, FrozenBERT
 
 from dataset import get_datasets, padded_collate, PadSequence
 from torch.utils.data import DataLoader, WeightedRandomSampler
@@ -306,9 +306,9 @@ def train(seed,
         elif model_type == 'bert':
             model = TextClassificationBERT(num_classes = train_dataset.num_classes)
 
-            # freeze all the BERT-parameters
-            for param in model.encoder.bert.parameters():
-                param.requires_grad = False
+            # # freeze all the BERT-parameters
+            # for param in model.encoder.bert.parameters():
+            #     param.requires_grad = False
 
     elif mode == 'test':
         if model_type == 'lstm':
@@ -986,7 +986,6 @@ def load_saved_model(model_class, optimizer_class, lr, device, batch_size, vocab
     loss = checkpoint['loss']
     acc = checkpoint['acc']
 
-    # set_trace()
 
     return model, optimizer, epoch, loss, acc
 
