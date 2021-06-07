@@ -50,155 +50,174 @@ def train_classifiers(dataset,
         # change column names so everything works later
         data.rename(columns={"clean_text": "clean_data",
                              "age_cat": "labels"}, inplace=True)
+    elif dataset == 'bnc':
+        raw_data = pd.read_csv('data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv')
+
+        # prepocess data
+        data = preprocess_df(df=raw_data, data='bnc')
+
+        # change column names so everything works later
+        data.rename(columns={"clean_text": "clean_data",
+                             "age_cat": "labels"}, inplace=True)
     elif dataset == 'blog':
+
+        raw_data = pd.read_csv('data/blogs_kaggle/blogtext.csv')
+
+        # prepocess data
+        data = preprocess_df(df=raw_data, data='blog')
+
+        # change column names so everything works later
+        data.rename(columns={"clean_text": "clean_data",
+                             "age_cat": "labels"}, inplace=True)
+
         preproc_file = Path("./data/blogs_kaggle/blogger_preprocessed_data_FAKE.csv")
 
-        # Pre-process raw data if pre-processed data doesn't exist
-        try:
-            preproc_abs_path = preproc_file.resolve(strict=True)
-        except FileNotFoundError:
-            # doesn't exist
-
-            # Read and load dataset
-            print("Reading raw data...")
-            data = pd.read_csv("./data/blogs_kaggle/blogtext.csv")
-            print("Done reading raw data.")
-
-
-            # Subsetting data
-            # perc_df = 0.00020 # fraction of dataset to take
-            # sub_sample = math.ceil(perc_df * data.shape[0])
-
-            if subset_size != -1:
-                # Chosen to train and test model(s) on subset of size subset_size
-
-                #shuffle data set before subsampling
-                data = data.sample(frac=1).reset_index(drop=True)
-                data = data[:subset_size]
-
-            print(f"Dataset size before preprocessing: {data.shape[0]}")
-
-            print("Preprocessing data...")
-            # Removing all unwanted text/characters from data['text'] column
-            # Remove all non-alphabetical characters
-            data['clean_data'] = data['text'].apply(lambda x: re.sub(r'[^A-Za-z]+',' ', x))
-
-            # Make all letters lower case
-            data['clean_data'] = data['clean_data'].apply(lambda x: x.lower())
-
-            # Remove white space from beginning and end of string
-            data['clean_data'] = data['clean_data'].apply(lambda x: x.strip())
-
-            # Remove instances empty strings
-            before_rm_empty = len(data)
-            data.drop(data[data.clean_data == ''].index, inplace = True)
-
-            print(f'{before_rm_empty - len(data)} empty string instances removed.')
-
-            # Remove texts that are probably not English by filtering blogs that dont contain at least one of the top 50 most used English words
-            # create dict with most common English words
-            top_en_words = {}
-            with open('./data/wordlists/top1000english.txt') as f:
-                count = 1
-                for line in f:
-                    key = line.split()[0].lower()
-                    top_en_words[key] = count
-                    count += 1
-
-                    # Stop at top 50 words. Idea taken from DialoGPT paper.
-                    if count > 50:
-                        break
-
-
-            data['top_50_en'] = data['clean_data'].apply(lambda x : True if not set(x.split()).isdisjoint(top_en_words) else False)
-
-            def top_lang_detect(text):
-
-                detected_langs = detect_langs(text)
-
-                return detected_langs[0].lang
-
-
-            def top_prob_detect(text):
-
-                detected_langs = detect_langs(text)
-
-                return detected_langs[0].prob
-
-            start_time = time.time()
-            data['top_lang'] = data['clean_data'].apply(top_lang_detect)
-            print(f"Top lang detection took {time.time() - start_time} seconds")
-            start_time = time.time()
-            data['top_prob'] = data['clean_data'].apply(top_prob_detect)
-            print(f"Top lang prob lang detection took {time.time() - start_time} seconds")
-
-            # Remove rows without one of top50 most common english words
-            before_top50_removal = len(data)
-            data.drop(data[data['top_50_en'] == False].index, inplace = True)
-            print(f"{before_top50_removal - len(data)} instances dropped")
-
-            before_top_lang = len(data)
-            data.drop(data[data['top_lang'] != 'en'].index, inplace = True)
-            print(f'{before_top_lang - len(data)} instances dropped.')
-
-            before_top_prob = len(data)
-            data.drop(data[data['top_prob'] < 0.9].index, inplace = True)
-            print(f'{before_top_prob - len(data)} instances dropped.')
-
-            # Remove stop words
-            stopwords = set(nltk.corpus.stopwords.words('english')) # use set (hash table) data structure for faster lookup
-
-            # also add urllink and nbsp to set of words to remove
-            stopwords.update(['urllink', 'nbsp'])
-
-            data['clean_data'] = data['clean_data'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords]))
-
-            print("Done preprocessing data.")
-
-            print("Saving preprocessed dataframe to csv...")
-            # save pre-processed dataframe to csv
-            data.to_csv("./data/blogs_kaggle/blogger_preprocessed_data.csv")
-
-        else:
-            # exists
-            # Read and load dataset
-            print("Reading preprocessed data...")
-            data = pd.read_csv("./data/blogs_kaggle/blogger_preprocessed_data.csv")
-            print("Done reading preprocessed data.")
-            # data = data[['clean_data', 'labels']]
-
-        print(f"Dataset size after preprocessing: {data.shape[0]}")
-
-        # Drop columns that are uninformative for writing style (i.e., ID and date)
-        data.drop(['id', 'date'], axis = 1, inplace = True)
-
-        # Add labels for age categories
-        def age_to_cat(age):
-            '''Returns age category label for given age number.'''
-
-            if 13 <= int(age) <= 17:
-                return '13-17'
-            elif 23 <= int(age) <= 27:
-                return '23-27'
-            elif 33 <= int(age):
-                return '33-47'
-            else:
-                print(int(age))
-                raise ValueError("Given age not in one of pre-defined age groups.")
-
-
-        data['age_cat'] = data['age'].apply(age_to_cat)
-
-        # Merge all possibly interesting labels into one column
-        data['labels'] = data.apply(lambda col: [col['gender'], str(col['age']), col['topic'], col['sign']], axis = 1)
-
-        # Only keep age as label
-        # data['labels'] = data.apply(lambda col: [str(col['age'])], axis = 1) # TODO: Why keep age as string?
-        # data['labels'] = data.apply(lambda col: [col['age']], axis = 1)
-        data['labels'] = data.apply(lambda col: [col['age_cat']], axis = 1)
-
-        # Reduce dataframe to only contain cleaned blogs and list of labels
-        data = data[['clean_data', 'labels']]
+        # # Pre-process raw data if pre-processed data doesn't exist
+        # try:
+        #     preproc_abs_path = preproc_file.resolve(strict=True)
+        # except FileNotFoundError:
+        #     # doesn't exist
+        #
+        #     # Read and load dataset
+        #     print("Reading raw data...")
+        #     data = pd.read_csv("./data/blogs_kaggle/blogtext.csv")
+        #     print("Done reading raw data.")
+        #
+        #
+        #     # Subsetting data
+        #     # perc_df = 0.00020 # fraction of dataset to take
+        #     # sub_sample = math.ceil(perc_df * data.shape[0])
+        #
+        #     if subset_size != -1:
+        #         # Chosen to train and test model(s) on subset of size subset_size
+        #
+        #         #shuffle data set before subsampling
+        #         data = data.sample(frac=1).reset_index(drop=True)
+        #         data = data[:subset_size]
+        #
+        #     print(f"Dataset size before preprocessing: {data.shape[0]}")
+        #
+        #     print("Preprocessing data...")
+        #     # Removing all unwanted text/characters from data['text'] column
+        #     # Remove all non-alphabetical characters
+        #     data['clean_data'] = data['text'].apply(lambda x: re.sub(r'[^A-Za-z]+',' ', x))
+        #
+        #     # Make all letters lower case
+        #     data['clean_data'] = data['clean_data'].apply(lambda x: x.lower())
+        #
+        #     # Remove white space from beginning and end of string
+        #     data['clean_data'] = data['clean_data'].apply(lambda x: x.strip())
+        #
+        #     # Remove instances empty strings
+        #     before_rm_empty = len(data)
+        #     data.drop(data[data.clean_data == ''].index, inplace = True)
+        #
+        #     print(f'{before_rm_empty - len(data)} empty string instances removed.')
+        #
+        #     # Remove texts that are probably not English by filtering blogs that dont contain at least one of the top 50 most used English words
+        #     # create dict with most common English words
+        #     top_en_words = {}
+        #     with open('./data/wordlists/top1000english.txt') as f:
+        #         count = 1
+        #         for line in f:
+        #             key = line.split()[0].lower()
+        #             top_en_words[key] = count
+        #             count += 1
+        #
+        #             # Stop at top 50 words. Idea taken from DialoGPT paper.
+        #             if count > 50:
+        #                 break
+        #
+        #
+        #     data['top_50_en'] = data['clean_data'].apply(lambda x : True if not set(x.split()).isdisjoint(top_en_words) else False)
+        #
+        #     def top_lang_detect(text):
+        #
+        #         detected_langs = detect_langs(text)
+        #
+        #         return detected_langs[0].lang
+        #
+        #
+        #     def top_prob_detect(text):
+        #
+        #         detected_langs = detect_langs(text)
+        #
+        #         return detected_langs[0].prob
+        #
+        #     start_time = time.time()
+        #     data['top_lang'] = data['clean_data'].apply(top_lang_detect)
+        #     print(f"Top lang detection took {time.time() - start_time} seconds")
+        #     start_time = time.time()
+        #     data['top_prob'] = data['clean_data'].apply(top_prob_detect)
+        #     print(f"Top lang prob lang detection took {time.time() - start_time} seconds")
+        #
+        #     # Remove rows without one of top50 most common english words
+        #     before_top50_removal = len(data)
+        #     data.drop(data[data['top_50_en'] == False].index, inplace = True)
+        #     print(f"{before_top50_removal - len(data)} instances dropped")
+        #
+        #     before_top_lang = len(data)
+        #     data.drop(data[data['top_lang'] != 'en'].index, inplace = True)
+        #     print(f'{before_top_lang - len(data)} instances dropped.')
+        #
+        #     before_top_prob = len(data)
+        #     data.drop(data[data['top_prob'] < 0.9].index, inplace = True)
+        #     print(f'{before_top_prob - len(data)} instances dropped.')
+        #
+        #     # Remove stop words
+        #     stopwords = set(nltk.corpus.stopwords.words('english')) # use set (hash table) data structure for faster lookup
+        #
+        #     # also add urllink and nbsp to set of words to remove
+        #     stopwords.update(['urllink', 'nbsp'])
+        #
+        #     data['clean_data'] = data['clean_data'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords]))
+        #
+        #     print("Done preprocessing data.")
+        #
+        #     print("Saving preprocessed dataframe to csv...")
+        #     # save pre-processed dataframe to csv
+        #     data.to_csv("./data/blogs_kaggle/blogger_preprocessed_data.csv")
+        #
+        # else:
+        #     # exists
+        #     # Read and load dataset
+        #     print("Reading preprocessed data...")
+        #     data = pd.read_csv("./data/blogs_kaggle/blogger_preprocessed_data.csv")
+        #     print("Done reading preprocessed data.")
+        #     # data = data[['clean_data', 'labels']]
+        #
+        # print(f"Dataset size after preprocessing: {data.shape[0]}")
+        #
+        # # Drop columns that are uninformative for writing style (i.e., ID and date)
+        # data.drop(['id', 'date'], axis = 1, inplace = True)
+        #
+        # # Add labels for age categories
+        # def age_to_cat(age):
+        #     '''Returns age category label for given age number.'''
+        #
+        #     if 13 <= int(age) <= 17:
+        #         return '13-17'
+        #     elif 23 <= int(age) <= 27:
+        #         return '23-27'
+        #     elif 33 <= int(age):
+        #         return '33-47'
+        #     else:
+        #         print(int(age))
+        #         raise ValueError("Given age not in one of pre-defined age groups.")
+        #
+        #
+        # data['age_cat'] = data['age'].apply(age_to_cat)
+        #
+        # # Merge all possibly interesting labels into one column
+        # data['labels'] = data.apply(lambda col: [col['gender'], str(col['age']), col['topic'], col['sign']], axis = 1)
+        #
+        # # Only keep age as label
+        # # data['labels'] = data.apply(lambda col: [str(col['age'])], axis = 1) # TODO: Why keep age as string?
+        # # data['labels'] = data.apply(lambda col: [col['age']], axis = 1)
+        # data['labels'] = data.apply(lambda col: [col['age_cat']], axis = 1)
+        #
+        # # Reduce dataframe to only contain cleaned blogs and list of labels
+        # data = data[['clean_data', 'labels']]
 
     # results dict
     accs_all = {}
@@ -308,12 +327,17 @@ def train_classifiers(dataset,
             # Get label counts
             label_counts = {}
             if dataset == 'blog':
-                for labels in data.labels.values:
-                    for label in labels:
-                        if label in label_counts:
-                            label_counts[label] += 1
-                        else:
-                            label_counts[label] = 1
+                # for labels in data.labels.values:
+                #     for label in labels:
+                #         if label in label_counts:
+                #             label_counts[label] += 1
+                #         else:
+                #             label_counts[label] = 1
+                for label in data.labels.values:
+                    if label in label_counts:
+                        label_counts[label] += 1
+                    else:
+                        label_counts[label] = 1
             elif dataset == 'bnc_rb' or dataset == 'bnc':
                 for label in data.labels.values:
                     if label in label_counts:
@@ -321,10 +345,10 @@ def train_classifiers(dataset,
                     else:
                         label_counts[label] = 1
 
-
             # Binarize the labels for prediction
             if dataset == 'blog':
-                binarizer = MultiLabelBinarizer(classes = sorted(label_counts.keys()))
+                # binarizer = MultiLabelBinarizer(classes = sorted(label_counts.keys()))
+                binarizer = LabelBinarizer()
             elif dataset == 'bnc_rb' or dataset == 'bnc':
                 binarizer = LabelBinarizer()
 
