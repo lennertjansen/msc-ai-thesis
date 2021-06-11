@@ -27,7 +27,7 @@ import os, glob
 import pandas as pd
 
 # for detailed evaluation
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score
 import seaborn as sns
 from utils import make_confusion_matrix
 
@@ -288,7 +288,7 @@ def train(seed,
                              shuffle=False,
                              collate_fn=PadSequence())
 
-    if mode == 'train' or mode == 'val':
+    if mode == 'train' or mode == 'val' or mode == 'tvt':
 
         if model_type == 'lstm':
             # initialize model
@@ -353,7 +353,7 @@ def train(seed,
     else:
         criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
 
-    if mode == 'train' or mode == 'val':
+    if mode == 'train' or mode == 'val' or mode == 'tvt':
 
         # count trainable parameters
         trainable_params = sum(param.numel() for param in model.parameters() if param.requires_grad)
@@ -417,7 +417,8 @@ def train(seed,
                                                           global_iteration=iterations,
                                                           print_metrics=False,
                                                           data=data,
-                                                          model_type=model_type)
+                                                          model_type=model_type,
+                                                          mode='val')
             # TODO: See this tutorials prettier logging -- https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html
             # print(f"#######################################################################")
             # print(f"Epoch {epoch + 1} finished, validation loss: {val_loss}, val acc: {val_accuracy}")
@@ -466,7 +467,7 @@ def train(seed,
                                                   set='test',
                                                   data=data,
                                                   plot_cm=True,
-                                                  model_type=model_type)
+                                                  model_type=model_type, mode=mode)
     elif mode == 'test':
         print("Starting testing...")
         _, _ = evaluate_performance(model=model, data_loader=test_loader,
@@ -475,7 +476,20 @@ def train(seed,
                                                   set='test',
                                                   data=data,
                                                   plot_cm=True,
-                                                  model_type=model_type)
+                                                  model_type=model_type,
+                                                  mode=mode)
+    elif mode == 'tvt':
+        print('Evaluating model performance...')
+        loss, accuracy, f1_scores = evaluate_performance(model=best_model, data_loader=val_loader,
+                                                         device=device,
+                                                         criterion=criterion,
+                                                         set='val',
+                                                         data=data,
+                                                         plot_cm=False,
+                                                         model_type=model_type,
+                                                         mode=mode)
+        return loss, accuracy, f1_scores, best_model, criterion
+
 
     # plot_performance(losses=train_losses, accs=train_accs)
 
@@ -484,7 +498,7 @@ def train(seed,
 
 
 def evaluate_performance(model, data_loader, device, criterion, data, writer=None, global_iteration=0, set='validation',
-                         print_metrics=True, plot_cm=False, save_fig=True, show_fig=False, model_type='lstm'):
+                         print_metrics=True, plot_cm=False, save_fig=True, show_fig=False, model_type='lstm', mode='val'):
     # For Confucius matrix
     y_pred = []
     y_true = []
@@ -608,8 +622,12 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
         #
         #     plt.show()
 
+        if mode == 'tvt':
+            f1_scores = f1_score(y_true, y_pred, average=None)
 
-        return set_loss, accuracy
+            return set_loss, accuracy, f1_scores
+        else:
+            return set_loss, accuracy
 
 
 def plot_performance(losses, accs, show=False, save=False):
@@ -990,6 +1008,166 @@ def load_saved_model(model_class, optimizer_class, lr, device, batch_size, vocab
     return model, optimizer, epoch, loss, acc
 
 
+def train_test_val(seed,
+                  data,
+                  model_type,
+                  mode,
+                  device,
+                  batch_size,
+                  embedding_dim,
+                  hidden_dim,
+                  num_layers,
+                  bidirectional,
+                  dropout,
+                  batch_first,
+                  epochs,
+                  lr,
+                  clip_grad,
+                  max_norm,
+                  early_stopping_patience,
+                  train_frac,
+                  val_frac,
+                  test_frac,
+                  subset_size,
+                  log_interval,
+                  no_tb,
+                  w_loss,
+                  w_sampling):
+
+    # set starting time of full training pipeline
+    start_time = datetime.now()
+
+    # Random seeds for reproducibility and averaging over different initializations
+    seeds = [1, 2, 3, 4, 5]
+
+    # For keeping track of metrics for all configs
+    if data == 'bnc' or data == 'bnc_rb':
+        keys = ['seed', 'val_loss', 'val_acc', 'val_f1_0', 'val_f1_1',
+                        'test_loss', 'test_acc', 'test_f1_0', 'test_f1_1']
+    elif data == 'blog':
+        keys = ['seed', 'val_loss', 'val_acc', 'val_f1_0', 'val_f1_1', 'val_f1_2'
+                        'test_loss', 'test_acc', 'test_f1_0', 'test_f1_1', 'test_f1_2']
+
+    df = pd.DataFrame(columns=keys)
+
+    # Create detailed experiment tag for tensorboard summary writer
+    cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
+    file_name = f'{model_type}_emb_{embedding_dim}_hid_{hidden_dim}_l_{num_layers}_' \
+                f'bd_{bidirectional}_drop_{dropout}_bs_{batch_size}_epochs_{epochs}_' \
+                f'lr_{lr}_subset_{subset_size}_train_{train_frac}_val_{val_frac}_' \
+                f'test_{test_frac}_clip_{clip_grad}_maxnorm_{max_norm}' \
+                f'es_{early_stopping_patience}_device_{device}_dt_{cur_datetime}_'
+
+    save_destination = f'output/{data}/' + file_name + 'val_test_metrics.csv'
+
+    for seed_ in seeds:
+
+        # set seed for reproducibility on cpu or gpu based on availability
+        torch.manual_seed(seed_) if device == 'cpu' else torch.cuda.manual_seed(seed_)
+
+        # set device
+        device = torch.device(device)
+        print(f"Device: {device}")
+
+        # data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv' if data == 'bnc' else 'data/blogs_kaggle/blogtext.csv'
+
+        if data == 'bnc':
+            data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv'
+        elif data == 'bnc_rb':
+            data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0_rand_balanced.csv'
+        else:
+            data_path = 'data/blogs_kaggle/blogtext.csv'
+
+        print("Starting data preprocessing ... ")
+        data_prep_start = datetime.now()
+
+        # Load data and create dataset instances
+        train_dataset, val_dataset, test_dataset = get_datasets(subset_size=subset_size,
+                                                                file_path=data_path,
+                                                                train_frac=train_frac,
+                                                                val_frac=val_frac,
+                                                                test_frac=test_frac,
+                                                                seed=seed_,
+                                                                data=data)
+
+        test_loader = DataLoader(dataset=test_dataset,
+                                 batch_size=batch_size,
+                                 shuffle=False,
+                                 collate_fn=PadSequence())
+
+        print('-' * 91)
+        print('BASELINES//VALUE COUNTS')
+        print('Train')
+        print(train_dataset.df['age_cat'].value_counts(normalize=True))
+        print('Validation')
+        print(val_dataset.df['age_cat'].value_counts(normalize=True))
+        print('Test')
+        print(test_dataset.df['age_cat'].value_counts(normalize=True))
+        print('-' * 91)
+
+        print('-' * 91)
+        print(f'Data preprocessing finished. Data prep took {datetime.now() - data_prep_start}.')
+
+        print('######### DATA STATS ###############')
+        print(f'Number of classes: {train_dataset.num_classes}')
+        print(f'Vocabulary size: {train_dataset.vocab_size}')
+        print(f'Training set size: {train_dataset.__len__()}')
+        print(f'Validation set size: {val_dataset.__len__()}')
+        print(f'Test set size: {test_dataset.__len__()}')
+        print('-' * 91)
+
+        writer = None
+
+        val_loss, val_acc, val_f1_scores, model, criterion = train(mode=mode, model_type=model_type, data=data, seed=seed_, device=device,
+                                                                   batch_size=batch_size, embedding_dim=embedding_dim,
+                                                                   hidden_dim=hidden_dim, num_layers=num_layers,
+                                                                   bidirectional=bidirectional, dropout=dropout,
+                                                                   batch_first=batch_first, epochs=epochs,
+                                                                   lr=lr, clip_grad=clip_grad, max_norm=max_norm,
+                                                                   early_stopping_patience=early_stopping_patience,
+                                                                   train_frac=train_frac, val_frac=val_frac,
+                                                                   test_frac=test_frac, subset_size=subset_size,
+                                                                   log_interval=log_interval, writer=writer,
+                                                                   train_dataset=train_dataset, val_dataset=val_dataset,
+                                                                   test_dataset=test_dataset, no_tb=no_tb, w_loss=w_loss,
+                                                                   w_sampling=w_sampling)
+
+        # get test metrics
+        test_loss, test_acc, test_f1_scores = evaluate_performance(model=model, data_loader=test_loader, device=device,
+                                                                   criterion=criterion, set='test', data=data,
+                                                                   plot_cm=True, model_type=model_type, mode=mode)
+
+        #update dataframe
+
+        # if data == 'bnc' or data == 'bnc_rb':
+        #     keys = ['seed', 'val_loss', 'val_acc', 'val_f1_0', 'val_f1_1',
+        #             'test_loss', 'test_acc', 'test_f1_0', 'test_f1_1']
+        # elif data == 'blog':
+        #     keys = ['seed', 'val_loss', 'val_acc', 'val_f1_0', 'val_f1_1', 'val_f1_2'
+        #             'test_loss', 'test_acc', 'test_f1_0', 'test_f1_1', 'test_f1_2']
+
+        # Update metric logging dataframe
+        if data == 'bnc' or data == 'bnc_rb':
+            df.loc[0 if pd.isnull(df.index.max()) else df.index.max() + 1] = [seed_] + [val_loss.item()] + [val_acc] + \
+                                                                             [val_f1_scores[0]] + [val_f1_scores[1]] + \
+                                                                             [test_loss.item()] + [test_acc] + \
+                                                                             [test_f1_scores[0]] + [test_f1_scores[1]]
+        elif data == 'blog':
+            df.loc[0 if pd.isnull(df.index.max()) else df.index.max() + 1] = [seed_] + [val_loss.item()] + [val_acc] + \
+                                                                             [val_f1_scores[0]] + [val_f1_scores[1]] + \
+                                                                             [val_f1_scores[2]] + \
+                                                                             [test_loss.item()] + [test_acc] + \
+                                                                             [test_f1_scores[0]] + [test_f1_scores[1]] + \
+                                                                             [test_f1_scores[2]]
+
+        # Save metric logging dataframe to csv
+        # cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
+        df.to_csv(
+            save_destination, index=False
+        )
+
+
+
 def parse_arguments(args = None):
     parser = argparse.ArgumentParser(description="Train discriminator neural text classifiers.")
 
@@ -1003,7 +1181,7 @@ def parse_arguments(args = None):
         help='Model type/class to use.'
     )
     parser.add_argument(
-        '--mode', type=str, choices=['train', 'val', 'test'], default='train',
+        '--mode', type=str, choices=['train', 'val', 'test', 'tvt'], default='train',
         help='Set script to training, development/validation, or test mode.'
     )
     parser.add_argument(
@@ -1124,5 +1302,8 @@ if __name__ == "__main__":
         # hyper parameter search
         hp_search(**vars(args))
 
-    else:
+    elif args.mode == 'test':
         train(**vars(args))
+
+    elif args.mode == 'tvt':
+        train_test_val(**vars(args))

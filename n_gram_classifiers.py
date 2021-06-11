@@ -28,8 +28,13 @@ import pickle
 from collections import Counter
 import spacy
 import argparse
+from datetime import datetime
 
 from preprocessing import preprocess_df
+from utils import make_confusion_matrix
+
+FIGDIR = 'figures/'
+FIGSIZE = (15, 8)
 
 def train_classifiers(dataset,
                       dataset_fp,
@@ -420,6 +425,15 @@ def train_classifiers(dataset,
 
             print("=" * 81)
 
+
+            int_labels = [label for label in range(len(class_labels_list))]
+            cm = confusion_matrix(Y_test, Y_pred, labels=int_labels)
+            make_confusion_matrix(cf=cm, categories=class_labels_list, title=f'Confusion Matrix for {dataset} on Test set',
+                                  num_labels=int_labels, y_true=Y_test, y_pred=Y_pred, figsize=FIGSIZE)
+            cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
+            plt.savefig(f"{FIGDIR}{dataset}/cm_{n}_gram_{dataset}_dt_{cur_datetime}.png",
+                        bbox_inches='tight')
+
     #         most_informative_feature_for_class(vectorizer = vectorizer, classifier = model, class_labels = class_labels_list, n=10)
 
     # def plot_accuracies(accs, show = False):
@@ -470,7 +484,7 @@ def train_classifiers(dataset,
     print(f"Done with everything. Took {overall_end_time - overall_start_time} seconds.")
 
 
-    pdb.set_trace()
+    # pdb.set_trace()
 
 if __name__ == "__main__":
 
@@ -488,9 +502,9 @@ if __name__ == "__main__":
                              "Needed only in case of generic datadset")
     parser.add_argument("--subset_size", type=int, default=-1,
                         help="Desired size of subset. -1: full dataset")
-    parser.add_argument("--n_grams", type=int, default=[1, 2, 3], nargs='+',
+    parser.add_argument("--n_grams", type=int, default=[3], nargs='+',
                         help="Size(s) of n-gram models.")
-    parser.add_argument("--seeds", type=int, default=[1, 2, 3, 4, 5], nargs='+',
+    parser.add_argument("--seeds", type=int, default=[1], nargs='+',
                         help="Seeds to set for reproducibility."
                              "NB: number of seeds is the number of runs to " + \
                              "train and test stochasti models.")
