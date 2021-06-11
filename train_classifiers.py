@@ -959,14 +959,14 @@ def load_saved_model(model_class, optimizer_class, lr, device, batch_size, vocab
                      num_classes, num_layers, bidirectional, dropout, batch_first):
 
     # blog lstm
-    checkpoint_path = 'models/blog/lstm/best_blog_lstm_emb_128_hid_256_l_2_bd_True_drop_0_bs_64_epochs_5_lr_0.001_' \
-                      'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_' \
-                      'device_cuda_dt_13_May_2021_16_25_34.pt'
-
-    # w_loss
-    checkpoint_path = 'models/bnc/lstm/best_lstm_emb_256_hid_512_l_1_bd_True_drop_0_bs_64_epochs_15_lr_0.0001_' \
-                      'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_device_cuda_' \
-                      'dt_23_May_2021_01_00_29.pt'
+    # checkpoint_path = 'models/blog/lstm/best_blog_lstm_emb_128_hid_256_l_2_bd_True_drop_0_bs_64_epochs_5_lr_0.001_' \
+    #                   'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_' \
+    #                   'device_cuda_dt_13_May_2021_16_25_34.pt'
+    #
+    # # w_loss
+    # checkpoint_path = 'models/bnc/lstm/best_lstm_emb_256_hid_512_l_1_bd_True_drop_0_bs_64_epochs_15_lr_0.0001_' \
+    #                   'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_device_cuda_' \
+    #                   'dt_23_May_2021_01_00_29.pt'
 
     # w_sampling
     # checkpoint_path = 'models/bnc/lstm/best_lstm_emb_256_hid_1024_l_1_bd_False_drop_0_bs_64_epochs_15_lr_0.0001_' \
@@ -974,9 +974,11 @@ def load_saved_model(model_class, optimizer_class, lr, device, batch_size, vocab
     #                   'device_cuda_dt_22_May_2021_01_31_46.pt'
 
     # bnc_rb
-    # checkpoint_path = 'models/bnc_rb/lstm/best_lstm_emb_512_hid_1024_l_2_bd_False_drop_0_bs_64_epochs_15_lr_0.001_' \
-    #                   'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_' \
-    #                   'device_cuda_dt_23_May_2021_21_58_42.pt'
+    checkpoint_path = 'models/bnc_rb/lstm/best_lstm_emb_512_hid_1024_l_2_bd_False_drop_0_bs_64_epochs_15_lr_0.001_' \
+                      'subset_None_train_0.75_val_0.15_test_0.1_clip_False_maxnorm_10.0es_2_seed_2021_' \
+                      'device_cuda_dt_23_May_2021_21_58_42.pt'
+
+
 
     # initialize model instance
     model = model_class(batch_size=batch_size, vocab_size=vocab_size, embedding_dim=embedding_dim,
@@ -1075,7 +1077,7 @@ def train_test_val(seed,
             data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0.csv'
         elif data == 'bnc_rb':
             data_path = 'data/bnc/bnc_subset_19_29_vs_50_plus_nfiles_0_rand_balanced.csv'
-        else:
+        elif data == 'blog':
             data_path = 'data/blogs_kaggle/blogtext.csv'
 
         print("Starting data preprocessing ... ")
