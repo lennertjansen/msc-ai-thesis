@@ -31,8 +31,6 @@ from sklearn.metrics import accuracy_score, classification_report, confusion_mat
 import seaborn as sns
 from utils import make_confusion_matrix
 
-from weight_init import weight_init
-
 
 # Global variables
 # figure saving destiation and dimensions
@@ -305,7 +303,7 @@ def train(seed,
                                            dropout = dropout,
                                            device = device,
                                            batch_first = batch_first)
-            model.apply(weight_init)
+
         elif model_type == 'bert':
             model = TextClassificationBERT(num_classes = train_dataset.num_classes)
 
