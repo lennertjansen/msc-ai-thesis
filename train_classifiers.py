@@ -858,7 +858,7 @@ def hp_search(seed,
                                                                    log_interval=log_interval, writer=writer,
                                                                    train_dataset=train_dataset, val_dataset=val_dataset,
                                                                    test_dataset=test_dataset, no_tb=no_tb, w_loss=w_loss,
-                                                                   w_sampling=w_sampling)
+                                                                   w_sampling=w_sampling, model_type=model_type)
 
                         if not no_tb:
                             # close tensorboard summary writer
