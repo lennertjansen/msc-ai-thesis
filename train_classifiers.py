@@ -1054,7 +1054,7 @@ def train_test_val(seed,
 
     # Random seeds for reproducibility and averaging over different initializations
     # seeds = [1, 2, 3, 4, 5]
-    seeds = [2021, 2022, 2023, 2024, 2025]
+    seeds = [2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]
 
     # For keeping track of metrics for all configs
     if data == 'bnc' or data == 'bnc_rb':
