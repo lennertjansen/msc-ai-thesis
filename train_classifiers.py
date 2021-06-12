@@ -775,12 +775,16 @@ def hp_search(seed,
 
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
-    lrs = [1e-5, 1e-4, 1e-3]
-    embedding_dims = [64, 256, 512]
-    hidden_dims = [128, 512, 1024]
-    nums_layers = [1, 2]
-    bidirectionals = [False, True]
-
+    # lrs = [1e-5, 1e-4, 1e-3]
+    lrs = [0.001]
+    # embedding_dims = [64, 256, 512]
+    embedding_dims = [512]
+    # hidden_dims = [128, 512, 1024]
+    hidden_dims = [1024]
+    # nums_layers = [1, 2]
+    nums_layers = [2]
+    # bidirectionals = [False, True]
+    bidirectionals = [False]
     # weighting = [(True, False), (False, True)] # [(w_loss = True, w_sampling = False), (w_loss = False, w_sampling = True)]
 
 
@@ -1129,7 +1133,8 @@ def train_test_val(seed,
 
         writer = None
 
-        val_loss, val_acc, val_f1_scores, model, criterion = train(mode=mode, model_type=model_type, data=data, seed=seed_, device=device,
+        val_loss, val_acc, val_f1_scores, model, criterion = train(mode=mode, model_type=model_type, data=data,
+                                                                   seed=seed_, device=device,
                                                                    batch_size=batch_size, embedding_dim=embedding_dim,
                                                                    hidden_dim=hidden_dim, num_layers=num_layers,
                                                                    bidirectional=bidirectional, dropout=dropout,
