@@ -1,11 +1,31 @@
-Two datasets are considered during the experiments of this thesis: (1) the spoken component of the British National Corpus (BNC or BNC2014) \citep{love-spoken-bnc-2014}, and (2) the Blog Authorship Corpus (BAC, or sometimes referred to as `blog corpus') \citep{schler2006effects}. The first corpus is a collection of transcriptions of recorded everyday conversations in British English, gathered between 2012 and 2016. The second is a dataset of blogs posted on blogger.com, gathered in or before August 2004.
+Two datasets are considered during the experiments of this thesis: (1) the spoken component of the British National Corpus (BNC or BNC2014) \citep{love-spoken-bnc-2014}, and (2) the Blog Authorship Corpus (BAC, or sometimes referred to as `blog corpus') \citep{schler2006effects}. The first corpus is a collection of transcriptions of everyday conversations in British English, gathered between 2012 and 2016. The second is a dataset of blogs posted on \url{https://www.blogger.com}, gathered in or before August 2004.
 
-The texts (i.e., blogs or dialogue transcriptions) in both corpora are labeled by age, among other factors. This makes them suitable candidates for training and testing age classifiers. In both cases, the texts are written in a somewhat informal manner, making them more representative of common language. Only the BNC can be used for the controllable dialogue generation phase of the experiments, as the BAC is not a conversational dataset. What follows is an overview of both datasets' motivation for use, drawbacks, metadata, descriptive statistics, and pre-processing steps before analyses. 
+The texts (i.e., blogs or dialogue transcriptions) in both corpora are labeled by age, among other labels. This makes them suitable candidates for training and testing age classifiers. In both cases, the texts are written in a somewhat informal manner, making them more representative of everyday speech. Only the BNC is used for the controllable dialogue generation phase of the experiments, as the BAC is not a conversational dataset. What follows is an overview of both datasets' motivation for use, drawbacks, metadata, descriptive statistics, and pre-processing steps before analyses. 
 
 \subsection{The British National Corpus (BNC)}
 The conversations of the spoken component of the BNC were typically recorded at home and took place between friends and family of participants. Participants recorded their conversations using their smartphones, allowing for spontaneous recording. These two properties of the BNC's sampling procedure make the recorded dialogues representative of contemporary everyday British English speech. 
 
-A total of 1251 conversations among 672 speakers constitutes the full corpus. 
+A total of 1251 conversations of 672 speakers constitutes the full corpus, accounting for 10.4 million words. During the recruitment process of the BNC, prospective participants were asked to disclose personal information like age, gender, highest completed level of education, employment, and perceived accent\footnote{For a detailed description of the sampling decisions made during data collection, the reader is referred to the BNC2014 user manual: \url{http://corpora.lancs.ac.uk/bnc2014/doc/BNC2014manual.pdf}}. Other metadata accompany the conversations themselves. Namely, number of speakers taking part in the conversation, ages of those speakers, conversation length, and topic. 
+
+Nine age-brackets are present in the corpus: 11-18, 19-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89, and 90-99. To make the objective of learning to classify and generate conversational responses more straightforward, I only consider dialogues between two participants. Namely, it will be more difficult to distinguish which utterances constitute the relevant responses to something said in a conversation with more than two participants. This filter step results in a remaining dataset of 622 dialogues, almost 460K utterances (i.e., a single turn in a dialogue), and nearly 5M tokens. On average, a dialogue has 736 turns, meaning that the conversations are relatively long. Furthermore, due to minors not being allowed to participate in this project's interactive experiments later on, the age-bracket 11-18 is dropped. This leaves us with a dataset of 522 dialogues, 418K utterances, and 4.4M tokens. Finally, the age-brackets get regrouped into brackets 19-29 and 50 plus, and conversations with speakers aged 30-49 are removed. This gap between to two age-groups is made to minimize the chance of overlapping linguistic characteristics being present between separate age-brackets (e.g., the difference in language use between speakers aged 19-29 and 30-39 is probably smaller than that between age-brackets 19-29 and 50-59). Moreover, only conversations between two participants of the same (new regrouped) age-bracket is kept. This is done to avoid the confounding factor that interlocutors of a certain age-group might adjust their choice of words to the age of the person they are talking to. Only considering dialogues between participants of similar ages is expected to keep the utterances as representative of the age-bracket's linguistic characteristics as the corpus allows. These final filtration steps result in a subset consisting of 237 dialogues, roughly 172.000 utterances, and approximately 1.8M tokens.
+
+
+
+
+\begin{itemize}
+    \item Talk about pre-processing steps.
+    \item The main limitations of the BNC are its size and imbalance. 
+    \item Weighted loss and weighted random sampling
+    \item Data outdated? Not representative of modern speech.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/bnc_alt1_dist_age_new.png}
+    \caption{Distribution of age-brackets per dialogue in 19-29 vs. 50-plus subset of BNC.}
+    \label{fig:dist_age_bnc}
+\end{figure}
+
 
 
 \subsection{The Blog Authorship Corpus (BAC)}
@@ -17,7 +37,8 @@ A total of 1251 conversations among 672 speakers constitutes the full corpus.
         \textbf{Corpus} & BNC & BAC \\
         \hline
         \textbf{Dialogue?} & Yes & No\\
-        \textbf{No. words} & & \\
+        \textbf{No. words} & $10.4 \cdot 10^6$  & $140 \cdot 10^6$ \\
+        
         \hline
     \end{tabular}
     \caption{Summary of corpora properties.}

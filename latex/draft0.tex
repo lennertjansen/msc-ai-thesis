@@ -28,13 +28,13 @@
 
 \usepackage[ruled,vlined]{algorithm2e} % for algorithms/pseudocode
 
-\usepackage{hyperref} % for hyperlink referencing
+\usepackage{hyperref} % for hyperlink referencing and clickable urls
 
 
 
 
 
-\title{A Plug and Play Approach for Controlled Dialogue Generation}
+\title{A Plug and Play Approach to Controlled Dialogue Generation}
 
 \author{%
   Lennert Jansen\\
@@ -45,9 +45,13 @@
 \begin{document} 
 \maketitle
 
+\tableofcontents
+
+\newpage
 \section{Research questions}
 \input{sections/research_questions}
 
+\newpage
 \section{Introduction}
 \input{sections/introduction}
 
@@ -56,6 +60,7 @@
 
 \section{Methodology}
 \input{sections/methods}
+
 
 \section{Data}
 \input{sections/data}
@@ -67,6 +72,8 @@
 \section{Results}
 \input{sections/results/text_classification}
 
+\input{sections/results/dialogue_generation}
+
 % References ---------------------------------------------------------------
 \newpage
 \bibliographystyle{abbrvnat}
@@ -74,4 +81,8 @@
 
 \newpage
 
+
+\appendix
+\section{Appendix}
+\input{sections/appendix}
 \end{document}

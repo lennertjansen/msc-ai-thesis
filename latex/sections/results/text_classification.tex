@@ -2,67 +2,83 @@
 
 \subsection{Automated age-detection from text}
 
-Three classes of architectures are trained for the task of predicting a writer's or speaker's age given a written text or speech transcription; (1) logistic $n$-gram models, (2) recurrent neural networks (RNNs), specifically, long short-term memory (LSTM), and (3) attention-based BERT encoders.
+Three classes of architectures are trained for the task of predicting a writer's or speaker's age given a written text or speech transcription; (1) logistic $n$-gram models, (2) recurrent neural networks (RNNs), specifically, long short-term memory (LSTM), and (3) attention-based BERT sequence classifiers.
 
+% \boldsymbol{F}_1(\text{50_plus})$ $\boldsymbol{F}_1(\text{19_29})$
 \begin{table}[H]
     \centering
-    \begin{tabular}{c c c}
+    \begin{tabular}{l c c c}
     \hline
-    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1$\\
+    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1^{(19-29)}$  & $\boldsymbol{F}_1^{(50-plus)}$ \\
     \hline
-    Baseline (predict majority class) & 0.4704 & ...\\
-    unigram & 0.6058 & ...\\
-    bigram & 0.6247 & ...\\
-    trigram & 0.6207 & ...\\
-    (2 layer bi-)LSTM & 0.7194 & ...\\
-    BERT & ... & ...\\
+    Baseline (random guessing) & 0.500 & ... & ...\\
+    unigram & 0.702 (0.00574) & 0.713 (0.00559)  & 0.690 (0.00642)\\
+    bigram & 0.703 ( 0.00616) & 0.713 (0.00459) & 0.693 (0.00849)\\
+    trigram &  0.709 ( 0.00683) & \textbf{0.718} (0.00680) & \textbf{0.700} (0.00766)\\
+    LSTM & 0.701 (...) & 0.709 (...) & 0.691 (...)\\
+    BiLSTM & ... (...) & ... (...) & ...(...) \\
+    BERT & \textbf{0.716} (...) & ... & ...\\
     \hline
     \end{tabular}
-    \caption{Blog corpus age classifiers}
-    \label{tab:blog_classification}
+    \caption{Balanced BNC age classifiers. \textbf{Test set} results averaged over 5 random initializations. Format: \textit{average metric (standard error)}}
+    \label{tab:bnc_classification}
 \end{table}
 
 \begin{table}[H]
     \centering
-    \begin{tabular}{c c c}
+    \begin{tabular}{l c c c c}
     \hline
-    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1$\\
+    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1^{(13-17)}$ & $\boldsymbol{F}_1^{(23-27)}$ & $\boldsymbol{F}_1^{(33-plus)}$\\
     \hline
-    Baseline (predict majority class) & 0.500 & ...\\
-    unigram & ... & ...\\
-    bigram & ... & ...\\
-    trigram & ... & ...\\
-    LSTM & 0.701 & ...\\
-    BERT & 0.716 & ...\\
+    Baseline (predict majority class) & 0.470 & ... & ... & ...\\
+    unigram & 0.603 (0.00143) & 0.760 (0.00267) & 0.706 (0.00075) & 0.491 (0.00268)\\
+    bigram & 0.627 (0.00072) & 0.788 (0.00129) & 0.715 (0.00130) & 0.504 (0.00223)\\
+    trigram & 0.625 (0.00201) & \textbf{0.789} (0.00136) & 0.716 (0.00193) & 0.485 (0.00280)\\
+    (2 layer bi-)LSTM & \textbf{0.719} & 0.780 & \textbf{0.742} & \textbf{0.509}\\
+    BERT & ... & ... & ... & ...\\
     \hline
     \end{tabular}
-    \caption{BNC (balanced) age classifiers}
-    \label{tab:bnc_classification}
+    \caption{Blog corpus age classifiers. \textbf{Test set} results averaged over 5 random initializations. Format: \textit{average metric (standard error)}}
+    \label{tab:blog_classification}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\textwidth]{figures/cm_bert_test_dt_27_May_2021.png}
-    \caption{Confusion matrix BERT age classifier on balanced BNC test set.}
+    \caption{Confusion matrix BERT age classifier on balanced BNC \textbf{test} set.}
     \label{fig:cm_bert_bnc_rb}
 \end{figure}
 
-\begin{table}[H]
+\begin{figure}[H]
     \centering
-    \begin{tabular}{c c c}
-    \hline
-    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1$\\
-    \hline
-    Baseline (predict majority class) & 0.807 & ...\\
-    unigram & ... & ...\\
-    bigram & ... & ...\\
-    trigram & ... & ...\\
-    LSTM & 0.776 & ...\\
-    BERT & 0.786 & ...\\
-    \hline
-    \end{tabular}
-    \caption{BNC age classifiers}
-    \label{tab:bnc_classification}
-\end{table}
+    \includegraphics[width=0.5\textwidth]{figures/cm_lstm_test_dt_24_May_2021_09_24_30.png}
+    \caption{Confusion matrix LSTM age classifier on balanced BNC \textbf{test} set.}
+    \label{fig:cm_lstm_bnc_rb}
+\end{figure}
 
-\subsection{Age-adaptive conversational response generation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/cm_lstm_test_dt_24_May_2021_10_03_19.png}
+    \caption{Confusion matrix bi-LSTM age classifier on blog corpus \textbf{test} set.}
+    \label{fig:cm_lstm_blog}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/cm_3_gram_bnc_rb_dt_08_Jun_2021_12_05_02.png}
+    \caption{Confusion matrix for best trigram age classifier on \textbf{balanced} BNC \textbf{test} set.}
+    \label{fig:cm_trigram_bnc_rb}
+\end{figure}
+
+Notes on the imbalanced BNC.
+\begin{itemize}
+    \item Attempts were made to account for the original BNC's bias (i.e., the 19-29 age bracket accounts for roughly 80\% of the total considered subset).
+    \item Method 1: weighted loss.
+    \item Method 2: weighted random sampling (i.e., up-sampling of the minority class).
+    \item Weighted random sampling outperformed weighted loss in terms of validation accuracy and $F_1$ scores, but still failed to surpass the baseline.
+    \item  \textit{In terms of test accuracy}, the $n$-gram models succeeded in beating the baseline (predicting the majority class), whereas the best LSTM and fine-tuned BERT-based failed to do so.
+    \item However, the neural discriminators still outperformed all the other models with respect to minority class $F_1$ scores, indicating that (1) the $n$-gram models aren't very useful for correctly classifying the minority class, and that (2) weighted random sampling improved the models' efficacy with respect to the minority class.
+    \item See Appendix \ref{age_disc_bnc} for these results.
+\end{itemize}
+
+

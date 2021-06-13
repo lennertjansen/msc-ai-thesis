@@ -1,0 +1,39 @@
+\subsection{Age discrimination on the imbalanced British National Corpus}
+\label{age_disc_bnc}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{l c c c}
+    \hline
+    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1$ (19-29) & $\boldsymbol{F}_1$ (50-plus)\\
+    \hline
+    Baseline (predict majority class) & 0.807 & ... & 0 (0)\\
+    unigram & 0.833 (0.00241) & 0.903 (0.00142) & 0.373 (0.01198)\\
+    bigram & \textbf{0.840} (0.00101) & \textbf{0.907} (0.00050) & 0.406 (0.00933)\\
+    trigram & 0.838 (0.00151) & 0.906 (0.00109) & 0.403 (0.00731)\\
+    bi-LSTM & 0.780 (...) & 0.863 (...) & \textbf{0.440} (...)\\
+    BERT & 0.786 & ... & ...\\
+    \hline
+    \end{tabular}
+    \caption{BNC age classifiers. Results averaged over 5 random initializations. Format: \textit{average metric (standard error)}}
+    \label{tab:bnc_classification}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/cm_2_gram_bnc_dt_08_Jun_2021_11_33_16.png}
+    \caption{Confusion matrix for best bigram age classifier on BNC test set.}
+    \label{fig:cm_bigram_bnc}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/cm_lstm_test_dt_22_May_2021_12_41_50.png}
+    \caption{Confusion matrix bi-LSTM age classifier on BNC test set.}
+    \label{fig:cm_lstm_bnc}
+\end{figure}
+
+\textbf{TODOs:}
+\begin{itemize}
+    \item Add validation set results to appendix for all datasets.
+\end{itemize}

@@ -1,0 +1,26 @@
+\subsection{Controlled dialogue generation}
+
+Model settings to compare. \textbf{TODO:} Also add a representative model from \cite{dathathri2019plug} as baseline.
+\begin{itemize}
+    \item Uncontrolled language models:
+        \begin{itemize}
+            \item \textbf{Baseine: }``Vanilla'' uncontrolled GPT-2-medium
+            \item Uncontrolled GPT-2-large (?)
+            \item Uncontrolled DialoGPT-medium
+            \item Uncontrolled DialoGPT-large (?)
+        \end{itemize}
+    \item Bag-of-words (BoW) controlled language models:
+        \begin{itemize}
+            \item GPT-2-medium + Full BNC BoW
+            \item GPT-2-medium + 19-29 BNC BoW
+            \item GPT-2-medium + 50 plus BNC BoW
+            \item DialoGPT-medium + Full BNC BoW
+            \item DialoGPT-medium + 19-29 BNC BoW
+            \item DialoGPT-medium + 50 plus BNC BoW
+        \end{itemize}
+    \item Discriminator-based controlled language models. \textbf{TODO:} Which age discriminator(s) should I consider? E.g., 1-layer linear, or Transformer-based discriminators.
+        \begin{itemize}
+            \item GPT-2-medium + BNC age discriminator
+            \item DialoGPT-medium + BNC age discriminator
+        \end{itemize}
+\end{itemize}

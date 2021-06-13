@@ -1,1 +1,65 @@
-\textit{Which methods do you use to systematically research your topic (e.g., PPLM, GPT-2, Transformers), and by which you are answering your research questions. This is meant to check the validation and verification of your research.}
+% \textit{Which methods do you use to systematically research your topic (e.g., PPLM, GPT-2, Transformers), and by which you are answering your research questions. This is meant to check the validation and verification of your research.}
+
+% Most important methods to highlight:
+
+% \begin{itemize}
+%     \item \textbf{TODO:} Do I need to explain $n$-gram logistic regression, and LSTM models?
+%     \item Transformers
+%     \item Important pre-trained transformer-based architectures:
+%         \begin{itemize}
+%             \item GPT-2 (specifically GPT-2 for language generation)
+%             \item BERT (specifically BERT for sequence classification)
+%             \item DialoGPT*
+%         \end{itemize}
+%     \item Plug and play language models 
+%         \begin{itemize}
+%             \item Also emphasize that PPLM is different from fine-tuning (see top comment: \url{https://openreview.net/forum?id=H1edEyBKDS}), i.e., that PPLM updates the activations and not the model-parameters. 
+            
+%         \end{itemize}
+% \end{itemize}
+
+\subsection{Transformers}
+
+The Transformer architecture plays a central role in most of the recent advances in NLP. The same holds for the methods used in this thesis to investigate controlled dialogue generation and speaker/author age detection. A brief explanation of its workings is therefore in order. For a more detailed review of the model architecture, the reader is referred to the original paper (\citep{vaswani2017attention}) or this excellent blog post: \url{https://jalammar.github.io/illustrated-transformer/}.
+
+The Transformer, like most neural sequence processing models, has an encoder-decoder structure. On a high level, the encoder receives an input sequence $\textbf{x} = (x_1, ..., x_n)$ (e.g., a sentence), and maps this to a sequence of latent continuous variables $\textbf{z} = (z_1, ..., z_n)$. The decoder then takes $\textbf{z}$ as input, and maps this to an output sequence $\textbf{y} = (y_1, ..., y_m)$. Note that the use of positional encodings of the input and output embeddings enables the Transformer to process and generate sequences in arbitrary order, allowing for a high degree of parallelization. The generation of $\textbf{y}$ happens element-by-element in an auto-regression fashion, where at step $t$, element $y_{t - 1}$ is taken as input.
+
+Both the encoder and decoder are comprised of $N$ identical layers (denoted by the `N $\times$' in the left part of Figure \ref{fig:transformer_architecture}). Every sub-layer performs a succession of transformations using multi-head self-attention mechanisms and point-wise, fully connected layers, along with residual connections (\cite{he2016residual}) around every sub-layer followed by layer normalization (\cite{DBLP:journals/corr/BaKH16}). The decoder's first self-attention sub-layer is masked to ensure that the output predictions at sequence position $i$ cannot depend on output positions greater than $i$. Finally, the decoder passes its output through a linear and softmax layer to produce a probability distribution over the problem space (e.g., the vocabulary) from which the most likely symbols for the generated output sequence $\textbf{y}$ can be inferred.
+
+A key aspect of the Transformer architecture is its use of attention \cite{DBLP:journals/corr/BahdanauCB14}. This allows the encoder-decoder architecture to selectively focus on parts of the input sequence to produce a more informative hidden representation. \citeauthor{vaswani2017attention} formulate an attention function and a mapping of queries and sets of key-value pairs to an attention output, where matrices represent the queries $Q$, keys $K$, and values $V$. The attention output is a weighted sum of the values, based on the relevance of the corresponding keys to a query. In particular, they employ scaled dot-product attention:
+
+\begin{equation}
+    \texttt{Attention}(Q, K, V) = \texttt{softmax} \left( \frac{QK^T}{\sqrt{d_k}}\right) V,
+\end{equation}
+
+Furthermore, \citeauthor{vaswani2017attention} propose to use multi-head attention by using learned linear projections to project the queries, keys and values $h$ times, and apply the aforementioned attention function to these projections in parallel. The concatenation of these attention outputs, passed through a linear layer, ultimately produces the final output of the Transformer's attention sub-layers. This allows the model to attend to the relevant information from all representation sub-spaces at various sequence positions. See Figure \ref{fig:transformer_architecture} for an schematic illustration of the Transformer's structure described above.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/transformer_lillog.png}
+    \caption{An overview of the full Transformer model architecture. \textit{Collated image source:} Fig. 17 in this blog post \url{https://lilianweng.github.io/lil-log/2018/06/24/attention-attention.html}. \textit{Original image source:} Figures 1 and 2 in \cite{vaswani2017attention}}
+    \label{fig:transformer_architecture}
+\end{figure}
+
+\subsection{Causal language modeling with Transformers}
+
+Following the conventions of \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug}, a dialogue is comprised of multiple alternating turns (sometimes referred to as utterances) between more than one speaker. For simplicity, this project only focuses on dialogues between two speakers. The conversation history at turn $t$ is defined as $\mathcal{D}_t = \{S^{(1)}_1, S^{(2)}_1, ..., S^{(1)}_t\}$, where $S^{(j)}_t$ is speaker $j$'s utterance at time $t$. \citeauthor{madotto-etal-2020-plug} denote speaker $1$ and the user $U$, and speaker $2$ as the conversational system $S$, yielding dialogue history $\mathcal{D}_t = \{U_1, S_1, ..., U_t\}$. This notational convention will also be used for the user-system experiments later on.
+
+A Transformer-based language model (denoted $\texttt{LM}$) is used in this thesis to model the distribution of dialogues, using dialogue history at time $t$, $\mathcal{D}_t$, as a prompt to auto-regressively generate the dialogue continuation $S_t$. More specifically, let the concatenation of the dialogue history at $t$ and its continuation, $\{\mathcal{D}_t, S_t\}$, be represented as a sequence of tokens $\textbf{x}= \{x_0, ..., x_n\}$. By recursively applying the product rule of probability (\cite{bishop2006pattern}), the unconditional probability of the sequence $p(\textbf{x})$ can be expressed as:
+
+\begin{equation}
+    p(\textbf{x}) = \prod_{i = 1}^n p(x_i | x_0, ..., x_{i - 1}).
+\end{equation}
+
+\cite{dathathri2019plug} and \cite{madotto-etal-2020-plug} define the Transformer's decoding process in a recursive fashion. Let $H_t$ denote the conversation history's key-value pairs, i.e., $H_t = \left[ (K_t^{(1)}, V_t^{(1)}), ..., (K_t^{(l)}, V_t^{(l)}) \right]$, with $(K_t^{(i)}, V_t^{(i)})$ representing the key-value pairs from the $\texttt{LM}$'s $i$-th layer generated at all time steps $0$ through $t$. This results in the recurrent dedocing process being expressed as:
+
+\begin{equation}
+    o_{t + 1}, H_{t + 1} = \texttt{LM} \left( x_t, H_t \right),
+\end{equation}
+
+where $o_{t + 1}$ is the hidden state of the last layer. Finally, after applying a softmax transformation, the next token $x_{t + 1}$ is sampled from the distribution $p_t = \texttt{softmax} \left( W o_{t + 1} \right)$, where $W$ is a linear mapping from the model's last hidden state to a vector of vocabulary size. This recursive formulation allows for efficient text generation by leveraging cached memories, without repeated forward passes.
+
+\subsection{Plug-and-play modeling}
+
+P\&P $\neq$ fine-tuning!
