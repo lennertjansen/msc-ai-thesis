@@ -270,3 +270,42 @@ url={https://openreview.net/forum?id=H1edEyBKDS}
   year={2006},
   publisher={springer}
 }
+
+@inproceedings{nguyen2015deep,
+  title={Deep Neural Networks are Easily Fooled: High Confidence Predictions for Unrecognizable Images},
+  author={Nguyen, Anh and Yosinski, Jason and Clune, Jeff},
+  booktitle={Computer Vision and Pattern Recognition (CVPR), 2015 IEEE Conference on},
+  year={2015},
+  organization={IEEE}
+}
+
+@inproceedings{stahlberg-etal-2018-simple,
+    title = "Simple Fusion: Return of the Language Model",
+    author = "Stahlberg, Felix  and
+      Cross, James  and
+      Stoyanov, Veselin",
+    booktitle = "Proceedings of the Third Conference on Machine Translation: Research Papers",
+    month = oct,
+    year = "2018",
+    address = "Brussels, Belgium",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/W18-6321",
+    doi = "10.18653/v1/W18-6321",
+    pages = "204--211",
+    abstract = "Neural Machine Translation (NMT) typically leverages monolingual data in training through backtranslation. We investigate an alternative simple method to use monolingual data for NMT training: We combine the scores of a pre-trained and fixed language model (LM) with the scores of a translation model (TM) while the TM is trained from scratch. To achieve that, we train the translation model to predict the residual probability of the training data added to the prediction of the LM. This enables the TM to focus its capacity on modeling the source sentence since it can rely on the LM for fluency. We show that our method outperforms previous approaches to integrate LMs into NMT while the architecture is simpler as it does not require gating networks to balance TM and LM. We observe gains of between +0.24 and +2.36 BLEU on all four test sets (English-Turkish, Turkish-English, Estonian-English, Xhosa-English) on top of ensembles without LM. We compare our method with alternative ways to utilize monolingual data such as backtranslation, shallow fusion, and cold fusion.",
+}
+
+@inproceedings{bapna-firat-2019-simple,
+    title = "Simple, Scalable Adaptation for Neural Machine Translation",
+    author = "Bapna, Ankur  and
+      Firat, Orhan",
+    booktitle = "Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)",
+    month = nov,
+    year = "2019",
+    address = "Hong Kong, China",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/D19-1165",
+    doi = "10.18653/v1/D19-1165",
+    pages = "1538--1548",
+    abstract = "Fine-tuning pre-trained Neural Machine Translation (NMT) models is the dominant approach for adapting to new languages and domains. However, fine-tuning requires adapting and maintaining a separate model for each target task. We propose a simple yet efficient approach for adaptation in NMT. Our proposed approach consists of injecting tiny task specific adapter layers into a pre-trained model. These lightweight adapters, with just a small fraction of the original model size, adapt the model to multiple individual tasks simultaneously. We evaluate our approach on two tasks: (i) Domain Adaptation and (ii) Massively Multilingual NMT. Experiments on domain adaptation demonstrate that our proposed approach is on par with full fine-tuning on various domains, dataset sizes and model capacities. On a massively multilingual dataset of 103 languages, our adaptation approach bridges the gap between individual bilingual models and one massively multilingual model for most language pairs, paving the way towards universal machine translation.",
+}
