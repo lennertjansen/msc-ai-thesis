@@ -1,29 +1,27 @@
-\textit{This is where you position your research in the relevant background and related research.}
-
 \subsection{Background}
 
-\textit{What is the relevant theoretical background material to cover?}
-\begin{itemize}
-    \item Language modelling.
-    \item (Controllable) Text Generation.
-    \item GPT-x.
-    \item Transformers.
-    \item Dialogue Modelling.
-    \begin{itemize}
-        \item Adaptive dialogue systems.
-    \end{itemize}
-    \item Age and language.
-    \begin{itemize}
-        \item The theoretical relationship between age and language.
-        \item Age(-group) detection from text.
-    \end{itemize}
-\end{itemize}
+% \textit{What is the relevant theoretical background material to cover?}
+% \begin{itemize}
+%     \item Language modelling.
+%     \item (Controllable) Text Generation.
+%     \item GPT-x.
+%     \item Transformers.
+%     \item Dialogue Modelling.
+%     \begin{itemize}
+%         \item Adaptive dialogue systems.
+%     \end{itemize}
+%     \item Age and language.
+%     \begin{itemize}
+%         \item The theoretical relationship between age and language.
+%         \item Age(-group) detection from text.
+%     \end{itemize}
+% \end{itemize}
 
-\textit{Writing goals of this subsection:}
-\begin{itemize}
-    \item Position my research (i.e., dialogue response generation that is adaptive to age-groups) in its relevant background.
-    \item Explain concepts that must be understood to grasp my research topic (i.e., give theoretical background information for the rest of your thesis).
-\end{itemize}
+% \textit{Writing goals of this subsection:}
+% \begin{itemize}
+%     \item Position my research (i.e., dialogue response generation that is adaptive to age-groups) in its relevant background.
+%     \item Explain concepts that must be understood to grasp my research topic (i.e., give theoretical background information for the rest of your thesis).
+% \end{itemize}
 
 Controllable dialogue generation encompasses several concepts in natural language processing and linguistics that must be understood to approach the problem. This subsection highlights these topics and positions the central problem of this thesis in its relevant theoretical background.
 
@@ -43,26 +41,26 @@ Another recent development in language modelling is that of pre-training LMs on 
 
 
 
-\begin{itemize}
-    \item What are language models? / What is language modelling?
-    \item Why is it important for many NLP tasks?
-    \item How is it typically formulated or approached (very brief mathematical explanation)?
-    \item Why is it important (to understand this) for my research?
-    \begin{itemize}
-        \item Tractable sampling from the joint $\rightarrow$ (text) generation.
-    \end{itemize}
-    \item Introduce pre-trained language models.
-    \item Briefly introduce the Transformer (but not in too much technical detail, as it could be necessary to explain it in Methods).
-    \item Same for GPT-2.
-\end{itemize}
+% \begin{itemize}
+%     \item What are language models? / What is language modelling?
+%     \item Why is it important for many NLP tasks?
+%     \item How is it typically formulated or approached (very brief mathematical explanation)?
+%     \item Why is it important (to understand this) for my research?
+%     \begin{itemize}
+%         \item Tractable sampling from the joint $\rightarrow$ (text) generation.
+%     \end{itemize}
+%     \item Introduce pre-trained language models.
+%     \item Briefly introduce the Transformer (but not in too much technical detail, as it could be necessary to explain it in Methods).
+%     \item Same for GPT-2.
+% \end{itemize}
 
 \paragraph{(Controllable) Text Generation}
 
-\begin{itemize}
-    \item Describe the text generation task.
-    \item What is controllability in text generation? Why is it challenging?
-    \item One of the main challenges in CTG using large-scale LMs is the cost of fine-tuning. Expand on this. How can this be solved?
-\end{itemize}
+% \begin{itemize}
+%     \item Describe the text generation task.
+%     \item What is controllability in text generation? Why is it challenging?
+%     \item One of the main challenges in CTG using large-scale LMs is the cost of fine-tuning. Expand on this. How can this be solved?
+% \end{itemize}
 
 In text generation, a LM $p(\textbf{x})$ is asked to produce text $\textbf{x}$ given a primer text by using the language model to sample from the distribution of words that are assigned the highest likelihood of following the primer text.
 
@@ -91,9 +89,9 @@ The transformer architecture in recent years has dominated numerous NLP tasks an
 
 The transformer architecture mainly consists of a encoder and decoder structure. Where the encoder processes the embedded text inputs and produces a hidden state using self attention mechanisms and fully connected layers. This hidden state is then passed to the decoder layer which Produces an output which contains a distribution over the vocabulary and can be used for next word prediction.
 
-\paragraph{GPT}
+% \paragraph{GPT}
 
-Following the success of open AI's pre-trained transformer model they went on to produce a series of generative pre-train transformers that I have been trained in a unsupervised language modelling session.
+% Following the success of open AI's pre-trained transformer model they went on to produce a series of generative pre-train transformers that I have been trained in a unsupervised language modelling session.
 
 \paragraph{Dialogue Response Generation}
 \textbf{TODO: add references to eg dialogpt}
@@ -138,37 +136,51 @@ For explicit personalization models, the generated responses are conditioned eit
 %         \end{itemize}
 % \end{enumerate}
 
-\paragraph{Language and speaker age.}
+\paragraph{Language and age.}
 
-\begin{itemize}
-    \item What is known about the relationship between a speaker's (or author's) age and their linguistic characteristics? I.e., how does language use develop with age according to the existing literature?
-    \item How can we automatically detect a speaker's age(-group) from their utterances using machine learning?
-\end{itemize}
+The relationship between a person's age and use of language is a thoroughly studied subject with a decades long history and inherent challenges \citep{pennebaker2003words, nguyen2014gender}. A number factors like community membership (like gender, socioeconomic status, or political affiliation), experimental condition (e.g., emotional versus non-emotional disclosure), mode of disclosure (writing versus talking), and other confounding variables complicate the study of age's relation to language \citep{nguyen-etal-2011-author}. The relatively recent advent of widely available computational resources and vast amounts of textual data made it possible to leverage machine learning methods to help detect patterns in language that eluded conventional sociolinguistic research. Early computational investigations into the connection between a person's age and use of language is typically a combination of qualitative and statistical methods. For instance, using a mix between their proprietary count-based text analysis framework, Linguistic Inquiry and Word Count (LIWC) and sociolinguistic theory, \cite{pennebaker2003words} study the changes in written and spoken language use with increasing age. They discuss four important areas of a person's character that have been found to change with age: emotional experience and expression, identity and social relationships, time orientation, and cognitive abilities. These four axes and their hypothesized relationships with language use and age can be interpreted in the following ways:
+\begin{enumerate}
+    \item \textit{Emotional experience and expression:} This is the relationship between increasing age and linguistically observable manifestations of a person's experienced emotions. In practical terms, this is framed as detectable instances of positive and negative affect in language. This complex relationship between age and emotional expression is characterized by decreased levels of negative affect and slightly non-decreasing levels of positive affect. This is also confirmed by the findings of \cite{schler2006effects}.
+    
+    \item \textit{Sense of identity and social relationships:} These terms refer to developmental tends in one's relation to self and others, as expressed in their language, e.g., as references to self (\textit{I, me, my}, and \textit{we, us, our}) or others (\textit{they, them, theirs}). The literature cited in \cite{pennebaker2003words} suggests that the \textit{quantity} of social connections decreases and the \textit{quality} of remaining relationships increases with age.
+    
+    \item \textit{Time orientation:} This relationship describes how people express their perception of and orientation towards time. For instance, this can be indicated by the use of time-related verb tenses. The authors suggest that older individuals tend to be more past-oriented than their younger future-oriented counterparts.
+    
+    \item \textit{Cognitive abilities:} This refers to markers of cognitive capacity in language. Aging is expected to be associated with less use of cognitively complex words after a certain mid-adulthood peak. Specifically, the relationship between markers of cognitive complexity in natural language (cognitive mechanisms, causal insight, and exclusive words) and age is hypothesized to be curvilinear. And because verbal ability does not decline until very late in life, markers of verbal ability (e.g., use of big words) are not expected to show changes with age.
+\end{enumerate}
+
+Their analyses considered the following variables: positive and negative emotions, first-person singular and first-person plural pronouns, social references, time-related words (past-tense, present-tense, and future-tense verbs), big words ($>6$ letters), cognitive mechanisms, causal insight, and exclusive words. Their main findings suggest that increasing with age, people use more positive and fewer negative affect words, use fewer self-references, use more future-tense and fewer past-tense verbs, and exhibit a general pattern of increasing cognitive complexity.
+
+Detectable linguistic differences between age-groups can often be attributed to the use of language fads or references to age-specific popular culture. For instance, \cite{schler2006effects} find that the use of slang and neologism (such as \textit{lol} and \textit{ur}) are strong indicators of youth. Words like `facebook', `instagram', and `netflix' appear in the most frequently used words by younger participants of conversational data collection efforts, like that of the British National Corpus' spoken component \citep{love-spoken-bnc-2014}.
+
+More recent studies, like that of \cite{nguyen-etal-2011-author} and \cite{abdallah2020age}, frame age prediction from text as traditional machine learning problems, like linear regression, support vector machines, or neural architectures. These modeling approaches tend to reveal that strong indicators of age lie at the syntactic or structural level of language use, in addition to the more content-based lexical level, with older age typically being associated with more complex phrasing. Furthermore, this could explain why automatic detection from text of more content-based traits, like topic or sentiment, tend to be easier problems to solve than age prediction from text. To emphasize one such complicating factor, \cite{nguyen2014gender} argue that differences in language use are often relation to the speaker's social identity, which could differ from their biological identity. This idea that age prediction from text is more challenging than topic or sentiment prediction could be an indication that controlled language generation for age-differences is also a more nuanced problem than that of topical steered text generation.
+
+
+% \textbf{Keep in mind:}
+% \begin{itemize}
+%     \item What is known about the relationship between a speaker's (or author's) age and their linguistic characteristics? I.e., how does language use develop with age according to the existing literature?
+%     \item How can we automatically detect a speaker's age(-group) from their utterances using machine learning?
+%     \item Link findings from the papers you cite to the hypothesis that linguistic differences in age lie more are the phrase/constructional level than at the single word/lexical level. However, is this really the case? \cite{nguyen-etal-2011-author} mention single words like `well', `like`, and `just' being predictive of age.
+%     \item Mention that age differences in language could/should also be interpreted as indications of language fads during a person's formative years.
+%     \item Hypothesize that age-related linguistic variation is a more subtle and nuanced factor to control for during text generation than, e.g., topic (science, business, religion), or sentiment.
+%     \item Mention confounding factors like community membership (like gender, socioeconomic status, or political affiliation), experimental condition (e.g., emotional versus non-emotional disclosure), mode of disclosure (writing versus talking), and other confounding factors that complicate age prediction from language.
+% \end{itemize}
 
 \subsection{Related work}
 
 \paragraph{Controllable language generation}
-\begin{itemize}
-    \item PPLM \cite{dathathri2019plug}
-    \item Optimus \citep{li-etal-2020-optimus}
-\end{itemize}
-
 \cite{dathathri2019plug} Achieve controllable language generation using a plug and play model set up.Their architecture uses GPT to as their base language model which provides grammatical fluency, combined with a significantly easier to train attribute model (i.e., a simple BoW or single-layer classifier). Using gradient updates from the much smaller attribute model that are back propagated through the large pre-trained bass language model they manage to generate language combines (some of) the fluency of GPT-2 with the stylistic control of the attribute model, without the cost of retraining a specialised architecture.
 
 They demonstrate desirable fluency as measured by perplexity with respect to GPT as well as measurable attribute control. Their architecture is applied to among other Tasks controlled story writing and language detoxification. They also show a clear trade-off between attribute control and grammatical correctness and diversity.
 
 Dialogue generation is not explored as an application of PPLM, nor is their tested with more complex attribute models to hopefully allow for less deterioration of fluency as attribute control increases.
 
-\textbf{OPTIMUS}
+\textbf{TODO: Mention OPTIMUS}
 
 \paragraph{Writing-style Transfer}
-\begin{itemize}
-    \item \cite{dai2019style}
-\end{itemize}
-
 Writing-style transfer is a closely related problem to controllable language generation. It involves rewriting an input text with a different style of writing than it originally had. More formally, given a text $\textbf{x}$, its corresponding style $\textbf{s}^{(i)}$, the number of different styles $K$ over which there exists a distribution, and a desired style $\hat{\textbf{s}} \in \{\textbf{s}^{(i)}\}_{i = 1}^{K}$, the goal of style transfer is to rewrite the input sentence to $\hat{\textbf{x}}$ with style $\hat{\textbf{s}}$, while preserving the information content of $\textbf{x}$. Using a trained model to rewrite the positively formulated input sentence ``\textit{I like fish sticks}'' as it negative equivalent ``\textit{I do not like fish sticks}'' is an example of writing-style transfer. Writing-style transfer can also be seen as a special case of (abstractive) summarization, for which Transformers have also demonstrated applicability \citep{baan-etal-2019-abstractive}.
 
-\cite{dai-etal-2019-style} introduce the Style Transformer, an alternative to the previous RNN-based encoder-decoder frameworks for text style transfer. In previous work, neural text style transfer was done by passing input text through an encoder, yielding a style-dependent latent representation $z$. These previous approaches then attempt to ``disentangle'' $z$ into a style-independent content representation and a latent representation of the stylistic properties of the input text. The following decoder then receives the content representation and a new latent style variable as input, to ultimately produce a style-altered output text with unchanged content.
+\cite{dai2019style} introduce the Style Transformer, an alternative to the previous RNN-based encoder-decoder frameworks for text style transfer. In previous work, neural text style transfer was done by passing input text through an encoder, yielding a style-dependent latent representation $z$. These previous approaches then attempt to ``disentangle'' $z$ into a style-independent content representation and a latent representation of the stylistic properties of the input text. The following decoder then receives the content representation and a new latent style variable as input, to ultimately produce a style-altered output text with unchanged content.
 
 \begin{enumerate}
     \item It is difficult to evaluate the quality of disentanglement of the latent space.
@@ -181,10 +193,6 @@ Writing-style transfer is a closely related problem to controllable language gen
 These aforementioned problems are addressed by \cite{dai2019style} using Transformers \citep{vaswani2017attention} as the building block for text style transfer. The authors' approach does not require any manipulation (i.e., disentanglement) of the latent space, eliminates the need for a fixed-size vector representation of the input, and handles long-range dependencies better due to Transformers' attention mechanism. Aside from this being the first application of Transformers for text style transfer, the work contributes a novel training algorithm for such models, and boasts significant improvements of results on two text style transfer datasets.
 
 \paragraph{Dialogue Generation}
-\begin{itemize}
-    \item DialoGPT
-\end{itemize}
-
 In \cite{zhang2019dialogpt}, the authors introduce DialoGPT, a tunable large-scale language model for generation of conversational responses, trained on Reddit discussion chain data. DialoGPT therefore extends GPT-2 \cite{radford2019language} to address a more restrictive sub-category of text generation, i.e., conversational response generation.  
 
 DialoGPT inherits from GPT-2 a 12-to-48 layer transformer with layer normalisation, a custom initialisation scheme that accounts for model depth, and byte pair encodings \cite{sennrich-etal-2016-neural} as a tokeniser.
@@ -199,12 +207,6 @@ DialoGPT is evaluated on the Dialog System Technology Challenge (DSTC) 7 track; 
 
 
 \paragraph{Adaptive Dialogue Generation}
-\begin{itemize}
-    \item \texttt{PersonalDialogue}
-    \item MedDialog(?)
-\end{itemize}
 
-\cite{zheng2019personalized} investigate the problem of incorporating explicit personal characteristics in dialogue generation to deliver personalised (i.e., adaptive) conversation. They introduce \texttt{PersonalDialog}, a large-scale multi-turn dialogue dataset with personality trait labelling (i.e., \texttt{Age}, \texttt{Gender}, \texttt{Location}, \texttt{Interest Tags}, etc.) for a large number of speakers. They propose persona-aware adaptive dialogue generation models within the sequence-to-sequence learning framework. During the decoding process, they suggest two novel techniques: \textit{persona-aware attention} and \textit{persona-aware bias}.
-
-\paragraph{Plug-and-play language and dialogue generation}
+\cite{zheng2019personalized} investigate the problem of incorporating explicit personal characteristics in dialogue generation to deliver personalised (i.e., adaptive) conversation. They introduce \texttt{PersonalDialog}, a large-scale multi-turn dialogue dataset with personality trait labelling (i.e., \texttt{Age}, \texttt{Gender}, \texttt{Location}, \texttt{Interest Tags}, etc.) for a large number of speakers. They propose persona-aware adaptive dialogue generation models within the sequence-to-sequence learning framework. During the decoding process, they suggest two novel techniques: \textit{persona-aware attention} and \textit{persona-aware bias}. \textbf{TODO: mention MedDialog?}
 
