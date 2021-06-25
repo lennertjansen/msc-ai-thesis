@@ -32,11 +32,14 @@
 
 \usepackage{mathrsfs} % for fancy script letters in mathmode using \mathscr
 
+\usepackage{longtable}
 
 
+\usepackage{booktabs}% http://ctan.org/pkg/booktabs
+\newcommand{\tabitem}{~~\llap{\textbullet}~~}
 
 
-\title{A Plug and Play Approach to Age-Adaptive Dialogue Generation}
+\title{A Plug-and-Play Approach to Age-Adaptive Dialogue Generation}
 
 \author{%
   Lennert Jansen\\
@@ -61,14 +64,16 @@
 \input{sections/literature_review}
 
 \section{Methodology}
+\label{sec:methods}
 \input{sections/methods}
 
 
-\section{Data}
-\input{sections/data_es}
+% \section{Data}
+% \input{sections/data_es}
 
 
 \section{Planning}
+\label{sec:plan}
 \input{sections/plan}
 
 % References ---------------------------------------------------------------
