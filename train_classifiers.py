@@ -533,6 +533,8 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
                 # predictions = torch.argmax(log_probs, dim=1, keepdim=True) # Old
                 # batch_pred = [int(item[0]) for item in predictions.tolist()] # Old
                 predictions = torch.argmax(log_probs, dim=1) # New
+                # pdb.set_trace()
+                # predictions = torch.randint(0, 2, predictions.shape)
 
             elif model_type == 'bert':
                 loss, text_fea = model(batch_inputs, batch_labels)
@@ -1189,7 +1191,7 @@ def parse_arguments(args = None):
     parser = argparse.ArgumentParser(description="Train discriminator neural text classifiers.")
 
     parser.add_argument(
-        '--data', type=str, choices=['blog', 'bnc', 'bnc_rb'], default='blog',
+        '--data', type=str, choices=['blog', 'bnc', 'bnc_rb'], default='bnc_rb',
         help='Choose dataset to work with. Either blog corpus, BNC (NB: highly imbalanced. '
              'Activate w_loss or w_sampling), or BNC randomly balanced (bnc_rb).'
     )
