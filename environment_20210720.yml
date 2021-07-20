@@ -210,5 +210,5 @@ dependencies:
     - torchtext==0.3.1
     - transformers==3.4.0
     - werkzeug==1.0.1
-prefix: /Users/lennertjansen/miniconda3/envs/thesis
+
 
