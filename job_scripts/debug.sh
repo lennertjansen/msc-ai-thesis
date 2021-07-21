@@ -18,8 +18,7 @@ module load Miniconda3
 
 # Activate the conda environment
 echo "Activating conda environment..."
-source activate base
-source activate thesis_lisa2
+conda activate thesis_lisa2
 
 # Change directories
 echo "Changing directory"
