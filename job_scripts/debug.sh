@@ -18,6 +18,7 @@ module load Miniconda3
 
 # Activate the conda environment
 echo "Activating conda environment..."
+source /home/lennertj/miniconda3/etc/profile.d/conda.sh
 conda activate thesis_lisa2
 
 # Change directories
