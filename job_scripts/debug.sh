@@ -11,7 +11,7 @@
 # Loading all necessary modules.
 echo "Loading modules..."
 module purge
-module load eb
+## module load eb
 module load 2019
 module load Python/3.7.5-foss-2019b
 module load Miniconda3
@@ -19,7 +19,7 @@ module load Miniconda3
 # Activate the conda environment
 echo "Activating conda environment..."
 source activate base
-conda activate thesis_lisa2
+source activate thesis_lisa2
 
 # Change directories
 echo "Changing directory"
