@@ -13,15 +13,15 @@
 echo "Loading modules..."
 module purge
 #module load eb
-module load 2019
+module load 2021
 module load Python/3.7.5-foss-2019b
-#module load Miniconda3
+module load Miniconda3
 
 # Activate the conda environment
-#echo "Activating conda environment..."
-#source /home/lennertj/miniconda3/etc/profile.d/conda.sh
-#source activate base # Required to activate conda
-#conda activate thesis_lisa
+echo "Activating conda environment..."
+source /home/lennertj/miniconda3/etc/profile.d/conda.sh
+source activate base # Required to activate conda
+conda activate thesis_lisa2
 
 # Change directories
 echo "Changing directory"
