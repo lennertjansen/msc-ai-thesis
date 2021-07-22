@@ -11,25 +11,27 @@
 # Loading all necessary modules.
 echo "Loading modules..."
 module purge
-module load eb
-module load 2020
+#module load eb
+module load 2019
 module load Python/3.7.5-foss-2019b
-module load Miniconda3
+#module load Miniconda3
 
 # Activate the conda environment
-echo "Activating conda environment..."
-source /home/lennertj/miniconda3/etc/profile.d/conda.sh
-source activate base # Required to activate conda
-conda activate thesis_lisa2
+#echo "Activating conda environment..."
+#source /home/lennertj/miniconda3/etc/profile.d/conda.sh
+#source activate base # Required to activate conda
+#conda activate thesis_lisa
 
 # Change directories
 echo "Changing directory"
-cd $HOME/code/PPLM
+#cd $HOME/code/PPLM
+cd $HOME/code/msc-ai-thesis
 
 # Run your code
 echo "Running python code..."
-python run_pplm_discrim_train.py --dataset 'generic' \
-      --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_small_generic_pplm.txt' \
-      --epochs 1 \
-      --batch_size 64 \
-      --pretrained_model 'bert-base-uncased'
+#python run_pplm_discrim_train.py --dataset 'generic' \
+#      --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_small_generic_pplm.txt' \
+#      --epochs 1 \
+#      --batch_size 64 \
+#      --pretrained_model 'bert-base-uncased'
+python klad2.py
