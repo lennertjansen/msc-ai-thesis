@@ -13,7 +13,7 @@
 echo "Loading modules..."
 module purge
 #module load eb
-module load 2021
+module load 2020
 module load Python/3.7.5-foss-2019b
 module load Miniconda3
 
