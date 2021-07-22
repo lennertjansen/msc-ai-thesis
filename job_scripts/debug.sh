@@ -22,6 +22,7 @@ module load Anaconda3/2020.02
 echo "Activating conda environment..."
 source /home/lennertj/miniconda3/etc/profile.d/conda.sh
 source activate base
+conda info --envs
 source activate thesis_lisa2
 
 # Change directories
