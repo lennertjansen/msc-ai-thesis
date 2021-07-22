@@ -2,6 +2,7 @@
 
 #SBATCH --partition=gpu_short
 #SBATCH --nodes=1
+#SBATCH --gpus-per-node=1
 #SBATCH --job-name=debugger
 #SBATCH --time=1:00:00
 #SBATCH --mail-type=BEGIN,END
@@ -24,14 +25,14 @@ module load Python/3.7.5-foss-2019b
 
 # Change directories
 echo "Changing directory"
-#cd $HOME/code/PPLM
-cd $HOME/code/msc-ai-thesis
+cd $HOME/code/PPLM
+#cd $HOME/code/msc-ai-thesis
 
 # Run your code
 echo "Running python code..."
-#python run_pplm_discrim_train.py --dataset 'generic' \
-#      --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_small_generic_pplm.txt' \
-#      --epochs 1 \
-#      --batch_size 64 \
-#      --pretrained_model 'bert-base-uncased'
-python klad2.py
+python run_pplm_discrim_train.py --dataset 'generic' \
+      --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_small_generic_pplm.txt' \
+      --epochs 1 \
+      --batch_size 64 \
+      --pretrained_model 'bert-base-uncased'
+#python klad2.py
