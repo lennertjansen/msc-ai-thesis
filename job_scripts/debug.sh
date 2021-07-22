@@ -32,8 +32,16 @@ cd $HOME/code/PPLM
 
 # Run your code
 echo "Running python code..."
-python run_pplm_discrim_train.py --dataset 'generic' \
-      --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_small_generic_pplm.txt' \
-      --epochs 1 \
-      --batch_size 64 \
-      --pretrained_model 'bert-base-uncased'
+## declare an array variable
+declare -a arr=("bert-base-uncased" "gpt2-medium")
+
+## now loop through the above array
+for i in "${arr[@]}"
+
+  for j in 1 2 3 4 5
+
+    python run_pplm_discrim_train.py --dataset 'generic' \
+          --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_small_generic_pplm.txt' \
+          --epochs 1 \
+          --batch_size 64 \
+          --pretrained_model "$i"
