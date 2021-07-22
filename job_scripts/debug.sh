@@ -12,15 +12,15 @@
 # Loading all necessary modules.
 echo "Loading modules..."
 module purge
-#module load eb
 module load 2020
+module load eb
 module load Python/3.7.5-foss-2019b
 module load Miniconda3
 
 # Activate the conda environment
 echo "Activating conda environment..."
 source /home/lennertj/miniconda3/etc/profile.d/conda.sh
-source activate base # Required to activate conda
+source activate base
 conda activate thesis_lisa2
 
 # Change directories
@@ -35,4 +35,3 @@ python run_pplm_discrim_train.py --dataset 'generic' \
       --epochs 1 \
       --batch_size 64 \
       --pretrained_model 'bert-base-uncased'
-#python klad2.py
