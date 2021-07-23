@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=1
 #SBATCH --job-name=debugger
-#SBATCH --time=3:00:00
+#SBATCH --time=1:00:00
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
 #SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/debugger.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
