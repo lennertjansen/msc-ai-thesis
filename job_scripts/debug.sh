@@ -14,7 +14,7 @@ echo "Loading modules..."
 module purge
 module load 2020
 #module load eb
-module load Python/3.7.5-foss-2019b
+#module load Python/3.7.5-foss-2019b
 #module load Miniconda3
 module load Anaconda3/2020.02
 
