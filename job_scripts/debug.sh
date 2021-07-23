@@ -72,5 +72,5 @@ do
          --test_frac 0.1 \
          --subset_size 10000 \
          --log_interval 100 \
-         --no_tb \
+         --no_tb
 done
