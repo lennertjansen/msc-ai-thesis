@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=debugger
+#SBATCH --job-name=real_deal_bnc_rb
 #SBATCH --time=24:00:00
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/real_deal_gpt_bnc_rb.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/real_deal_test_bert_bnc_rb.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -34,17 +34,17 @@ cd $HOME/code/PPLM
 # Run your code
 echo "Running python code..."
 ## declare an array variable
-declare -a arr=("gpt2-medium")
+declare -a arr=("bert-base-uncased")
 
 ## now loop through the above array
 for i in "${arr[@]}"
 do
-  for j in 1 2 3 4 5
+  for j in 1 2
   do
 
     python run_pplm_discrim_train.py --dataset 'generic' \
           --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_full_generic_pplm.txt' \
-          --epochs 20 \
+          --epochs 2 \
           --batch_size 64 \
           --log_interval 20000 \
           --pretrained_model "$i"
