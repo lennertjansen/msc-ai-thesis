@@ -33,19 +33,19 @@ cd $HOME/code/PPLM
 # Run your code
 echo "Running python code..."
 ## declare an array variable
-declare -a arr=("bert-base-uncased" "gpt2-medium")
+declare -a arr=("bert-base-uncased")
 
 ## now loop through the above array
 for i in "${arr[@]}"
 do
-  for j in 1 2 3 4 5
+  for j in 1 2
   do
 
     python run_pplm_discrim_train.py --dataset 'generic' \
-          --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_small_generic_pplm.txt' \
+          --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_full_generic_pplm.txt' \
           --epochs 5 \
           --batch_size 64 \
-          --log_interval 100 \
+          --log_interval 20000 \
           --pretrained_model "$i"
   done
 done
