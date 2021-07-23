@@ -73,3 +73,4 @@ do
          --subset_size 10000 \
          --log_interval 100 \
          --no_tb \
+done
