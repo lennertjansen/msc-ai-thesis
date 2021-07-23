@@ -66,7 +66,7 @@ do
          --batch_first \
          --epochs 2 \
          --lr 0.001 \
-         --es 3 \
+         --early_stopping_patience 3 \
          --train_frac 0.75 \
          --val_frac 0.15 \
          --test_frac 0.1 \
