@@ -70,7 +70,7 @@ def train_one_epoch(model,
 
         if model_type == 'lstm':
             # forward pass through model
-            log_probs = model(batch_inputs, batch_lengths)  # log_probs shape: (batch_size, num_classes)
+            log_probs = model(batch_inputs, batch_lengths.cpu())  # log_probs shape: (batch_size, num_classes)
 
             # Evaluate loss, gradients, and update network parameters
             loss = criterion(log_probs, batch_labels)
