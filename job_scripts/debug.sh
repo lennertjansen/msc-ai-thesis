@@ -3,11 +3,11 @@
 #SBATCH --partition=gpu_short
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=1
-#SBATCH --job-name=debugger_blog_lstm_wsampling
+#SBATCH --job-name=debugger_blog_lstm_wsampling_wloss
 #SBATCH --time=1:00:00
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/debugger_blog_lstm_wsampling.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/debugger_blog_lstm_wsampling_wloss.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -74,5 +74,6 @@ do
          --test_frac 0.1 \
          --log_interval 1000 \
          --w_sampling \
+         --w_loss \
          --no_tb
 done
