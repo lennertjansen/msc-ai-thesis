@@ -308,8 +308,8 @@ def train(seed,
             model = TextClassificationBERT(num_classes = train_dataset.num_classes)
 
             # freeze all the BERT-parameters
-            for param in model.encoder.bert.parameters():
-                param.requires_grad = False
+            # for param in model.encoder.bert.parameters():
+            #     param.requires_grad = False
 
     elif mode == 'test':
         if model_type == 'lstm':
