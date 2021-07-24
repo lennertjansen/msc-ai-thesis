@@ -73,6 +73,5 @@ do
          --val_frac 0.15 \
          --test_frac 0.1 \
          --log_interval 1000 \
-         --w_loss \
          --no_tb
 done
