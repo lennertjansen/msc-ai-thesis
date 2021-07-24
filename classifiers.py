@@ -94,7 +94,7 @@ class TextClassificationLSTM(nn.Module):
         # pack padded sequence
         # here's why: https://stackoverflow.com/questions/51030782/why-do-we-pack-the-sequences-in-pytorch
         packed_embedded = nn.utils.rnn.pack_padded_sequence(input = embedded,
-                                                            lengths = text_lengths,
+                                                            lengths = text_lengths.cpu(),
                                                             batch_first = self.batch_first,
                                                             enforce_sorted = False)
 
