@@ -3,11 +3,11 @@
 #SBATCH --partition=gpu_short
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=1
-#SBATCH --job-name=debugger_blog_lstm_wsampling_wloss
+#SBATCH --job-name=debugger_bnc_rb_bert
 #SBATCH --time=1:00:00
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/debugger_blog_lstm_wsampling_wloss.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/debugger_bnc_rb_bert.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -56,24 +56,22 @@ do
   echo "$seed"
 
   python train_classifiers.py \
-         --data 'blog' \
-         --model_type 'lstm' \
+         --data 'bnc_rb' \
+         --model_type 'bert' \
          --mode 'train' \
          --seed "$seed" \
-         --batch_size 64 \
+         --batch_size 8 \
          --embedding_dim 128 \
          --hidden_dim 256 \
          --num_layers 2 \
          --bidirectional \
          --batch_first \
-         --epochs 2 \
+         --epochs 3 \
          --lr 0.001 \
          --early_stopping_patience 3 \
          --train_frac 0.75 \
          --val_frac 0.15 \
          --test_frac 0.1 \
          --log_interval 1000 \
-         --w_sampling \
-         --w_loss \
          --no_tb
 done
