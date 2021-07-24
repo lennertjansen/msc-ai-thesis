@@ -515,7 +515,7 @@ def evaluate_performance(model, data_loader, device, criterion, data, writer=Non
     eval_start_time = datetime.now()
 
     with torch.no_grad():
-        for iteration, (batch_inputs, batch_labels, batch_lengths) in enumerate(tqdm(data_loader)):
+        for iteration, (batch_inputs, batch_labels, batch_lengths) in enumerate(data_loader):
 
             # move everything to device
             batch_inputs, batch_labels, batch_lengths = batch_inputs.to(device), batch_labels.to(device), \
