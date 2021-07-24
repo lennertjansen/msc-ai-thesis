@@ -23,55 +23,55 @@ echo "Activating conda environment..."
 source /home/lennertj/miniconda3/etc/profile.d/conda.sh
 source activate base
 conda info --envs
-source activate /home/lennertj/miniconda3/envs/thesis_lisa2
+source activate /home/lennertj/miniconda3/envs/thesis_lisa
 
 # Change directories
 echo "Changing directory"
-cd $HOME/code/PPLM
-#cd $HOME/code/msc-ai-thesis
+#cd $HOME/code/PPLM
+cd $HOME/code/msc-ai-thesis
 
 # Run your code
 echo "Running python code..."
 # declare an array variable
-declare -a arr=("bert-base-uncased")
-
-# now loop through the above array
-for i in "${arr[@]}"
-do
-  for j in 1 2
-  do
-
-    python run_pplm_discrim_train.py --dataset 'generic' \
-          --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_full_generic_pplm.txt' \
-          --epochs 5 \
-          --batch_size 64 \
-          --log_interval 20000 \
-          --pretrained_model "$i"
-  done
-done
-
-#for seed in 2021 2022
-#do
+#declare -a arr=("bert-base-uncased")
 #
-#  python train_classifiers.py \
-#         --data 'blog' \
-#         --model_type 'lstm' \
-#         --mode 'train' \
-#         --seed "$seed" \
-#         --batch_size 64 \
-#         --embedding_dim 128 \
-#         --hidden_dim 256 \
-#         --num_layers 2 \
-#         --bidirectional \
-#         --batch_first \
-#         --epochs 2 \
-#         --lr 0.001 \
-#         --early_stopping_patience 3 \
-#         --train_frac 0.75 \
-#         --val_frac 0.15 \
-#         --test_frac 0.1 \
-#         --subset_size 10000 \
-#         --log_interval 100 \
-#         --no_tb
+## now loop through the above array
+#for i in "${arr[@]}"
+#do
+#  for j in 1 2
+#  do
+#
+#    python run_pplm_discrim_train.py --dataset 'generic' \
+#          --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_full_generic_pplm.txt' \
+#          --epochs 5 \
+#          --batch_size 64 \
+#          --log_interval 20000 \
+#          --pretrained_model "$i"
+#  done
 #done
 
+for seed in 2021 2022
+do
+
+  python train_classifiers.py \
+         --data 'blog' \
+         --model_type 'lstm' \
+         --mode 'train' \
+         --seed "$seed" \
+         --batch_size 64 \
+         --embedding_dim 128 \
+         --hidden_dim 256 \
+         --num_layers 2 \
+         --bidirectional \
+         --batch_first \
+         --epochs 2 \
+         --lr 0.001 \
+         --early_stopping_patience 3 \
+         --train_frac 0.75 \
+         --val_frac 0.15 \
+         --test_frac 0.1 \
+         --subset_size 10000 \
+         --log_interval 100 \
+         --w_loss \
+         --no_tb
+done
