@@ -455,7 +455,7 @@ def train(seed,
         # TODO: See this tutorials prettier logging -- https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html
         print('-' * 91)
         print(f"Done training and validating. Best model from epoch {best_epoch}:")
-        print(best_model)
+        # print(best_model)
         print('-' * 91)
 
     if mode == 'val':
