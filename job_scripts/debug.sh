@@ -50,8 +50,10 @@ echo "Running python code..."
 #  done
 #done
 
-for seed in 2021 2022
+for seed in 2021
 do
+  echo 'Starting new seed:'
+  echo "$seed"
 
   python train_classifiers.py \
          --data 'blog' \
@@ -70,8 +72,7 @@ do
          --train_frac 0.75 \
          --val_frac 0.15 \
          --test_frac 0.1 \
-         --subset_size 10000 \
-         --log_interval 100 \
+         --log_interval 1000 \
          --w_loss \
          --no_tb
 done
