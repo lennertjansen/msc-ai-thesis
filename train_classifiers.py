@@ -328,10 +328,10 @@ def train(seed,
 
 
     # Print model architecture and trainable parameters
-    print('-' * 91)
-    print("MODEL ARCHITECTURE:")
-    print(model)
-    print('-' * 91)
+    # print('-' * 91)
+    # print("MODEL ARCHITECTURE:")
+    # print(model)
+    # print('-' * 91)
 
     if w_loss:
 
