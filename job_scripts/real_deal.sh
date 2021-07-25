@@ -4,18 +4,18 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=real_deal_bnc_rb_bert_finetune
+#SBATCH --job-name=real_deal_blog_subset_bert_finetune
 #SBATCH --time=24:00:00
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/real_deal_bnc_rb_bert_finetune.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/real_deal_blog_subset_bert_finetune.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
 module purge
 module load 2020
 #module load eb
-module load Python/3.7.5-foss-2019b
+#module load Python/3.7.5-foss-2019b
 #module load Miniconda3
 module load Anaconda3/2020.02
 
@@ -51,27 +51,28 @@ echo "Running python code..."
 #  done
 #done
 
-for seed in 2021 2022 2023 2024 2025
+for seed in 2021
 do
   echo 'Starting new seed:'
   echo "$seed"
 
   python train_classifiers.py \
-         --data 'bnc_rb' \
+         --data 'blog' \
          --model_type 'bert' \
          --mode 'train' \
          --seed "$seed" \
-         --batch_size 8 \
+         --batch_size 2 \
          --embedding_dim 128 \
          --hidden_dim 256 \
          --num_layers 2 \
          --batch_first \
-         --epochs 10 \
+         --epochs 1 \
          --lr 0.001 \
          --early_stopping_patience 3 \
          --train_frac 0.75 \
          --val_frac 0.15 \
          --test_frac 0.1 \
          --log_interval 1000 \
+         --subset_size 10000 \
          --no_tb
 done
