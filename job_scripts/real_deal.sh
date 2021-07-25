@@ -51,7 +51,7 @@ echo "Running python code..."
 #  done
 #done
 
-for seed in 2021
+for seed in 2021 2022 2023 2024 2025
 do
   echo 'Starting new seed:'
   echo "$seed"
@@ -66,13 +66,12 @@ do
          --hidden_dim 256 \
          --num_layers 2 \
          --batch_first \
-         --epochs 1 \
+         --epochs 10 \
          --lr 0.001 \
          --early_stopping_patience 3 \
          --train_frac 0.75 \
          --val_frac 0.15 \
          --test_frac 0.1 \
-         --log_interval 1000 \
-         --subset_size 10000 \
+         --log_interval 10000 \
          --no_tb
 done
