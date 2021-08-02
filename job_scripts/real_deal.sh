@@ -71,7 +71,7 @@ do
          --hidden_dim 256 \
          --num_layers 2 \
          --batch_first \
-         --epochs 1 \
+         --epochs 10 \
          --lr 0.001 \
          --early_stopping_patience 3 \
          --train_frac 0.75 \
