@@ -56,7 +56,7 @@ echo "Running python code..."
 #  done
 #done
 
-for seed in 7
+for seed in 1 2 3 4 5
 do
   echo 'Starting new seed:'
   echo "$seed"
