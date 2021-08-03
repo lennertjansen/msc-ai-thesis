@@ -56,11 +56,11 @@ echo "Running python code..."
 #  done
 #done
 
-#for seed in 7
-#do
-#  echo 'Starting new seed:'
-#  echo "$seed"
-#
+for seed in 7
+do
+  echo 'Starting new seed:'
+  echo "$seed"
+
   python train_classifiers.py \
          --data 'bnc_rb' \
          --model_type 'bert' \
