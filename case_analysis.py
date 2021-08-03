@@ -402,8 +402,8 @@ if __name__ == '__main__':
     df = preprocess_col(df, data='bnc_rb')
 
     # rename column
-    # df.rename(columns={'label': 'age_cat',
-    #                    'age_cat' : 'label'}, inplace=True)
+    df.rename(columns={'label': 'age_cat',
+                       'age_cat' : 'label'}, inplace=True)
 
     # In case you want a subset for faster debugging
     # subset_size = 1000
