@@ -448,7 +448,7 @@ if __name__ == '__main__':
     print(f"Device: {device}")
 
     # Initialize and load saved model
-    model = TextClassificationBERT()
+    model = TextClassificationBERT(num_classes=2)
     mode_path = 'bert_bnc_rb_case_analysis_REAL.pt'
     model.load_state_dict(torch.load(model_path))
 
