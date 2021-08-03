@@ -402,8 +402,8 @@ if __name__ == '__main__':
     df = preprocess_col(df, data='bnc_rb')
 
     # rename column
-    df.rename(columns={'label': 'age_cat',
-                       'age_cat' : 'label'}, inplace=True)
+    # df.rename(columns={'label': 'age_cat',
+    #                    'age_cat' : 'label'}, inplace=True)
 
     # In case you want a subset for faster debugging
     # subset_size = 1000
@@ -426,13 +426,21 @@ if __name__ == '__main__':
 
     # pdb.set_trace()
 
-    # save the test set
+    # save the data sets
+    # train_df.to_csv(
+    #     'data/bnc/ca_splits/bnc_rb_ca_trainset_case_analysis.csv',
+    #     index=False
+    # )
+    # val_df.to_csv(
+    #     'data/bnc/ca_splits/bnc_rb_ca_valset_case_analysis.csv',
+    #     index=False
+    # )
     test_df.to_csv(
         'bnc_rb_10p_testset_case_analysis.csv',
         index=False
     )
 
-    # pdb.set_trace()
+    pdb.set_trace()
 
     concat_train_df = pd.concat([train_df, val_df])
     train_test_ngram(train_df=concat_train_df, test_df=test_df)

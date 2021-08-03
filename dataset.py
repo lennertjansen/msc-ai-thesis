@@ -153,7 +153,8 @@ class PadSequence:
     def __call__(self, batch):
         # Let's assume that each element in "batch" is a tuple (data, label).
         # Sort the batch in the descending order
-        sorted_batch = sorted(batch, key=lambda x: x[0].shape[0], reverse=True)
+        # sorted_batch = sorted(batch, key=lambda x: x[0].shape[0], reverse=True) #TODO: UNCOMMENT THIS AFTER YOURE DONE FIXING STUFF
+        sorted_batch = batch
         # sorted_batch = sorted(batch, key=lambda x: len(x[0]), reverse=True)
         # Get each sequence and pad it
         sequences = [x[0] for x in sorted_batch]
