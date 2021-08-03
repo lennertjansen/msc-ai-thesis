@@ -460,7 +460,7 @@ if __name__ == '__main__':
     test_preprocessed = test_df[['clean_text', 'label']]
 
     # re-rename column because im stupid
-    df.rename(columns={'label': 'age_cat'}, inplace=True)
+    test_preprocessed.rename(columns={'label': 'age_cat'}, inplace=True)
 
     test_dataset = BncDataset(df=test_preprocessed, tokenizer=tokenizer)
 
