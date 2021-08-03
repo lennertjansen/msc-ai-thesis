@@ -306,11 +306,11 @@ def test_bert(model, criterion, device, data_loader, data='bnc_rb', writer=None,
             batch_inputs, batch_labels, batch_lengths = batch_inputs.to(device), batch_labels.to(device), \
                                                         batch_lengths.to(device)
 
-            elif model_type == 'bert':
-                loss, text_fea = model(batch_inputs, batch_labels)
-                set_loss += loss
 
-                predictions = torch.argmax(text_fea, 1)
+            loss, text_fea = model(batch_inputs, batch_labels)
+            set_loss += loss
+
+            predictions = torch.argmax(text_fea, 1)
 
 
             # batch_pred = [int(item[0]) for item in predictions.tolist()]
