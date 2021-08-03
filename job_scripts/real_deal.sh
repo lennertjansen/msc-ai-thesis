@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=real_deal_bnc_bert_case_analysis
+#SBATCH --job-name=real_deal_bnc_trigram_bert_case_analysis_tryout
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/real_deal_bnc_bert_case_analysis.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/real_deal_bnc_trigram_bert_case_analysis_tryout.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -56,27 +56,29 @@ echo "Running python code..."
 #  done
 #done
 
-for seed in 7
-do
-  echo 'Starting new seed:'
-  echo "$seed"
+#for seed in 7
+#do
+#  echo 'Starting new seed:'
+#  echo "$seed"
+#
+#  python train_classifiers.py \
+#         --data 'bnc_rb' \
+#         --model_type 'bert' \
+#         --mode 'train' \
+#         --seed "$seed" \
+#         --batch_size 4 \
+#         --embedding_dim 128 \
+#         --hidden_dim 256 \
+#         --num_layers 2 \
+#         --batch_first \
+#         --epochs 10 \
+#         --lr 0.001 \
+#         --early_stopping_patience 3 \
+#         --train_frac 0.75 \
+#         --val_frac 0.15 \
+#         --test_frac 0.1 \
+#         --log_interval 10000 \
+#         --no_tb
+#done
 
-  python train_classifiers.py \
-         --data 'bnc_rb' \
-         --model_type 'bert' \
-         --mode 'train' \
-         --seed "$seed" \
-         --batch_size 4 \
-         --embedding_dim 128 \
-         --hidden_dim 256 \
-         --num_layers 2 \
-         --batch_first \
-         --epochs 10 \
-         --lr 0.001 \
-         --early_stopping_patience 3 \
-         --train_frac 0.75 \
-         --val_frac 0.15 \
-         --test_frac 0.1 \
-         --log_interval 10000 \
-         --no_tb
-done
+python case_analysis.py
