@@ -458,7 +458,7 @@ if __name__ == '__main__':
     # Initialize and load saved model
     model = TextClassificationBERT(num_classes=2)
     model.to(device)
-    model_path = 'bert_bnc_rb_case_analysis_REAL.pt'
+    model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt'
     model.load_state_dict(torch.load(model_path))
 
     # Setup data stuff
