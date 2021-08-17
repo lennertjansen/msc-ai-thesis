@@ -153,8 +153,8 @@ class PadSequence:
     def __call__(self, batch):
         # Let's assume that each element in "batch" is a tuple (data, label).
         # Sort the batch in the descending order
-        # sorted_batch = sorted(batch, key=lambda x: x[0].shape[0], reverse=True) #TODO: UNCOMMENT THIS AFTER YOURE DONE FIXING STUFF
-        sorted_batch = batch
+        sorted_batch = sorted(batch, key=lambda x: x[0].shape[0], reverse=True)
+
         # sorted_batch = sorted(batch, key=lambda x: len(x[0]), reverse=True)
         # Get each sequence and pad it
         sequences = [x[0] for x in sorted_batch]
@@ -229,24 +229,24 @@ def get_datasets(subset_size=None,
                                               int((1 - test_frac) * len(df))])
 
     # Temporary fix for case analysis....
-    train_preprocessed = pd.read_csv('data/bnc/ca_splits/bnc_rb_ca_trainset_case_analysis.csv', encoding="utf-8")
-    val_preprocessed = pd.read_csv('data/bnc/ca_splits/bnc_rb_ca_valset_case_analysis.csv', encoding="utf-8")
-    test_preprocessed = pd.read_csv('data/bnc/ca_splits/bnc_rb_ca_testset_case_analysis.csv', encoding="utf-8")
-
-    # reset indices of subsets
-    train_preprocessed.reset_index(drop=True, inplace=True)
-    val_preprocessed.reset_index(drop=True, inplace=True)
-    test_preprocessed.reset_index(drop=True, inplace=True)
+    # train_preprocessed = pd.read_csv('data/bnc/ca_splits/bnc_rb_ca_trainset_case_analysis.csv', encoding="utf-8")
+    # val_preprocessed = pd.read_csv('data/bnc/ca_splits/bnc_rb_ca_valset_case_analysis.csv', encoding="utf-8")
+    # test_preprocessed = pd.read_csv('data/bnc/ca_splits/bnc_rb_ca_testset_case_analysis.csv', encoding="utf-8")
+    #
+    # # reset indices of subsets
+    # train_preprocessed.reset_index(drop=True, inplace=True)
+    # val_preprocessed.reset_index(drop=True, inplace=True)
+    # test_preprocessed.reset_index(drop=True, inplace=True)
 
     # TODO: uncomment this after you fixed the BERT dataset bug ###
     # reset indices of subsets
-    # train_df.reset_index(drop=True, inplace=True)
-    # val_df.reset_index(drop=True, inplace=True)
-    # test_df.reset_index(drop=True, inplace=True)
-    #
-    # train_preprocessed = preprocess_df(train_df, data=data)
-    # val_preprocessed = preprocess_df(val_df, data=data)
-    # test_preprocessed = preprocess_df(test_df, data=data)
+    train_df.reset_index(drop=True, inplace=True)
+    val_df.reset_index(drop=True, inplace=True)
+    test_df.reset_index(drop=True, inplace=True)
+
+    train_preprocessed = preprocess_df(train_df, data=data)
+    val_preprocessed = preprocess_df(val_df, data=data)
+    test_preprocessed = preprocess_df(test_df, data=data)
     ###############################################################
 
 

@@ -1,3 +1,5 @@
+import pdb
+
 from nltk.corpus import stopwords
 import pandas as pd
 import re
@@ -33,7 +35,6 @@ def preprocess_df(df, data='blog'):
     dropped_instances = data_size - len(df)
     data_size = len(df)
 
-
     if data == 'blog':
         # Add labels for age categories
         def age_to_cat(age):
@@ -68,4 +69,7 @@ def preprocess_df(df, data='blog'):
         # # rename column
         # df.rename(columns={'label': 'age_cat'}, inplace=True)
 
+    # import pdb
+    # pdb.set_trace()
     return df[['clean_text', 'age_cat']]
+    # return df[['clean_text', 'label']]
