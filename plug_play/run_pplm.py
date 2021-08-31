@@ -1043,8 +1043,8 @@ def run_pplm_example(
         print("=" * 80)
     print("= Unperturbed generated text =")
     print(unpert_gen_text)
-    with open('plug_play/texts/tryout.txt', 'a', encoding='utf-8') as f:
-        f.write("%s\n" % unpert_gen_text[13:])
+    # with open('plug_play/texts/tryout.txt', 'a', encoding='utf-8') as f:
+    #     f.write("%s\n" % unpert_gen_text[13:])
     print()
 
     generated_texts = []
@@ -1084,8 +1084,8 @@ def run_pplm_example(
 
             print("= Perturbed generated text {} =".format(i + 1))
             print(pert_gen_text)
-            with open('plug_play/texts/tryout.txt', 'a', encoding='utf-8') as f:
-                f.write("%s\n" % pert_gen_text[13:])
+            # with open('plug_play/texts/tryout.txt', 'a', encoding='utf-8') as f:
+            #     f.write("%s\n" % pert_gen_text[13:])
             print()
         except:
             pass
@@ -1099,52 +1099,75 @@ def run_pplm_example(
         gen_text_df.loc[0 if pd.isnull(gen_text_df.index.max()) else gen_text_df.index.max() + 1] = [class_label] + \
                                                                                                     [pert_gen_text[13:]]
 
+    # LJ: add column for text length
+    gen_text_df['text_length'] = gen_text_df['text'].apply(lambda x: len(x.split()))
+
     #######################
     # LJ: Time to test BERT
-    # loss criterion
+    # LJ: loss criterion
     criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
 
-    # Initialize and load saved model
+    # LJ: Initialize, move to device, and load saved model
     bert_model = TextClassificationBERT(num_classes=2)
     bert_model.to(device)
     bert_model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt'
-    bert_model.load_state_dict(torch.load(bert_model_path, map_location=torch.device('cpu')))
+    bert_model.load_state_dict(torch.load(bert_model_path, map_location=device))
 
-    # Setup data stuff
-    # BERT tokenizer
+    # LJ: Setup data stuff
+    # LJ: BERT tokenizer
     bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', truncation=True,
                                               max_length=500)  # truncation only considers sequences of max 512 tokens (same as original BERT implementation)
 
+    # LJ: preprocess sequences for bert
     bert_df = preprocess_col(gen_text_df)[['clean_text', 'label']]
 
-    # re-rename column because im stupid
+    # LJ: re-rename column because im stupid
     bert_df.rename(columns={'label': 'age_cat'}, inplace=True)
 
+    # LJ: create BncDataset instance
     bert_dataset = BncDataset(df=bert_df, tokenizer=bert_tokenizer)
 
+    #LJ: construct dataloader
     bert_loader = DataLoader(dataset=bert_dataset,
                              batch_size=4,
                              shuffle=False,
                              collate_fn=PadSequence())
 
+    # LJ: use bert to make predictions and save assigned probabilities of belonging to young or old age group
     bert_probs = bert_pred(model=bert_model, criterion=criterion, device=device, data_loader=bert_loader,
                                 save_fig=False, set='test')
     bert_probs = np.array(bert_probs) # for easier slicing
-
     young_probs = bert_probs[:,0]
     old_probs = bert_probs[:, 1]
 
+    # LJ: append young and old probabilities to dataframe
     gen_text_df.insert(len(gen_text_df.columns), 'young_prob', young_probs)
     gen_text_df.insert(len(gen_text_df.columns), 'old_prob', old_probs)
 
+    # LJ: compute and append perplexity column
     gen_text_df['perplexity'] = gen_text_df['text'].apply(perplexity)
 
+    # LJ: compute and append columns for normalized number of distinct n-grams for n = [1,2,3]
     for n in [1, 2, 3]:
 
         gen_text_df[f'dist_{n}'] = gen_text_df['text'].apply(dist_n_grams, args=(n,))
 
-    # LJ
-    set_trace()
+
+    # LJ: output csv file name
+    attr_model = 'bow' if bag_of_words else 'discrim'
+    if bag_of_words:
+        wordlist = bag_of_words[20 : len(bag_of_words) - 4]
+    else:
+        wordlist = 'NA'
+    output_path = f'plug_play/output/ctg_out_am_{attr_model}_wl_{wordlist}.csv'
+
+    # create csv file with header if non-existent, append if already exists
+    gen_text_df.to_csv(
+        output_path,
+        index=False,
+        mode='a',
+        header=not os.path.exists(output_path)
+    )
 
     #######################
 
