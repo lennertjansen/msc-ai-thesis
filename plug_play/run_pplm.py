@@ -747,8 +747,8 @@ def preprocess_col(df):
 
 # LJ
 def perplexity(text,
+               device,
                model_id='openai-gpt',
-               device='cpu',
                stride=512):
 
     # Based on: https://huggingface.co/transformers/perplexity.html
