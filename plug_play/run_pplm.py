@@ -633,7 +633,7 @@ def generate_text_pplm(
             else:
                 pert_past = past
 
-        pert_logits, past, pert_all_hidden = model(last, past=pert_past)
+        pert_logits, past, pert_all_hidden = model(last, past_key_values=pert_past) # i renamed past --> past_key_values
         pert_logits = pert_logits[:, -1, :] / temperature  # + SMALL_CONST
         pert_probs = F.softmax(pert_logits, dim=-1)
 
