@@ -24,7 +24,7 @@ echo "Activating conda environment..."
 source /home/lennertj/miniconda3/etc/profile.d/conda.sh
 source activate base
 conda info --envs
-source activate /home/lennertj/miniconda3/envs/thesis_lisa
+source activate /home/lennertj/miniconda3/envs/thesis_lisa2
 
 # Change directories
 echo "Changing directory"
