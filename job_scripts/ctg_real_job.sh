@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_tryout
+#SBATCH --job-name=ctg_gpt2_baseline
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_tryout.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_gpt2_baseline.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -36,16 +36,21 @@ echo "Running python code..."
 
 for seed in 2021
 do
-  python plug_play/run_pplm.py \
-         --pretrained_model 'gpt2-medium' \
-         --cond_text 'My first impression' \
-         --num_samples 3 \
-         --bag_of_words 'plug_play/wordlists/bnc_young_mcwu.txt' \
-         --length 30 \
-         --seed $seed \
-         --sample \
-         --class_label 0 \
-         --verbosity "quiet"
+  for length in 8 16 32 64
+  do
+    python plug_play/run_pplm.py \
+           --pretrained_model 'gpt2-medium' \
+           --cond_text 'My first impression' \
+           --num_samples 30 \
+           --bag_of_words 'plug_play/wordlists/bnc_young_mcwu.txt' \
+           --length $length \
+           --seed $seed \
+           --sample \
+           --class_label 0 \
+           --verbosity "quiet" \
+           --stepsize 0 \
+           --uncond
+  done
 done
 
 
