@@ -48,7 +48,6 @@ do
            --sample \
            --class_label 1 \
            --verbosity "quiet" \
-           --stepsize 0 \
            --uncond
   done
 done
