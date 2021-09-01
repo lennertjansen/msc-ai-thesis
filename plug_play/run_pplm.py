@@ -975,8 +975,9 @@ def run_pplm_example(
     # load pretrained model
     model = GPT2LMHeadModel.from_pretrained(
         pretrained_model,
-        output_hidden_states=True
-    )
+        output_hidden_states=True,
+        return_dict=False
+    ) # LJ: added "return_dict=False" to solve this error: "AttributeError: 'str' object has no attribute 'size'" based on this thread: https://github.com/allanj/pytorch_neural_crf/issues/22
     model.to(device)
     model.eval()
 
@@ -1145,7 +1146,7 @@ def run_pplm_example(
     gen_text_df.insert(len(gen_text_df.columns), 'old_prob', old_probs)
 
     # LJ: compute and append perplexity column
-    gen_text_df['perplexity'] = gen_text_df['text'].apply(perplexity)
+    gen_text_df['perplexity'] = gen_text_df['text'].apply(perplexity, args=(device,))
 
     # LJ: compute and append columns for normalized number of distinct n-grams for n = [1,2,3]
     for n in [1, 2, 3]:
