@@ -333,10 +333,10 @@ def train_discriminator(
         if not os.path.exists(output_fp):
             os.makedirs(output_fp)
     classifier_head_meta_fp = os.path.join(
-        output_fp, "{}_classifier_head_meta.json".format(dataset)
+        output_fp, "{}_pm_{}_ml_{}_lr_{}_classifier_head_meta.json".format(dataset, pretrained_model, max_length_seq, learning_rate)
     )
     classifier_head_fp_pattern = os.path.join(
-        output_fp, "{}_classifier_head_epoch".format(dataset) + "_{}.pt"
+        output_fp, "{}_pm_{}_ml_{}_lr_{}_classifier_head_epoch".format(dataset, pretrained_model, max_length_seq, learning_rate) + "_{}.pt"
     )
 
     print("Preprocessing {} dataset...".format(dataset))
