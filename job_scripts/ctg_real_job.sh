@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_young_discrim_gpt2_sl100
+#SBATCH --job-name=ctg_old_discrim_gpt2_sl100
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_young_discrim_gpt2_sl100.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_old_discrim_gpt2_sl100.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -67,7 +67,7 @@ do
            --length $length \
            --seed $seed \
            --sample \
-           --class_label 0 \
+           --class_label 1 \
            --verbosity "quiet" \
            --discrim_weights "plug_play/discriminators/bnc_gpt2_sl100_classifier_head_epoch_7.pt" \
            --discrim_meta "plug_play/discriminators/bnc_gpt2_sl100_classifier_head_meta.json"
