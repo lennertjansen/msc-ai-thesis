@@ -1163,7 +1163,7 @@ def run_pplm_example(
         wordlist = 'NA'
 
         age_group = 'young' if class_label == 0 else 'old'
-    output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}.csv'
+    output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_incl_sw_nac.csv' #TODO: remove the "incl_etc" part
 
 
     # create csv file with header if non-existent, append if already exists
