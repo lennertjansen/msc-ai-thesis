@@ -64,6 +64,7 @@ p = os.path.abspath('.')
 sys.path.insert(1, p)
 from classifiers import TextClassificationBERT
 from dataset import BncDataset, PadSequence
+from transformers import BertTokenizer, BertModel
 
 PPLM_BOW = 1
 PPLM_DISCRIM = 2
@@ -974,16 +975,40 @@ def run_pplm_example(
                 "to discriminator's = {}".format(discrim, pretrained_model))
 
     # load pretrained model
-    model = GPT2LMHeadModel.from_pretrained(
-        pretrained_model,
-        output_hidden_states=True,
-        return_dict=False
-    ) # LJ: added "return_dict=False" to solve this error: "AttributeError: 'str' object has no attribute 'size'" based on this thread: https://github.com/allanj/pytorch_neural_crf/issues/22
+    # model = GPT2LMHeadModel.from_pretrained(
+    #     pretrained_model,
+    #     output_hidden_states=True,
+    #     return_dict=False
+    # ) # LJ: added "return_dict=False" to solve this error: "AttributeError: 'str' object has no attribute 'size'" based on this thread: https://github.com/allanj/pytorch_neural_crf/issues/22
+    # model.to(device)
+    # model.eval()
+    #
+    # # load tokenizer
+    # tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model)
+
+    # LJ: Use this if-else statement so you can actually choose your pretrained model via commandline args
+    if pretrained_model.startswith("gpt2"):
+        # load pretrained model and corresponding tokenizer
+        model = GPT2LMHeadModel.from_pretrained(
+            pretrained_model,
+            output_hidden_states=True,
+            return_dict=False
+        )  # LJ: added "return_dict=False" to solve this error: "AttributeError: 'str' object has no attribute 'size'" based on this thread: https://github.com/allanj/pytorch_neural_crf/issues/22
+        tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model)
+
+    elif pretrained_model.startswith("bert"):
+        model = BertModel.from_pretrained(
+            pretrained_model,
+            output_hidden_states=True,
+            return_dict=False
+        )  # LJ: added "return_dict=False" to solve this error: "AttributeError: 'str' object has no attribute 'size'" based on this thread: https://github.com/allanj/pytorch_neural_crf/issues/22
+        tokenizer = BertTokenizer.from_pretrained(pretrained_model)
+
+
+
+    # LJ: move model to device and set to evaluation mode
     model.to(device)
     model.eval()
-
-    # load tokenizer
-    tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model)
 
     # Freeze GPT-2 weights
     for param in model.parameters():
@@ -1013,6 +1038,7 @@ def run_pplm_example(
 
     # full_text_generation returns:
     # unpert_gen_tok_text, pert_gen_tok_texts, discrim_losses, losses_in_time
+    start = datetime.now() # LJ
     unpert_gen_tok_text, pert_gen_tok_texts, _, _ = full_text_generation(
         model=model,
         tokenizer=tokenizer,
@@ -1047,6 +1073,8 @@ def run_pplm_example(
     print(unpert_gen_text)
     # with open('plug_play/texts/tryout.txt', 'a', encoding='utf-8') as f:
     #     f.write("%s\n" % unpert_gen_text[13:])
+    end_unpert = datetime.now() #LJ
+    print(f"Time to generate, detokenize, and print unpert. text: {end_unpert - start}") # LJ
     print()
 
     generated_texts = []
@@ -1086,12 +1114,14 @@ def run_pplm_example(
 
             print("= Perturbed generated text {} =".format(i + 1))
             print(pert_gen_text)
+            end_pert = datetime.now()
             # with open('plug_play/texts/tryout.txt', 'a', encoding='utf-8') as f:
             #     f.write("%s\n" % pert_gen_text[13:])
             print()
         except:
             pass
 
+        print(f"Time to generate, detokenize, and print unpert. text: {end_pert - start}") # LJ
         # keep the prefix, perturbed seq, original seq for each index
         generated_texts.append(
             (tokenized_cond_text, pert_gen_tok_text, unpert_gen_tok_text)
@@ -1163,7 +1193,7 @@ def run_pplm_example(
         wordlist = 'NA'
 
         age_group = 'young' if class_label == 0 else 'old'
-    output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_incl_sw_nac.csv' #TODO: remove the "incl_etc" part
+    output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}.csv'
 
 
     # create csv file with header if non-existent, append if already exists
