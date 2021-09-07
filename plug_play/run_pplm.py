@@ -1121,7 +1121,7 @@ def run_pplm_example(
         except:
             pass
 
-        print(f"Time to generate, detokenize, and print unpert. text: {end_pert - start}") # LJ
+        print(f"Time to generate, detokenize, and print pert. text: {end_pert - start}") # LJ
         # keep the prefix, perturbed seq, original seq for each index
         generated_texts.append(
             (tokenized_cond_text, pert_gen_tok_text, unpert_gen_tok_text)
