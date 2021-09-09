@@ -67,8 +67,8 @@ do
          --mode 'train' \
          --seed "$seed" \
          --batch_size 64 \
-         --embedding_dim 128 \
-         --hidden_dim 256 \
+         --embedding_dim 512 \
+         --hidden_dim 1024 \
          --num_layers 2 \
          --batch_first \
          --epochs 10 \
