@@ -12,7 +12,8 @@ def preprocess_df(df, data='blog'):
     # standard ones can be switched on and off to evaluate their impact on
     # performance:
     # Remove all non-alphabetical characters
-    df['clean_text'] = df['text'].apply(lambda x: re.sub(r'[^A-Za-z]+',' ', x))
+    # df['clean_text'] = df['text'].apply(lambda x: re.sub(r'[^A-Za-z]+',' ', x))
+    df['clean_text'] = df['text']
 
     # make all letters lowercase
     df['clean_text'] = df['clean_text'].apply(lambda x: x.lower())
@@ -21,8 +22,8 @@ def preprocess_df(df, data='blog'):
     df['clean_text'] = df['clean_text'].apply(lambda x: x.strip())
 
     # remove stop words
-    stopwords_dict = set(stopwords.words('english')) # use set (hash table) data structure for faster lookup
-    df['clean_text'] = df['clean_text'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords_dict]))
+    # stopwords_dict = set(stopwords.words('english')) # use set (hash table) data structure for faster lookup
+    # df['clean_text'] = df['clean_text'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords_dict]))
 
     # Remove instances empty strings
     df.drop(df[df.clean_text == ''].index, inplace = True)
