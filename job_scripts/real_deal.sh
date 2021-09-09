@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=real_deal_bnc_lstm_ws
+#SBATCH --job-name=real_deal_bnc_bilstm_ws
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/real_deal_bnc_lstm_ws.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/real_deal_bnc_bilstm_ws.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -67,8 +67,8 @@ do
          --mode 'train' \
          --seed "$seed" \
          --batch_size 64 \
-         --embedding_dim 512 \
-         --hidden_dim 1024 \
+         --embedding_dim 64 \
+         --hidden_dim 512 \
          --num_layers 2 \
          --batch_first \
          --epochs 10 \
@@ -78,6 +78,7 @@ do
          --val_frac 0.15 \
          --test_frac 0.1 \
          --log_interval 10000 \
+         --bidirectional \
          --no_tb
 done
 
