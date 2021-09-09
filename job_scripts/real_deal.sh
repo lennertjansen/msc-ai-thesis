@@ -63,10 +63,10 @@ do
 
   python train_classifiers.py \
          --data 'bnc_rb' \
-         --model_type 'lstm' \
+         --model_type 'bert' \
          --mode 'train' \
          --seed "$seed" \
-         --batch_size 64 \
+         --batch_size 8 \
          --embedding_dim 64 \
          --hidden_dim 512 \
          --num_layers 2 \
@@ -77,7 +77,7 @@ do
          --train_frac 0.75 \
          --val_frac 0.15 \
          --test_frac 0.1 \
-         --log_interval 10000 \
+         --log_interval 1000 \
          --bidirectional \
          --no_tb
 done
