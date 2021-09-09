@@ -42,7 +42,7 @@ do
     python plug_play/run_pplm.py \
            --pretrained_model 'gpt2-medium' \
            --num_samples 15 \
-           --bag_of_words 'plug_play/wordlists/bnc_rb_50_mi_unigrams_young.txt' \
+           --bag_of_words 'plug_play/wordlists/bnc_rb_100_mi_unigrams_young.txt' \
            --length $length \
            --seed $seed \
            --sample \

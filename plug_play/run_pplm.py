@@ -1192,7 +1192,7 @@ def run_pplm_example(
     else:
         wordlist = 'NA'
 
-        age_group = 'young' if class_label == 0 else 'old'
+    age_group = 'young' if class_label == 0 else 'old'
     output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_baseline_redo.csv'
 
 
