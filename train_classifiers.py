@@ -782,16 +782,16 @@ def hp_search(seed,
 
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
-    # lrs = [1e-5, 1e-4, 1e-3]
-    lrs = [0.001]
-    # embedding_dims = [64, 256, 512]
-    embedding_dims = [512]
-    # hidden_dims = [128, 512, 1024]
-    hidden_dims = [1024]
-    # nums_layers = [1, 2]
-    nums_layers = [2]
-    # bidirectionals = [False, True]
-    bidirectionals = [False]
+    lrs = [1e-6, 1e-5, 1e-4, 1e-3]
+    # lrs = [0.001]
+    embedding_dims = [64, 256, 512]
+    # embedding_dims = [512]
+    hidden_dims = [128, 512, 1024]
+    # hidden_dims = [1024]
+    nums_layers = [1, 2]
+    # nums_layers = [2]
+    bidirectionals = [False, True]
+    # bidirectionals = [False]
     # weighting = [(True, False), (False, True)] # [(w_loss = True, w_sampling = False), (w_loss = False, w_sampling = True)]
 
 
@@ -884,7 +884,7 @@ def hp_search(seed,
                         # Save metric logging dataframe to csv
                         # cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
                         df.to_csv(
-                            f'output/{data}_lstm_hp_search_metrics.csv', index=False
+                            f'output/{data}_lstm_hp_search_metrics_ws.csv', index=False
                         )
 
                         # update best ...
