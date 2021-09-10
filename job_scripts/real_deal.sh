@@ -47,7 +47,7 @@ do
   for j in 1 2 3 4 5
   do
 
-    python plug_play/run_pplm_discrim_train.py --dataset 'generic' \
+    python run_pplm_discrim_train.py --dataset 'generic' \
           --dataset_fp 'data/bnc/bnc_rb_incl_stopwords_nonalph_generic_pplm.txt' \
           --epochs 10 \
           --batch_size 16 \
