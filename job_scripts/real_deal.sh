@@ -48,7 +48,7 @@ do
   do
 
     python run_pplm_discrim_train.py --dataset 'generic' \
-          --dataset_fp 'data/bnc/bnc_rb_incl_stopwords_nonalph_generic_pplm.txt' \
+          --dataset_fp '../msc-ai-thesis/data/bnc/bnc_rb_incl_stopwords_nonalph_generic_pplm.txt' \
           --epochs 10 \
           --batch_size 16 \
           --log_interval 20000 \
