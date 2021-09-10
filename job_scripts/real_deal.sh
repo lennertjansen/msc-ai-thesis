@@ -35,7 +35,7 @@ cd $HOME/code/msc-ai-thesis
 echo "Running python code..."
 # declare an array variable
 #declare -a arr=("gpt2-medium")
-#declare -a arr=("bert-base-uncased")
+declare -a arr=("bert-base-uncased")
 
 # data fps
 # --dataset_fp '/home/lennertj/code/msc-ai-thesis/data/bnc/bnc_rb_full_generic_pplm.txt' \
