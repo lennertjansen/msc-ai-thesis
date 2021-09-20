@@ -4,7 +4,7 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=real_deal_bnc_ws_2ndbestlstm
+#SBATCH --job-name=classif_blog_ws_ngrams
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
@@ -56,32 +56,39 @@ echo "Running python code..."
 #  done
 #done
 
-for seed in 1 2 3 4 5 6 7 8 9 10
-do
-  echo 'Starting new seed:'
-  echo "$seed"
+#for seed in 1 2 3 4 5 6 7 8 9 10
+#do
+#  echo 'Starting new seed:'
+#  echo "$seed"
+#
+#  python train_classifiers.py \
+#         --data 'bnc_rb' \
+#         --model_type 'lstm' \
+#         --mode 'train' \
+#         --seed "$seed" \
+#         --batch_size 64 \
+#         --embedding_dim 512 \
+#         --hidden_dim 1024 \
+#         --num_layers 2 \
+#         --batch_first \
+#         --epochs 10 \
+#         --lr 0.0001 \
+#         --early_stopping_patience 3 \
+#         --train_frac 0.75 \
+#         --val_frac 0.15 \
+#         --test_frac 0.1 \
+#         --log_interval 1000 \
+#         --no_tb \
+#         --w_sampling \
+#         --w_loss \
+#         --dropout 0.1
+#done
 
-  python train_classifiers.py \
-         --data 'bnc_rb' \
-         --model_type 'lstm' \
-         --mode 'train' \
-         --seed "$seed" \
-         --batch_size 64 \
-         --embedding_dim 512 \
-         --hidden_dim 1024 \
-         --num_layers 2 \
-         --batch_first \
-         --epochs 10 \
-         --lr 0.0001 \
-         --early_stopping_patience 3 \
-         --train_frac 0.75 \
-         --val_frac 0.15 \
-         --test_frac 0.1 \
-         --log_interval 1000 \
-         --no_tb \
-         --w_sampling \
-         --w_loss \
-         --dropout 0.1
-done
+python n_gram_classifiers.py \
+       --dataset 'blog' \
+       --n_grams 1 2 3 \
+       --seeds 1 2 3 4 5 \
+       --subset_size -1 \
+       --test_size 0.2
 
 #python case_analysis.py
