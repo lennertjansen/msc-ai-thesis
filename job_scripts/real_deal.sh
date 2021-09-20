@@ -62,8 +62,8 @@ do
   echo "$seed"
 
   python train_classifiers.py \
-         --data 'bnc_rb' \
-         --model_type 'blog' \
+         --data 'blog' \
+         --model_type 'lstm' \
          --mode 'val' \
          --seed "$seed" \
          --batch_size 64 \
