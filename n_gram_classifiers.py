@@ -75,7 +75,7 @@ def train_classifiers(dataset,
         data.rename(columns={"clean_text": "clean_data",
                              "age_cat": "labels"}, inplace=True)
 
-        preproc_file = Path("./data/blogs_kaggle/blogger_preprocessed_data_FAKE.csv")
+        # preproc_file = Path("./data/blogs_kaggle/blogger_preprocessed_data_FAKE.csv")
 
         # # Pre-process raw data if pre-processed data doesn't exist
         # try:
@@ -425,14 +425,14 @@ def train_classifiers(dataset,
 
             print("=" * 81)
 
-
-            int_labels = [label for label in range(len(class_labels_list))]
-            cm = confusion_matrix(Y_test, Y_pred, labels=int_labels)
-            make_confusion_matrix(cf=cm, categories=class_labels_list, title=f'Confusion Matrix for {dataset} on Test set',
-                                  num_labels=int_labels, y_true=Y_test, y_pred=Y_pred, figsize=FIGSIZE)
-            cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
-            plt.savefig(f"{FIGDIR}{dataset}/cm_{n}_gram_{dataset}_dt_{cur_datetime}.png",
-                        bbox_inches='tight')
+            # UNCOMMENT FOLLOWING LINES FOR CM PLOTS
+            # int_labels = [label for label in range(len(class_labels_list))]
+            # cm = confusion_matrix(Y_test, Y_pred, labels=int_labels)
+            # make_confusion_matrix(cf=cm, categories=class_labels_list, title=f'Confusion Matrix for {dataset} on Test set',
+            #                       num_labels=int_labels, y_true=Y_test, y_pred=Y_pred, figsize=FIGSIZE)
+            # cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
+            # plt.savefig(f"{FIGDIR}{dataset}/cm_{n}_gram_{dataset}_dt_{cur_datetime}.png",
+            #             bbox_inches='tight')
 
     #         most_informative_feature_for_class(vectorizer = vectorizer, classifier = model, class_labels = class_labels_list, n=10)
 
@@ -507,7 +507,7 @@ if __name__ == "__main__":
     parser.add_argument("--seeds", type=int, default=[1], nargs='+',
                         help="Seeds to set for reproducibility."
                              "NB: number of seeds is the number of runs to " + \
-                             "train and test stochasti models.")
+                             "train and test stochastic models.")
     parser.add_argument("--test_size", type=float, default = 0.2,
                         help="Fraction of preprocessed data(sub)set to reserve " + \
                              "for testing.")
