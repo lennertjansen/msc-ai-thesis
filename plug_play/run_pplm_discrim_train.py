@@ -7,6 +7,8 @@ import argparse
 import csv
 import json
 import math
+import pdb
+
 import numpy as np
 import os
 import time
@@ -23,6 +25,10 @@ from transformers import BertTokenizer, BertModel
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 
 from pplm_classification_head import ClassificationHead
+
+# LJ:
+from transformers import AutoTokenizer, AutoModelWithLMHead
+import pdb
 
 torch.manual_seed(0)
 np.random.seed(0)
@@ -51,6 +57,10 @@ class Discriminator(torch.nn.Module):
             self.tokenizer = BertTokenizer.from_pretrained(pretrained_model)
             self.encoder = BertModel.from_pretrained(pretrained_model)
             self.embed_size = self.encoder.config.hidden_size
+        elif pretrained_model.startswith("microsoft/DialoGPT"):
+            self.tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
+            self.encoder = AutoModelWithLMHead.from_pretrained(pretrained_model)
+            self.embed_size = self.encoder.transformer.config.hidden_size
         else:
             raise ValueError(
                 "{} model not yet supported".format(pretrained_model)
