@@ -66,7 +66,7 @@ do
          --model_type 'bert' \
          --mode 'train' \
          --seed "$seed" \
-         --batch_size 64 \
+         --batch_size 8 \
          --embedding_dim 512 \
          --hidden_dim 1024 \
          --num_layers 2 \
