@@ -996,6 +996,18 @@ def run_pplm_example(
         )  # LJ: added "return_dict=False" to solve this error: "AttributeError: 'str' object has no attribute 'size'" based on this thread: https://github.com/allanj/pytorch_neural_crf/issues/22
         tokenizer = GPT2Tokenizer.from_pretrained(pretrained_model)
 
+    elif pretrained_model.startswith("microsoft/DialoGPT"):
+
+        # model = AutoModelForCausalLM.from_pretrained(pretrained_model,
+        #                                              output_hidden_states=True,
+        #                                              return_dict=False
+        #                                              )
+        model = AutoModelWithLMHead.from_pretrained(pretrained_model,
+                                                    output_hidden_states=True,
+                                                    return_dict=False
+                                                    )
+        tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
+
     elif pretrained_model.startswith("bert"):
         model = BertModel.from_pretrained(
             pretrained_model,
@@ -1003,7 +1015,6 @@ def run_pplm_example(
             return_dict=False
         )  # LJ: added "return_dict=False" to solve this error: "AttributeError: 'str' object has no attribute 'size'" based on this thread: https://github.com/allanj/pytorch_neural_crf/issues/22
         tokenizer = BertTokenizer.from_pretrained(pretrained_model)
-
 
 
     # LJ: move model to device and set to evaluation mode
@@ -1142,7 +1153,7 @@ def run_pplm_example(
     # LJ: Initialize, move to device, and load saved model
     bert_model = TextClassificationBERT(num_classes=2)
     bert_model.to(device)
-    bert_model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt'
+    bert_model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt' # TODO: CHANGE TO BERT TRAINED WITH STOPWORDS!!!!!
     bert_model.load_state_dict(torch.load(bert_model_path, map_location=device))
 
     # LJ: Setup data stuff
@@ -1193,7 +1204,12 @@ def run_pplm_example(
         wordlist = 'NA'
 
     age_group = 'young' if class_label == 0 else 'old'
-    output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS.csv'
+
+    if pretrained_model.__contains__("/"):
+        pretrained_model_no_slash = pretrained_model.replace('/', '-')
+        output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS.csv'
+    else:
+        output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS.csv'
 
 
     # create csv file with header if non-existent, append if already exists
