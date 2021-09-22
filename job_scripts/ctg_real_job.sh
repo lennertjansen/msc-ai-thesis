@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_discrim_dialogpt_med_ml512_lr_00001_WS_300samples_young
+#SBATCH --job-name=ctg_discrim_dialogpt_med_ml512_lr_00001_WS_300samples_old
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_discrim_dialogpt_med_ml512_lr_00001_WS_300samples_young.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_discrim_dialogpt_med_ml512_lr_00001_WS_300samples_old.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -59,14 +59,13 @@ do
   do
     python plug_play/run_pplm.py \
            --pretrained_model 'microsoft/DialoGPT-medium' \
-           --cond_text 'My first impression' \
-           --uncond \
+           --cond_text 'Hello, how are you?<|endoftext|>' \
            --num_samples 30 \
            --discrim 'generic' \
            --length $length \
            --seed $seed \
            --sample \
-           --class_label 0 \
+           --class_label 1 \
            --verbosity "quiet" \
            --discrim_weights "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt" \
            --discrim_meta "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json"
@@ -120,3 +119,5 @@ done
 #         --log_interval 10000 \
 #         --no_tb
 #done
+
+#python plug_play/run_pplm.py --pretrained_model 'microsoft/DialoGPT-medium' --cond_text 'Hello, how are you?<|endoftext|>' --num_samples 30 --discrim 'generic' --length 10 --seed 2021 --sample --class_label 1 --verbosity "verbose" --discrim_weights "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt" --discrim_meta "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json"
