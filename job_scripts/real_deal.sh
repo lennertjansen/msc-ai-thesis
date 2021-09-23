@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=classif_bnc_rb_bert_search_best_eval
+#SBATCH --job-name=classif_bnc_rb_bert_search_best_eval_correction
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_bnc_rb_bert_search_best_eval.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_bnc_rb_bert_search_best_eval_correction.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -73,7 +73,7 @@ do
          --batch_first \
          --epochs 10 \
          --lr 0.0001 \
-         --early_stopping_patience 3 \
+         --early_stopping_patience 4 \
          --train_frac 0.75 \
          --val_frac 0.15 \
          --test_frac 0.1 \
