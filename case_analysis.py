@@ -71,7 +71,10 @@ def preprocess_col(df, data='blog'):
     data_size = len(df)
 
     # Remove all non-alphabetical characters
-    df['clean_text'] = df['text'].apply(lambda x: re.sub(r'[^A-Za-z]+',' ', x))
+    # df['clean_text'] = df['text'].apply(lambda x: re.sub(r'[^A-Za-z]+',' ', x))
+
+    # incl. stopwords setting
+    df['clean_text'] = df['text']
 
     # make all letters lowercase
     df['clean_text'] = df['clean_text'].apply(lambda x: x.lower())
@@ -80,8 +83,8 @@ def preprocess_col(df, data='blog'):
     df['clean_text'] = df['clean_text'].apply(lambda x: x.strip())
 
     # remove stop words
-    stopwords_dict = set(stopwords.words('english')) # use set (hash table) data structure for faster lookup
-    df['clean_text'] = df['clean_text'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords_dict]))
+    # stopwords_dict = set(stopwords.words('english')) # use set (hash table) data structure for faster lookup
+    # df['clean_text'] = df['clean_text'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords_dict]))
 
     # Remove instances empty strings
     df.drop(df[df.clean_text == ''].index, inplace = True)
@@ -253,13 +256,13 @@ def train_test_ngram(train_df, test_df, n_grams=[3], seeds=[SEED], dataset='bnc_
 
     #         most_informative_feature_for_class(vectorizer = vectorizer, classifier = model, class_labels = class_labels_list, n=10)
 
-            df = pd.read_csv('bnc_rb_10p_testset_case_analysis.csv')
+            df = pd.read_csv('bnc_rb_10p_testset_case_analysis_ws.csv')
 
             df.insert(len(df.columns), 'trigram_pred', Y_pred)
 
             # Save dataframe to csv
             df.to_csv(
-                'bnc_rb_10p_testset_case_analysis.csv',
+                'bnc_rb_10p_testset_case_analysis_ws.csv',
                 index=False
             )
 
@@ -428,19 +431,17 @@ if __name__ == '__main__':
 
     # save the data sets
     # train_df.to_csv(
-    #     'data/bnc/ca_splits/bnc_rb_ca_trainset_case_analysis.csv',
+    #     'data/bnc/ca_splits/bnc_rb_ca_trainset_case_analysis_ws.csv',
     #     index=False
     # )
     # val_df.to_csv(
-    #     'data/bnc/ca_splits/bnc_rb_ca_valset_case_analysis.csv',
+    #     'data/bnc/ca_splits/bnc_rb_ca_valset_case_analysis_ws.csv',
     #     index=False
     # )
     test_df.to_csv(
-        'bnc_rb_10p_testset_case_analysis.csv',
+        'bnc_rb_10p_testset_case_analysis_ws.csv',
         index=False
     )
-
-    # pdb.set_trace()
 
     concat_train_df = pd.concat([train_df, val_df])
     train_test_ngram(train_df=concat_train_df, test_df=test_df)
@@ -458,7 +459,9 @@ if __name__ == '__main__':
     # Initialize and load saved model
     model = TextClassificationBERT(num_classes=2)
     model.to(device)
-    model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt'
+    # model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt'
+    model_path = 'models/bert/bert_bnc_rb_ws_ca_seed_4_24_Sep_2021_12_51_09.pt' # for lisa
+    # model_path = 'bert_bnc_rb_ws_ca_seed_4_24_Sep_2021_12_51_09.pt'  # for local
     model.load_state_dict(torch.load(model_path))
 
     # Setup data stuff
@@ -481,13 +484,13 @@ if __name__ == '__main__':
     _, _, bert_pred = test_bert(model=model, criterion=criterion, device=device, data_loader=test_loader,
                                 save_fig=False, set='test')
 
-    df = pd.read_csv('bnc_rb_10p_testset_case_analysis.csv')
+    df = pd.read_csv('bnc_rb_10p_testset_case_analysis_ws.csv')
 
     df.insert(len(df.columns), 'bert_pred', bert_pred)
 
     # Save dataframe to csv
     df.to_csv(
-        'bnc_rb_10p_testset_case_analysis_final.csv',
+        'bnc_rb_10p_testset_case_analysis_final_ws.csv',
         index=False
     )
 
