@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=classif_bnc_rb_bert_search_best_eval_correction
+#SBATCH --job-name=classif_bnc_rb_bert_search_best_eval_FOR_CA_WS
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_bnc_rb_bert_search_best_eval_correction.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_bnc_rb_bert_search_best_eval_FOR_CA_WS.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -56,7 +56,7 @@ echo "Running python code..."
 #  done
 #done
 
-for seed in 1 2 3 4 5 6 7
+for seed in 4 5 6 7
 do
   echo 'Starting new seed:'
   echo "$seed"
