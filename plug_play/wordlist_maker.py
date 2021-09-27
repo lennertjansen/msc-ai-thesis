@@ -32,7 +32,8 @@ def df_to_wordlist(df, top_k=None, age=None):
         spl = line.split()
 
         # update count off all words in the line that are not in stopwords
-        without_stp.update(w.lower().rstrip(punctuation) for w in spl if w not in stopwords and not any(p in w for p in punctuation) and not any(p in w for p in numbers))
+        # without_stp.update(w.lower().rstrip(punctuation) for w in spl if w not in stopwords and not any(p in w for p in punctuation) and not any(p in w for p in numbers)) # exclude stopwords
+        without_stp.update(w.lower() for w in spl if not any(p in w for p in punctuation) and not any(p in w for p in numbers)) # keep stopwords
 
     # return a list with top ten most common words from each
     if top_k:
@@ -50,8 +51,7 @@ if __name__ == '__main__':
     df = pd.read_csv(bnc_rb_path, encoding="utf-8")  # to keep no. unique chars consistent across platforms
 
     most_common_words = df_to_wordlist(df, top_k=500)
-
-    # with open('plug_play/wordlists/bnc_rb_500_most_common.txt', 'w') as f:
+    # with open('plug_play/wordlists/bnc_rb_ws_500_most_common.txt', 'w') as f:
     #     for word, count in most_common_words:
     #         f.write("%s\n" % word)
 
@@ -137,13 +137,13 @@ if __name__ == '__main__':
         else:
             break
 
-
-
-    with open('plug_play/wordlists/bnc_young_mcwu.txt', 'w') as f:
+    print(f"Young mcwu len: {len(mcw_young_unique)}")
+    print(f"Old mcwu len: {len(mcw_old_unique)}")
+    with open(f'plug_play/wordlists/bnc_young_mcwu_ws_pct_{int(100*max_percentile)}.txt', 'w') as f:
         for word, prob in mcw_young_unique:
             f.write("%s\n" % word)
 
-    with open('plug_play/wordlists/bnc_old_mcwu.txt', 'w') as f:
+    with open(f'plug_play/wordlists/bnc_old_mcwu_ws_pct_{int(100*max_percentile)}.txt', 'w') as f:
         for word, prob in mcw_old_unique:
             f.write("%s\n" % word)
 
