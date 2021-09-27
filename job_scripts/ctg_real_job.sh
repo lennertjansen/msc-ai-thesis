@@ -4,7 +4,7 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_discrim_dialogpt_med_ml512_lr_00001_WS_300samples_young
+#SBATCH --job-name=ctg_discrim_dialogpt_med_ml512_lr_00001_WS_quick_sandro_young
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
@@ -52,25 +52,33 @@ echo "Running python code..."
 #  done
 #done
 
+declare -a arr=("Tell me about your last holidays.<|endoftext|>", "Tell me about your favorite food.<|endoftext|>", "Tell me about your hobbies.<|endoftext|>", "Once upon a time", "The last time", "The city")
+
+
 # for discrim-based
 for seed in 2021
 do
-  for length in 6 12 24 30 36 42 48 54 60
+  for i in "${arr[@]}"
   do
-    python plug_play/run_pplm.py \
-           --pretrained_model 'microsoft/DialoGPT-medium' \
-           --cond_text 'Hello, how are you?<|endoftext|>' \
-           --num_samples 30 \
-           --discrim 'generic' \
-           --length $length \
-           --seed $seed \
-           --sample \
-           --class_label 0 \
-           --verbosity "quiet" \
-           --discrim_weights "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt" \
-           --discrim_meta "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json"
+    for length in 16 24 32
+    do
+      python plug_play/run_pplm.py \
+             --pretrained_model 'microsoft/DialoGPT-medium' \
+             --cond_text "$i" \
+             --num_samples 5 \
+             --discrim 'generic' \
+             --length $length \
+             --seed $seed \
+             --sample \
+             --class_label 0 \
+             --verbosity "quiet" \
+             --discrim_weights "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt" \
+             --discrim_meta "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json"
+    done
   done
 done
+
+# for length in 6 12 24 30 36 42 48 54 60 # Lengths used for main results table until now (Monday, 27 September 2021)
 
 # declare an array variable
 #declare -a arr=("gpt2-medium")
