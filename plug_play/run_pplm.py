@@ -1207,9 +1207,9 @@ def run_pplm_example(
 
     if pretrained_model.__contains__("/"):
         pretrained_model_no_slash = pretrained_model.replace('/', '-')
-        output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS.csv'
+        output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS_quick_sandro.csv'
     else:
-        output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS.csv'
+        output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS_quick_sandro.csv'
 
 
     # create csv file with header if non-existent, append if already exists
