@@ -228,8 +228,39 @@ do
       if [ "$condition" = "unprompted" ]
       then
         echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta |class_label: $label | prompt: $condition |"
+
+        python plug_play/run_pplm.py \
+             --pretrained_model "$pretrained_model" \
+             --uncond \
+             --num_samples 1 \
+             --discrim 'generic' \
+             --length 30 \
+             --seed 2021 \
+             --sample \
+             --stepsize $stepsize \
+             --num_iterations $num_iterations \
+             --class_label $label \
+             --verbosity "quiet" \
+             --discrim_weights "$discrim_weights" \
+             --discrim_meta "$discrim_meta"
+
       else
         echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta | class_label: $label | prompt: Suhh dude |"
+
+        python plug_play/run_pplm.py \
+             --pretrained_model "$pretrained_model" \
+             --cond_text "Tell me about your holidays. Sure! I went to Greece and had a very fun time." \
+             --num_samples 1 \
+             --discrim 'generic' \
+             --length 30 \
+             --seed 2021 \
+             --sample \
+             --stepsize $stepsize \
+             --num_iterations $num_iterations \
+             --class_label $label \
+             --verbosity "quiet" \
+             --discrim_weights "$discrim_weights" \
+             --discrim_meta "$discrim_meta"
       fi
     done
 
