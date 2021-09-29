@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_explore_test
+#SBATCH --job-name=ctg_explore_discrim_based_30_per_config
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_explore_test.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_explore_discrim_based_30_per_config.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -232,9 +232,9 @@ do
         python plug_play/run_pplm.py \
              --pretrained_model "$pretrained_model" \
              --uncond \
-             --num_samples 1 \
+             --num_samples 30 \
              --discrim 'generic' \
-             --length 30 \
+             --length 50 \
              --seed 2021 \
              --sample \
              --stepsize $stepsize \
@@ -250,9 +250,9 @@ do
         python plug_play/run_pplm.py \
              --pretrained_model "$pretrained_model" \
              --cond_text "Tell me about your holidays. Sure! I went to Greece and had a very fun time." \
-             --num_samples 1 \
+             --num_samples 30 \
              --discrim 'generic' \
-             --length 30 \
+             --length 50 \
              --seed 2021 \
              --sample \
              --stepsize $stepsize \
