@@ -1049,7 +1049,7 @@ def run_pplm_example(
 
     # full_text_generation returns:
     # unpert_gen_tok_text, pert_gen_tok_texts, discrim_losses, losses_in_time
-    start = datetime.now() # LJ
+    # start = datetime.now() # LJ
     unpert_gen_tok_text, pert_gen_tok_texts, _, _ = full_text_generation(
         model=model,
         tokenizer=tokenizer,
@@ -1125,14 +1125,14 @@ def run_pplm_example(
 
             print("= Perturbed generated text {} =".format(i + 1))
             print(pert_gen_text)
-            end_pert = datetime.now()
+            # end_pert = datetime.now() # LJ
             # with open('plug_play/texts/tryout.txt', 'a', encoding='utf-8') as f:
             #     f.write("%s\n" % pert_gen_text[13:])
             print()
         except:
             pass
 
-        print(f"Time to generate, detokenize, and print pert. text: {end_pert - start}") # LJ
+        # print(f"Time to generate, detokenize, and print pert. text: {end_pert - start}") # LJ
         # keep the prefix, perturbed seq, original seq for each index
         generated_texts.append(
             (tokenized_cond_text, pert_gen_tok_text, unpert_gen_tok_text)

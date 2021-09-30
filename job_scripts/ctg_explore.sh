@@ -201,17 +201,23 @@ done
 ### --> if unprompted set --uncond
 ### --> if prompted set prompt to ???
 
-declare -a pretrained_models=("gpt2-medium" "microsoft/dialogpt-medium")
-declare -a attributes=("uncontrolled" "young" "old")
-declare -a conditions=("unprompted" "prompted")
+#declare -a pretrained_models=("gpt2-medium" "microsoft/dialogpt-medium")
+#declare -a attributes=("uncontrolled" "young" "old")
+#declare -a conditions=("unprompted" "prompted")
+
+declare -a pretrained_models=("gpt2-medium")
+declare -a attributes=("old")
+declare -a conditions=("unprompted")
 
 for pretrained_model in "${pretrained_models[@]}"
 do
 
+  # set discriminator weights
   [ "$pretrained_model" = "gpt2-medium" ] &&
     discrim_weights="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_epoch_19.pt" ||
     discrim_weights="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt"
 
+  # set discriminator meta-data
   [ "$pretrained_model" = "gpt2-medium" ] &&
     discrim_meta="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_meta.json" ||
     discrim_meta="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json"
@@ -227,7 +233,7 @@ do
     do
       if [ "$condition" = "unprompted" ]
       then
-        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta |class_label: $label | prompt: $condition |"
+        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta |class_label: $label | prompt: $condition | stepsize: $stepsize | iterations: $num_iterations |"
 
         python plug_play/run_pplm.py \
              --pretrained_model "$pretrained_model" \
@@ -245,7 +251,7 @@ do
              --discrim_meta "$discrim_meta"
 
       else
-        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta | class_label: $label | prompt: Suhh dude |"
+        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta | class_label: $label | prompt: Tell me about your holidays. Sure! I went to Greece and had a very fun time. | stepsize: $stepsize | iterations: $num_iterations |"
 
         python plug_play/run_pplm.py \
              --pretrained_model "$pretrained_model" \
