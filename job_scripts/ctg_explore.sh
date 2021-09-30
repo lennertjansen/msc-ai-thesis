@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_explore_discrim_based_30_only_gpt2_old_unprompt
+#SBATCH --job-name=ctg_explore_bow_based_config_loop_test
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_explore_discrim_based_30_only_gpt2_old_unprompt.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_explore_bow_based_config_loop_test.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -157,7 +157,7 @@ echo "Running python code..."
 ### --> if prompted set prompt to ???
 
 declare -a pretrained_models=("gpt2-medium" "microsoft/dialogpt-medium")
-declare -a attributes=("uncontrolled" "young" "old")
+declare -a attributes=("baseline" "young" "old")
 declare -a conditions=("unprompted" "prompted")
 
 for pretrained_model in "${pretrained_models[@]}"
@@ -165,19 +165,36 @@ do
 
   for attribute in "${attributes[@]}"
   do
-    [ "$attribute" = "uncontrolled" ] && stepsize=0 || stepsize=0.02
-    [ "$attribute" = "uncontrolled" ] && num_iterations=0 || num_iterations=3
 
-    [ "$attribute" = "uncontrolled" ] || [ "$attribute" = "young" ] && bow="young.txt" || bow="old.txt"
-    [ "$attribute" = "uncontrolled" ] || [ "$attribute" = "young" ] && label=0 || label=1
+    case "$attribute" in
+
+      "baseline")
+        bow="plug_play/wordlists/bnc_rb_ws_100_most_common.txt"
+        label=0
+        ;;
+
+      "young")
+        bow="plug_play/wordlists/bnc_young_mcwu_ws_pct_85.txt"
+        label=0
+        ;;
+
+      "old")
+        bow="plug_play/wordlists/bnc_old_mcwu_ws_pct_85.txt"
+        label=1
+        ;;
+
+      *)
+        echo -n "unknown"
+        ;;
+    esac
 
     for condition in "${conditions[@]}"
     do
       if [ "$condition" = "unprompted" ]
       then
-        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | BoW: $bow | class_label: $label | prompt: $condition |"
+        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | bow: $bow |class_label: $label | prompt: $condition |"
       else
-        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | BoW: $bow | class_label: $label | prompt: Suhh dude |"
+        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | bow: $bow | class_label: $label | prompt: Tell me about your holidays. Sure! I went to Greece and had a very fun time. |"
       fi
     done
 
@@ -204,72 +221,68 @@ done
 #declare -a pretrained_models=("gpt2-medium" "microsoft/dialogpt-medium")
 #declare -a attributes=("uncontrolled" "young" "old")
 #declare -a conditions=("unprompted" "prompted")
-
-declare -a pretrained_models=("gpt2-medium")
-declare -a attributes=("old")
-declare -a conditions=("unprompted")
-
-for pretrained_model in "${pretrained_models[@]}"
-do
-
-  # set discriminator weights
-  [ "$pretrained_model" = "gpt2-medium" ] &&
-    discrim_weights="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_epoch_19.pt" ||
-    discrim_weights="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt"
-
-  # set discriminator meta-data
-  [ "$pretrained_model" = "gpt2-medium" ] &&
-    discrim_meta="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_meta.json" ||
-    discrim_meta="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json"
-
-  for attribute in "${attributes[@]}"
-  do
-    [ "$attribute" = "uncontrolled" ] && stepsize=0 || stepsize=0.02
-    [ "$attribute" = "uncontrolled" ] && num_iterations=0 || num_iterations=3
-
-    [ "$attribute" = "uncontrolled" ] || [ "$attribute" = "young" ] && label=0 || label=1
-
-    for condition in "${conditions[@]}"
-    do
-      if [ "$condition" = "unprompted" ]
-      then
-        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta |class_label: $label | prompt: $condition | stepsize: $stepsize | iterations: $num_iterations |"
-
-        python plug_play/run_pplm.py \
-             --pretrained_model "$pretrained_model" \
-             --uncond \
-             --num_samples 30 \
-             --discrim 'generic' \
-             --length 50 \
-             --seed 2021 \
-             --sample \
-             --stepsize $stepsize \
-             --num_iterations $num_iterations \
-             --class_label $label \
-             --verbosity "quiet" \
-             --discrim_weights "$discrim_weights" \
-             --discrim_meta "$discrim_meta"
-
-      else
-        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta | class_label: $label | prompt: Tell me about your holidays. Sure! I went to Greece and had a very fun time. | stepsize: $stepsize | iterations: $num_iterations |"
-
-        python plug_play/run_pplm.py \
-             --pretrained_model "$pretrained_model" \
-             --cond_text "Tell me about your holidays. Sure! I went to Greece and had a very fun time." \
-             --num_samples 30 \
-             --discrim 'generic' \
-             --length 50 \
-             --seed 2021 \
-             --sample \
-             --stepsize $stepsize \
-             --num_iterations $num_iterations \
-             --class_label $label \
-             --verbosity "quiet" \
-             --discrim_weights "$discrim_weights" \
-             --discrim_meta "$discrim_meta"
-      fi
-    done
-
-  done
-
-done
+#
+#for pretrained_model in "${pretrained_models[@]}"
+#do
+#
+#  # set discriminator weights
+#  [ "$pretrained_model" = "gpt2-medium" ] &&
+#    discrim_weights="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_epoch_19.pt" ||
+#    discrim_weights="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt"
+#
+#  # set discriminator meta-data
+#  [ "$pretrained_model" = "gpt2-medium" ] &&
+#    discrim_meta="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_meta.json" ||
+#    discrim_meta="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json"
+#
+#  for attribute in "${attributes[@]}"
+#  do
+#    [ "$attribute" = "uncontrolled" ] && stepsize=0 || stepsize=0.02
+#    [ "$attribute" = "uncontrolled" ] && num_iterations=0 || num_iterations=3
+#
+#    [ "$attribute" = "uncontrolled" ] || [ "$attribute" = "young" ] && label=0 || label=1
+#
+#    for condition in "${conditions[@]}"
+#    do
+#      if [ "$condition" = "unprompted" ]
+#      then
+#        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta |class_label: $label | prompt: $condition | stepsize: $stepsize | iterations: $num_iterations |"
+#
+#        python plug_play/run_pplm.py \
+#             --pretrained_model "$pretrained_model" \
+#             --uncond \
+#             --num_samples 30 \
+#             --discrim 'generic' \
+#             --length 50 \
+#             --seed 2021 \
+#             --sample \
+#             --stepsize $stepsize \
+#             --num_iterations $num_iterations \
+#             --class_label $label \
+#             --verbosity "quiet" \
+#             --discrim_weights "$discrim_weights" \
+#             --discrim_meta "$discrim_meta"
+#
+#      else
+#        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta | class_label: $label | prompt: Tell me about your holidays. Sure! I went to Greece and had a very fun time. | stepsize: $stepsize | iterations: $num_iterations |"
+#
+#        python plug_play/run_pplm.py \
+#             --pretrained_model "$pretrained_model" \
+#             --cond_text "Tell me about your holidays. Sure! I went to Greece and had a very fun time." \
+#             --num_samples 30 \
+#             --discrim 'generic' \
+#             --length 50 \
+#             --seed 2021 \
+#             --sample \
+#             --stepsize $stepsize \
+#             --num_iterations $num_iterations \
+#             --class_label $label \
+#             --verbosity "quiet" \
+#             --discrim_weights "$discrim_weights" \
+#             --discrim_meta "$discrim_meta"
+#      fi
+#    done
+#
+#  done
+#
+#done
