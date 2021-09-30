@@ -1085,7 +1085,7 @@ def run_pplm_example(
     # with open('plug_play/texts/tryout.txt', 'a', encoding='utf-8') as f:
     #     f.write("%s\n" % unpert_gen_text[13:])
     end_unpert = datetime.now() #LJ
-    print(f"Time to generate, detokenize, and print unpert. text: {end_unpert - start}") # LJ
+    # print(f"Time to generate, detokenize, and print unpert. text: {end_unpert - start}") # LJ
     print()
 
     generated_texts = []
