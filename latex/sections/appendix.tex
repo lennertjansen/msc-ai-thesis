@@ -1,23 +1,35 @@
-\subsection{Age discrimination on the imbalanced British National Corpus}
-\label{age_disc_bnc}
+\section{Where to put these?}
 
-\begin{table}[H]
+\begin{figure}[H]
     \centering
-    \begin{tabular}{l c c c}
-    \hline
-    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1$ (19-29) & $\boldsymbol{F}_1$ (50-plus)\\
-    \hline
-    Baseline (predict majority class) & 0.807 & ... & 0 (0)\\
-    unigram & 0.833 (0.00241) & 0.903 (0.00142) & 0.373 (0.01198)\\
-    bigram & \textbf{0.840} (0.00101) & \textbf{0.907} (0.00050) & 0.406 (0.00933)\\
-    trigram & 0.838 (0.00151) & 0.906 (0.00109) & 0.403 (0.00731)\\
-    bi-LSTM & 0.780 (...) & 0.863 (...) & \textbf{0.440} (...)\\
-    BERT & 0.786 & ... & ...\\
-    \hline
-    \end{tabular}
-    \caption{BNC age classifiers. Results averaged over 5 random initializations. Format: \textit{average metric (standard error)}}
-    \label{tab:bnc_classification}
-\end{table}
+    \includegraphics[width=0.5\textwidth]{figures/cm_bert_test_dt_27_May_2021.png}
+    \caption{Confusion matrix BERT age classifier on balanced BNC \textbf{test} set.}
+    \label{fig:cm_bert_bnc_rb}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/cm_lstm_test_dt_24_May_2021_09_24_30.png}
+    \caption{Confusion matrix LSTM age classifier on balanced BNC \textbf{test} set.}
+    \label{fig:cm_lstm_bnc_rb}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/cm_lstm_test_dt_24_May_2021_10_03_19.png}
+    \caption{Confusion matrix bi-LSTM age classifier on blog corpus \textbf{test} set.}
+    \label{fig:cm_lstm_blog}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/cm_3_gram_bnc_rb_dt_08_Jun_2021_12_05_02.png}
+    \caption{Confusion matrix for best trigram age classifier on \textbf{balanced} BNC \textbf{test} set.}
+    \label{fig:cm_trigram_bnc_rb}
+\end{figure}
+
+\section{Age discrimination on the imbalanced British National Corpus}
+\label{age_disc_bnc}
 
 \begin{figure}[H]
     \centering
@@ -33,7 +45,98 @@
     \label{fig:cm_lstm_bnc}
 \end{figure}
 
-\textbf{TODOs:}
-\begin{itemize}
-    \item Add validation set results to appendix for all datasets.
-\end{itemize}
+\begin{table}[b!]
+    \centering
+    \begin{tabular}{@{}l l @{\hspace*{25pt}} l l@{}}
+    \toprule
+    \multicolumn{2}{c}{19-29} & \multicolumn{2}{c}{50+}\\
+    \textbf{coef.} & \textbf{n-gram} & \textbf{coef.} & \textbf{n-gram}\\
+    \midrule
+    -3.20 & um & 2.37 & yes\\
+    -2.84 & cool & 2.12 & you know\\
+    -2.58 & s**t & 2.09 & wonderful\\
+    -2.12 & hmm & 1.90 & how weird\\
+    -2.09 & like & 1.84 & chinese\\
+    -2.02 & was like & 1.73 & right\\
+    -1.96 & love & 1.71 & building\\
+    -1.96 & as well & 1.66 & right right\\
+    -1.88 & as in & 1.55 & so erm\\
+    -1.84 & cute & 1.43 & mm mm\\
+    -1.82 & uni & 1.41 & cheers\\
+    -1.79 & massive & 1.39 & shed\\
+    -1.79 & wanna & 1.37 & pain\\
+    -1.79 & f**k & 1.36 & we know\\
+    -1.72 & tut & 1.08 & yeah exactly\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Including stopwords.} For each age group, top 15 most informative $n$-grams used by the trigram model. \textbf{coef.} is the coefficient (and sign) of the corresponding $n$-gram for the logistic regression model: the higher its absolute value, the higher the utterance's odds to belong to one age group.
+    % Greater absolute value of \textbf{coef.} indicates occurrence of the $n$-gram results in the model assigning higher odds to the utterance belonging to a certain age group.
+    * indicates masking of foul language.}
+    % present in the dialogue.}
+    \label{tab:top_ngrams_ws}
+\end{table}
+
+\begin{table*}[h]
+    \centering
+    % \resizebox{\columnwidth}{!}{
+    \begin{tabular}{l c c c}
+    \toprule
+    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1^{(19-29)}$  & $\boldsymbol{F}_1^{(50+)}$ \\ 
+    % -plus)}$ \\
+     & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better \\
+    \midrule
+    Random
+    % Baseline (random guessing) 
+    & 0.500
+    % (0.000) 
+    & 0.500
+    % (0.000) 
+    & 0.500 
+    % (0.000)
+    \\ \midrule
+    unigram & 0.701 (0.007) & 0.708 (0.009)  & 0.693 (0.004)\\
+    bigram & 0.719 (0.002) & 0.724 (0.003) & 0.714 (0.003)\\
+    trigram &  \textcolor{blue}{0.722} (0.001) & \textcolor{blue}{0.727} (0.003) & \textcolor{blue}{0.717} (0.001)\\ \midrule
+    LSTM &  0.693 (0.003) & 0.696 (0.005) & 0.691 (0.007)\\
+    BiLSTM & 0.691 (0.009) & 0.702 (0.017) & 0.679 (0.007) \\ \midrule
+    BERT$_{frozen}$
+    % -base uncased (frozen) 
+    & 0.675 (0.003) & 0.677 (0.008) & 0.673 (0.010)\\
+    BERT$_{FT}$
+    % -base uncased (fine-tuned) 
+    & \textbf{0.729} (0.002) & \textbf{0.730} (0.011) & \textbf{0.727} (0.010)\\
+    % \hline
+    % GPT-2 medium (frozen) & 0.671 (0.003) & 0.665 (0.014) & 0.675 (0.017) \\
+    \bottomrule
+    \end{tabular}
+    % }
+    \caption{Dialogue dataset \len{Including stopwords.}. Test set results averaged over 5 random initializations. Format: \textit{average metric (standard error)}. Values in \textbf{bold} are the highest in the column; in \textcolor{blue}{blue}, the second highest.}
+    \label{tab:bnc_classification_ws}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l c c c c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    \midrule
+    Baseline*** & 27.45 ($\pm$7.27) & 0.90 ($\pm$0.10) & 0.92 ($\pm$0.05) & 0.86 ($\pm$0.09) & 57.5\%\\
+    \midrule
+    B$_{100MCW}$*** & 26.68 ($\pm$8.77) & 0.89 ($\pm$0.10) & 0.92 ($\pm$0.05) & 0.86 ($\pm$0.09) & 51.7\%\\
+    B$_{Y, FB}$ & 27.11 ($\pm$7.45) & \textbf{0.91} ($\pm$0.09) & \textbf{0.92} ($\pm$0.04) & \textbf{0.87} ($\pm$0.09) & 68.3\%\\
+    B$_{O, FB}$ & 25.99 ($\pm$6.41) & 0.88 ($\pm$0.11) & 0.92 ($\pm$0.05) & 0.86 ($\pm$0.09) & 62.5\%\\
+    B$_{Y, 100MIU}$ & 28.48 ($\pm$11.96) & 0.88 ($\pm$0.12) & 0.91 ($\pm$0.06) & 0.86 ($\pm$0.10) & 69.2\%\\
+    B$_{O, 100MIU}$ & \textbf{25.57} ($\pm$7.44) & 0.88 ($\pm$0.11) & 0.92 ($\pm$0.05) & \textbf{0.87} ($\pm$0.09) & 58.3\%\\
+    \midrule
+    D$_{Y, GPT2}$ & 33.02 ($\pm$12.24) & 0.85 ($\pm$0.16) & 0.89 ($\pm$0.07) & 0.83 ($\pm$0.12) & 73.9\%\\
+    D$_{O, GPT2}$ & 32.86 ($\pm$18.08) & 0.80 ($\pm$0.21) & 0.84 ($\pm$0.13) & 0.79 ($\pm$0.19) & 63.3\%\\
+    % D$_{Y, GPT2*}$ & 30.98 ($\pm$13.95) & 0.86 ($\pm$0.15) & 0.90 ($\pm$0.06) & 0.84 ($\pm$0.11) & \textbf{80.0\%}\\
+    % D$_{O, GPT2*}$ & 34.81 ($\pm$26.76) & 0.84 ($\pm$0.17) & 0.85 ($\pm$0.13) & 0.77 ($\pm$0.23) & 75.8\%\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Excluding stopwords.} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Young and old accuracy are the assigned probabilities of belonging to the young or old age categories.}
+    \label{tab:ctg_results}
+\end{table*}

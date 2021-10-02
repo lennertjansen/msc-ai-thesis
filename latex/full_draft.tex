@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass{report}
 
 \usepackage[final]{neurips_2018}
 \usepackage{amsmath}
@@ -21,6 +21,7 @@
 \usepackage{siunitx}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{color, soul}
 
 \usepackage{tikz}
 \usetikzlibrary{bayesnet}
@@ -32,21 +33,177 @@
 
 \usepackage{mathrsfs} % for fancy script letters in mathmode using \mathscr
 
+\usepackage{setspace}
+
+\newcommand{\red}[1]{{\color{red}{#1}}}
+
+\newcommand{\len}[1]{\textcolor{purple}{[L: #1]}} %LJ
 
 
 
 
-\title{A Plug-and-Play Approach to Age-Adaptive Dialogue Generation}
+% \title{A Plug-and-Play Approach to Age-Adaptive Dialogue Generation}
+% \title{input{sections/title-page-ai}}
 
-\author{%
-  Lennert Jansen\\
-  lennertjansen95@gmail.com \\
-  Working draft
-}
+% \author{%
+%   Lennert Jansen\\
+%   lennertjansen95@gmail.com \\
+%   Working draft
+% }
 
 \begin{document} 
-\maketitle
 
+% \input{sections/title-page-ai}
+
+% \maketitle
+
+%==================== BEGIN TITLE PAGE ==========================%
+\afterpage{%
+\newgeometry{a4paper,margin=2cm}
+\begin{titlepage}
+
+
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+
+ 
+
+%----------------------------------------------------------------------------------------
+
+%	HEADING SECTIONS
+
+%----------------------------------------------------------------------------------------
+
+
+
+\includegraphics[width=\linewidth]{figures/title_page/uvalogo_regular_p_en.jpg}\\[2.5cm]
+
+\textsc{\Large MSc Artificial Intelligence}\\[0.2cm]
+
+\textsc{\Large Master Thesis}\\[0.5cm] 
+
+
+
+%----------------------------------------------------------------------------------------
+
+%	TITLE SECTION
+
+%----------------------------------------------------------------------------------------
+
+
+
+\HRule \\[0.4cm]
+
+{ \huge \bfseries \red{A Plug-and-Play Approach to\\ Age-Adaptive Dialogue Generation}}\\[0.4cm] % Title of your document
+
+\HRule \\[0.5cm]
+
+ 
+
+%----------------------------------------------------------------------------------------
+
+%	AUTHOR SECTION
+
+%----------------------------------------------------------------------------------------
+
+
+
+by\\[0.2cm]
+
+\textsc{\Large \red{Lennert Jansen}}\\[0.2cm] %you name
+
+\red{10488952}\\[1cm]
+
+
+
+
+
+%----------------------------------------------------------------------------------------
+
+%	DATE SECTION
+
+%----------------------------------------------------------------------------------------
+
+
+
+{\Large \today}\\[1cm] % Date, change the \today to a set date if you want to be precise
+
+
+
+\red{Number of Credits}\\ %
+
+\red{Period in which the research was carried out}\\[1cm]%
+
+
+
+%----------------------------------------------------------------------------------------
+
+%	COMMITTEE SECTION
+
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}[t]{0.4\textwidth}
+
+\begin{flushleft} \large
+
+\emph{Supervisor:} \\
+
+\red{Dr \textsc{Sandro Pezzelle} }% Supervisor's Name
+
+\end{flushleft}
+
+\end{minipage}
+
+~
+
+\begin{minipage}[t]{0.4\textwidth}
+
+\begin{flushright} \large
+
+\emph{Assessor:} \\
+
+\red{Dr \textsc{Raquel Fernández}}\\
+
+\end{flushright}
+
+\end{minipage}\\[2cm]
+
+
+
+%----------------------------------------------------------------------------------------
+
+%	LOGO SECTION
+
+%----------------------------------------------------------------------------------------
+
+
+
+% \framebox{\rule{0pt}{2.5cm}\rule{2.5cm}{0pt}}\\[0.5cm]
+
+\includegraphics[width=2.5cm]{figures/title_page/illc_no_text_logo.jpg}\\ % Include a department/university logo - this will require the graphicx package
+
+\textsc{\large \red{Institute for Logic, Language and Computation}}\\[1.0cm] % 
+
+ 
+
+%----------------------------------------------------------------------------------------
+
+
+
+\vfill % Fill the rest of the page with whitespace
+
+
+
+\end{titlepage}
+\clearpage
+\restoregeometry
+}
+
+%===================== END TITLE PAGE ===========================%
+
+\doublespacing
 \tableofcontents
 
 % \newpage
@@ -54,37 +211,65 @@
 % \input{sections/research_questions}
 
 \newpage
-\section{Introduction}
+\chapter{Introduction}
 \input{sections/introduction}
 
-\section{Literature review}
+\chapter{Literature review}
 \input{sections/literature_review}
 
-\section{Methodology}
-\input{sections/methods}
+\chapter{Experiment 1: Classification}
+\input{sections/experiment1/exp1_intro}
+
+\input{sections/experiment1/exp1_data}
+
+\input{sections/experiment1/exp1_methods}
+
+\input{sections/experiment1/exp1_results_analyses}
+
+\chapter{Experiment 2: Generation}
+
+\input{sections/experiment2/exp2_intro}
+
+\input{sections/experiment2/exp2_data}
+
+\input{sections/experiment2/exp2_methods}
+
+\input{sections/experiment2/exp2_results_analyses}
+
+% \chapter{Methodology and experimental setup}\label{ch:methods} % TODO: FIX THIS REFERENCE IN INTRO
+% \input{sections/methods}
 
 
-\section{Data and experimental setup}
-\input{sections/data_es}
+% \chapter{Data}
+% \input{sections/data_es}
 
 
 % \section{Planning}
 % \input{sections/plan}
 
-\section{Results}
-\input{sections/results/text_classification}
+% \chapter{Results and analyses}
+% \input{sections/results/text_classification}
 
-\input{sections/results/dialogue_generation}
+% \input{sections/results/dialogue_generation}
+
+\chapter{Discussion}
+\dots
+
+\chapter{Conclusion}
+\dots
 
 % References ---------------------------------------------------------------
 \newpage
+\singlespacing
 \bibliographystyle{abbrvnat}
 \bibliography{references}
 
 \newpage
-
-
+\doublespacing
 \appendix
-\section{Appendix}
+\chapter{Supplementary material}
 \input{sections/appendix}
+
+
+
 \end{document}

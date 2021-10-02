@@ -1,0 +1,50 @@
+\section{Methodology and experimental setup}
+
+We frame the problem as a $N$-class classification problem: given a fragment of text $X$, we seek to predict
+the age class of its speaker/writer.
+% its age class. 
+For the dialogue dataset, $N=2$, while $N=3$ for the discourse dataset.
+
+We experiment with various models, that we briefly describe here below. Details on the training and evaluation of models are given at the end of the sub-section.
+% : $n$-gram logistic regression, Long Short Term Memory (LSTM) networks, and transformer-based language models BERT and GPT-2.
+
+\paragraph{\textit{n}-gram} 
+% $n$-gram logistic regression models are the simplest classifiers we consider for our task. For these models,
+% every 
+Our simplest models are based on $n$-grams, which have the advantage of being highly interpretable.
+Each data entry (i.e., a dialogue utterance or blog post) is split into chunks of all possible contiguous sequences of $n$ tokens. The resulting vectorized features are used by a logistic regression model to estimate the odds of a text sample belonging to a certain age group. We experiment with unigram, bigram and trigram models. Note that a bigram model uses unigrams and bigrams, and a trigram model unigrams, bigrams, and trigrams.
+
+\paragraph{LSTM and BiLSTM} We
+%also 
+use a standard Long Short-Term Memory network \cite[LSTM;][]{hochreiter1997long} with two layers, embedding size 512, and hidden layer size 1024. Batch-wise padding is applied to variable length sequences. The original model's bidirectional extension, the bidirectional LSTM \cite[BiLSTM;][]{schuster1997bidirectional}, is also used.
+% as an age-classifier. 
+% This version of the LSTM 
+BiLSTM more thoroughly leverages forward and backward directed information by combining the hidden states from both directions. Padding is similarly applied to this model, and the following optimal architecture is found: embedding size 64, 2 layers, and hidden layer size 512. Both RNN-model are found to perform optimally for a learning rate of $10^{-3}$.
+
+\paragraph{BERT} 
+We experiment with a Transformer-based model, i.e., 
+% Finally, we use 
+Bidirectional Encoder Representations from Transformers \cite[BERT;][]{devlin-etal-2019-bert} for text classification.
+%, as our transformer-based class of models. 
+BERT is pre-trained to learn deeply bidirectional language representations from massive amounts of unlabeled textual data. 
+We experiment with the base, uncased version of BERT, in two settings: by using its 
+pre-trained frozen embeddings (BERT$_{frozen}$) and by fine-tuning the embeddings on our age classification task (BERT$_{FT}$).
+% and fine-tuned on the task (BERT-FT). \san{should we use these labels to refer to the BERT models?; otherwise, we can use BERT for the fine-tuned one and BERT-frozen for the other}
+% Its frozen pre-trained embeddings, as well as a fine-tuned setup are compared for the task of speaker/author-age prediction.
+The BERT embeddings are followed by a dropout layer with dropout probability 0.1, and a linear layer with input size 768.
+
+\paragraph{Experimental details} % \textit{We report common things across models: objective function, number of epochs (?), early stopping criterion, etc. Plus, e.g., we train the models N times with random initializations}
+
+Both datasets are randomly split into a training (75\%), validation (15\%), and test (10\%) set.
+%s accounting for 75\%, 15\%, and 10\% of the full corpus size, respectively.
+Each model with a given configuration of hyperparameters is run 5 times with different random initializations. All models are trained on an NVIDIA TitanRTX GPU.
+
+The $n$-gram models are trained in a One-vs-Rest (OvR) fashion, and optimized using the Limited-memory Broyden–Fletcher–Goldfarb–Shanno (L-BFGS) algorithm \cite{liu1989limited}, with a maximum of $10^6$ iterations. The $n$-gram models are trained until convergence or for the maximum number of iterations.
+
+% All neural models 
+LSTMs and BERT-based models
+are optimized using Adam \cite{DBLP:journals/corr/KingmaB14}, and trained for 10 epochs, with an early stopping patience of 3 epochs.
+% All results reported in Tables \ref{tab:bnc_classification} and \ref{tab:blog_classification} are averaged over 5 random initializations. 
+The RNN-based models' embeddings are jointly trained, and optimal hyperparameters (i.e., learning rate, embedding size, hidden layer size, and number of layers)  are determined using the validation set and a guided grid-search. %BERT-base-uncased is either used in its unaltered, pre-trained form, or fine-tuned on the validation set for 10 epochs, or until the early stopping criterion is met. 
+BERT$_{FT}$ is fine-tuned on the validation set for 10 epochs, or until the early stopping criterion is met.
+BERT models have a maximum input length of 512 tokens. Sequences exceeding this length are truncated.
