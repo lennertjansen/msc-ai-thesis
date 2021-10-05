@@ -782,7 +782,7 @@ def hp_search(seed,
 
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
-    lrs = [1e-6, 1e-5, 1e-4, 1e-3]
+    lrs = [1e-5, 1e-4, 1e-3]
     # lrs = [0.001]
     embedding_dims = [64, 256, 512]
     # embedding_dims = [512]
@@ -796,7 +796,7 @@ def hp_search(seed,
 
 
     # set holders for best performance metrics and corresponding hyperparameters
-    best_metrics = {'loss' : float("inf"),
+    best_metrics = {'loss' : float("inf"), 25
                     'acc' : float('-inf')}
     best_hps = {'lr' : None,
                 'embedding_dim' : None,
