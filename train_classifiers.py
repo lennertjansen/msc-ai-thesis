@@ -796,7 +796,7 @@ def hp_search(seed,
 
 
     # set holders for best performance metrics and corresponding hyperparameters
-    best_metrics = {'loss' : float("inf"), 25
+    best_metrics = {'loss' : float("inf"),
                     'acc' : float('-inf')}
     best_hps = {'lr' : None,
                 'embedding_dim' : None,
