@@ -1215,7 +1215,7 @@ def run_pplm_example(
         if num_iterations == 0 or stepsize == 0:
             output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_NA_WS_baseline.csv'
         else:
-            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS_baseline.csv'
+            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS.csv'
 
 
     # create csv file with header if non-existent, append if already exists
