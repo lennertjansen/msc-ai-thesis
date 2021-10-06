@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=classif_blog_ws_bert_ft_7seeds_ACTUALLY_BLOGS
+#SBATCH --job-name=classif_ACTUALLY_BLOGS_ws_lstm_hps_redo_100K_subset
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_blog_ws_bert_ft_7seeds_ACTUALLY_BLOGS.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_ACTUALLY_BLOGS_ws_lstm_hps_redo_100K_subset.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -56,7 +56,7 @@ echo "Running python code..."
 #  done
 #done
 
-for seed in 2021 2022 2023 2024 2025 2026 2027
+for seed in 2021
 do
   echo 'Starting new seed:'
   echo "$seed"
@@ -64,7 +64,7 @@ do
   python train_classifiers.py \
          --data 'blog' \
          --model_type 'bert' \
-         --mode 'train' \
+         --mode 'val' \
          --seed "$seed" \
          --batch_size 4 \
          --embedding_dim 512 \
@@ -81,6 +81,7 @@ do
          --no_tb \
          --w_sampling \
          --w_loss \
+         --subset_size 100000 \
          --dropout 0.1
 done
 
