@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_bow_dialogpt_ml512_lr_00001_WS_young_label_100mcw_baseline
+#SBATCH --job-name=ctg_discrim_dialogpt_WS_young_label_uncontrolled_baseline_sameprompt
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_bow_dialogpt_ml512_lr_00001_WS_young_label_100mcw_baseline.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_discrim_dialogpt_WS_young_label_uncontrolled_baseline_sameprompt.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -35,59 +35,60 @@ cd $HOME/code/msc-ai-thesis
 echo "Running python code..."
 
 ## for BoW-based
-declare -a arr=("Tell me about your holidays. Sure! I went to Greece and had a very fun time." "Tell me about your favorite food. Of course. I love pasta!." "Have you seen the news lately? I can't believe what I saw.")
+#declare -a arr=("Tell me about your holidays. Sure! I went to Greece and had a very fun time." "Tell me about your favorite food. Of course. I love pasta!." "Have you seen the news lately? I can't believe what I saw.")
+
+
+## for discrim-based
+#for prompt in "${arr[@]}"
+#do
+#  for seed in 2021
+#  do
+#    for length in 6 12 24 30 36 42 48 54 60
+#    do
+#      python plug_play/run_pplm.py \
+#             --pretrained_model 'microsoft/DialoGPT-medium' \
+#             --num_samples 10 \
+#             --bag_of_words 'plug_play/wordlists/bnc_rb_ws_100_most_common.txt' \
+#             --length $length \
+#             --seed $seed \
+#             --sample \
+#             --class_label 0 \
+#             --verbosity "quiet" \
+#             --cond_text "$prompt"
+#    done
+#  done
+#done
+
+#declare -a arr=("Tell me about your holidays. Sure! I went to Greece and had a very fun time." "Tell me about your favorite food. Of course. I love pasta!." "Have you seen the news lately? I can't believe what I saw.")
+declare -a arr=("Hello, how are you?<|endoftext|>")
 
 
 # for discrim-based
 for prompt in "${arr[@]}"
 do
   for seed in 2021
-  do
+    do
+
     for length in 6 12 24 30 36 42 48 54 60
     do
+
       python plug_play/run_pplm.py \
              --pretrained_model 'microsoft/DialoGPT-medium' \
-             --num_samples 10 \
-             --bag_of_words 'plug_play/wordlists/bnc_rb_ws_100_most_common.txt' \
+             --cond_text "$prompt" \
+             --num_samples 30 \
+             --discrim 'generic' \
              --length $length \
              --seed $seed \
              --sample \
              --class_label 0 \
              --verbosity "quiet" \
-             --cond_text "$prompt"
+             --discrim_weights "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt" \
+             --discrim_meta "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json" \
+             --num_iterations 0 \
+             --stepsize 0
     done
   done
 done
-
-#declare -a arr=("Tell me about your holidays. Sure! I went to Greece and had a very fun time." "Tell me about your favorite food. Of course. I love pasta!." "Have you seen the news lately? I can't believe what I saw.")
-
-
-# for discrim-based
-#for prompt in "${arr[@]}"
-#do
-#  for seed in 2021
-#    do
-#
-#    for length in 6 12 24 30 36 42 48 54 60
-#    do
-#
-#      python plug_play/run_pplm.py \
-#             --pretrained_model 'microsoft/DialoGPT-medium' \
-#             --cond_text "$prompt" \
-#             --num_samples 10 \
-#             --discrim 'generic' \
-#             --length $length \
-#             --seed $seed \
-#             --sample \
-#             --class_label 0 \
-#             --verbosity "quiet" \
-#             --discrim_weights "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt" \
-#             --discrim_meta "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json" \
-#             --num_iterations 0 \
-#             --stepsize 0
-#    done
-#  done
-#done
 
 
 

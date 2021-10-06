@@ -1207,15 +1207,15 @@ def run_pplm_example(
     if pretrained_model.__contains__("/"):
         pretrained_model_no_slash = pretrained_model.replace('/', '-')
         if num_iterations == 0 or stepsize == 0:
-            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_NA_WS_baseline.csv'
+            output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_NA_WS_baseline.csv'
         else:
-            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS_baseline.csv'
+            output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS_baseline.csv'
     else:
 
         if num_iterations == 0 or stepsize == 0:
-            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_NA_WS_baseline.csv'
+            output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_NA_WS_baseline.csv'
         else:
-            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS.csv'
+            output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS.csv'
 
 
     # create csv file with header if non-existent, append if already exists
