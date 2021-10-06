@@ -4,7 +4,7 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_discrim_gpt2_ml512_lr_00001_WS_quick_sandro_old_proper_QA
+#SBATCH --job-name=ctg_discrim_dialogpt_ml512_lr_00001_WS_young_label_uncontrolled_baseline
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
@@ -52,28 +52,32 @@ echo "Running python code..."
 #  done
 #done
 
-declare -a arr=("Can you tell me about your last holidays?<|endoftext|>", "Can you tell me about your favorite food?<|endoftext|>", "Can you tell me about your hobbies?<|endoftext|>", "Once upon a time", "The last time", "The city")
+declare -a arr=("Tell me about your holidays. Sure! I went to Greece and had a very fun time." "Tell me about your favorite food. Of course. I love pasta!." "Have you seen the news lately? I can't believe what I saw.")
 
 
 # for discrim-based
-for i in "${arr[@]}"
+for prompt in "${arr[@]}"
 do
-  for length in 16 24 32
-  do
-    for seed in 2021 2022 2023
+  for seed in 2021
     do
+
+    for length in 6 12 24 30 36 42 48 54 60
+    do
+
       python plug_play/run_pplm.py \
-             --pretrained_model 'gpt2-medium' \
-             --cond_text "$i" \
-             --num_samples 2 \
+             --pretrained_model 'microsoft/DialoGPT-medium' \
+             --cond_text "$prompt" \
+             --num_samples 10 \
              --discrim 'generic' \
              --length $length \
              --seed $seed \
              --sample \
-             --class_label 1 \
+             --class_label 0 \
              --verbosity "quiet" \
-             --discrim_weights "plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_epoch_19.pt" \
-             --discrim_meta "plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_meta.json"
+             --discrim_weights "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt" \
+             --discrim_meta "plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json" \
+             --num_iterations 0 \
+             --stepsize 0
     done
   done
 done

@@ -1016,7 +1016,6 @@ def run_pplm_example(
         )  # LJ: added "return_dict=False" to solve this error: "AttributeError: 'str' object has no attribute 'size'" based on this thread: https://github.com/allanj/pytorch_neural_crf/issues/22
         tokenizer = BertTokenizer.from_pretrained(pretrained_model)
 
-
     # LJ: move model to device and set to evaluation mode
     model.to(device)
     model.eval()
@@ -1208,15 +1207,15 @@ def run_pplm_example(
     if pretrained_model.__contains__("/"):
         pretrained_model_no_slash = pretrained_model.replace('/', '-')
         if num_iterations == 0 or stepsize == 0:
-            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_NA_WS_explore.csv'
+            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_NA_WS_baseline.csv'
         else:
-            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS_explore.csv'
+            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS_baseline.csv'
     else:
 
         if num_iterations == 0 or stepsize == 0:
-            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_NA_WS_explore.csv'
+            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_NA_WS_baseline.csv'
         else:
-            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS_explore.csv'
+            output_path = f'plug_play/output/ctg_explore/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS_baseline.csv'
 
 
     # create csv file with header if non-existent, append if already exists
