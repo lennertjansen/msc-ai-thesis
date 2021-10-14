@@ -782,7 +782,7 @@ def hp_search(seed,
 
     # Set hyperparameters for grid search*
     # seeds = [0, 1, 2]
-    lrs = [1e-5, 1e-4, 1e-3]
+    lrs = [1e-3, 1e-2]
     # lrs = [0.001]
     embedding_dims = [64, 256, 512]
     # embedding_dims = [512]
@@ -831,6 +831,11 @@ def hp_search(seed,
                         print(f"| Current config: lr: {lr_} | emb: {emb_dim} | hid_dim: {hid_dim} | n_layers: {n_layers} "
                               f"| bd: {bd} | ")
                         print('-' * 91)
+
+                        # TODO: REMOVE THIS AFTER BLOG-WS part 2 FINISHED
+                        if (lr_ == 1e-3) and (hid_dim <= 512):
+                            print("SKIPPING THIS CONFIG BECAUSE ALREADY TESTED.")
+                            continue
 
                         # Create detailed experiment tag for tensorboard summary writer
                         cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
