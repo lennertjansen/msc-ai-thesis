@@ -832,10 +832,6 @@ def hp_search(seed,
                               f"| bd: {bd} | ")
                         print('-' * 91)
 
-                        # TODO: REMOVE THIS AFTER BLOG-WS part 2 FINISHED
-                        if (lr_ == 1e-3) and (hid_dim <= 512):
-                            print("SKIPPING THIS CONFIG BECAUSE ALREADY TESTED.")
-                            continue
 
                         # Create detailed experiment tag for tensorboard summary writer
                         cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
