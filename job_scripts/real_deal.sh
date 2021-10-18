@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=classif_ACTUALLY_BLOGS_ws_ACTUALLY_LSTM_hps_redo_100K_subset_part2_rm_if836
+#SBATCH --job-name=classif_BLOGS_ws_best_LSTM_lr_1emin4_emb_256_hid_512_nl_1
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_ACTUALLY_BLOGS_ws_ACTUALLY_LSTM_hps_redo_100K_subset_part2_rm_if836.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_BLOGS_ws_best_LSTM_lr_1emin4_emb_256_hid_512_nl_1.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -56,7 +56,7 @@ echo "Running python code..."
 #  done
 #done
 
-for seed in 2021
+for seed in 2021 2022 2023 2024 2025 2026 2027
 do
   echo 'Starting new seed:'
   echo "$seed"
@@ -66,10 +66,10 @@ do
          --model_type 'lstm' \
          --mode 'val' \
          --seed "$seed" \
-         --batch_size 4 \
-         --embedding_dim 512 \
-         --hidden_dim 1024 \
-         --num_layers 2 \
+         --batch_size 32 \
+         --embedding_dim 256 \
+         --hidden_dim 512 \
+         --num_layers 1 \
          --batch_first \
          --epochs 10 \
          --lr 0.0001 \
@@ -81,7 +81,6 @@ do
          --no_tb \
          --w_sampling \
          --w_loss \
-         --subset_size 100000 \
          --dropout 0.1
 done
 
