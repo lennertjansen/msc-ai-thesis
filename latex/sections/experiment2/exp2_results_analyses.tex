@@ -1,7 +1,37 @@
 \newpage
-\section{Results of controlled dialogue generation}
+\section{Controlled text generation performance}
+\label{sec:exp2_results}
 
-\begin{table*}[h]
+Table~\ref{tab:ctg_results_ws} reports the automated evaluation results of our controllable text generation models. It can be seen that uncontrolled GPT-2 baseline has a slight bias towards generating "young-sounding" language (57.5\% accuracy). Furthermore, it appears that perturbing GPT-2's output distribution with the 100 most common words across all ages results in a slight de-biasing of the generated text (54.1\% accuracy). Achieving detectable control seems possible, because all GPT-2-based models surpass both baselines in terms of accuracy, with the exception of both BoW-setups using the 100 most informative unigrams.
+
+Frequency-based BoW-models outperform those using the most informative unigrams, as illustrated by their higher average accuracy (66.75\% versus. 53.1\%), and lower average perplexity (27.48 versus 27.90). 
+% \len{Offer an explanation.} 
+Discriminator-based models achieve noticeably better accuracies, with an average improvement of 8.45\% over the best performing BoW-based models. However, discriminator-based models do show more signs of disfluency and repetitiveness compared to the BoW-models, as depicted by the worse perplexities and Dist-$n |_{n = 1,2,3}$ scores.
+
+The accuracies of our uncontrolled DialoGPT baseline (78.1\%) and the 100MCW baseline (80.7\%), suggest that DialoGPT is heavily biased towards producing young-sounding language. This can be attributable to DialoGPT having been fine-tuned on Reddit threads, as the majority of Reddit users are between the ages 20 and 29~\footnote{\url{https://www.statista.com/statistics/1125159/reddit-us-app-users-age/}}
+% \len{Find a reference for this statement} 
+\citep{zhang2019dialogpt}. DialoGPT's strong propensity for generating younger sounding language makes it a less desirable choice for our human evaluation experiments, because it requires non-standard parameter settings to produce detectably older sounding text.
+
+Overall, the results show that, for most models, a plug-and-play approach to controlling generated dialogue responses to possess detectable age-specific linguistic features is achievable. The most promising models being either discriminator-based, or frequency-based bag-of-words models. Discriminator-based models achieve more detectable levels of control than their BoW-based counterparts, at the cost of perplexity and repetitiveness. This could be attributable to the more complex activation-space updates that are used by discriminator-models. Furthermore, GPT-2's preference to generate young-sounding language is severely less pronounced than that of DialoGPT, making it easier to control, given equal parameter settings.
+
+% \textbf{Observations:}
+% GPT-2
+% \begin{itemize}
+%     \item All GPT2-based models beat the GPT-2 baseline, except for the BoW-100MIU.
+%     \item GPT-2 has a slight bias towards being classified as young. Has a preference to sound young.
+%     \item BoW-based control with the 100 most common words appears to de-bias uncontrolled GPT-2
+%     \item The frequency-based BoW models are the best ones. They achieve on average better control than 100MIU w.r.t. the baseline, and have on average a lower perplexity than 100MIU. \len{Compute and explicitly mention these differences}.
+%     \item Discriminator-based models achieve (1) much higher accuracy, (2) noticeably worse perplexity, and (3) on average more repetitive unigrams, bigrams, and trigrams.
+%     \item Controlling for old language seems harder than for young, as its accuracy is consistently lower.
+% \end{itemize}
+
+% \textbf{DialoGPT:}
+% \begin{itemize}
+%     \item DialoGPT is heavily biased towards younger language. This is most likely due to it being finetuned on Reddit threads. Vast majority of U.S. Reddit users are between the ages of 18 and 19 \url{https://www.statista.com/statistics/261766/share-of-us-internet-users-who-use-reddit-by-age-group/}
+%     \item 100 most common words across all ages seems to result in more pronounced young-bias. Could also be due to prompt.
+% \end{itemize}
+
+\begin{table*}[h!]
     \centering
     \begin{tabular}{l c c c c c}
     \toprule
@@ -10,23 +40,26 @@
      & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
     \midrule
     \midrule
-    Baseline & 29.60 ($\pm$17.54) & \textbf{0.89} ($\pm$0.09) & \textbf{0.93} ($\pm$0.07) & 0.88 ($\pm$0.10) & 50.0\%\\
+    GPT-2 baseline & 29.60 ($\pm$17.57) & \textbf{0.89} ($\pm$0.09) & \textbf{0.93} ($\pm$0.05) & 0.88 ($\pm$0.10) & 57.5\%\\
+    GPT-2 100MCW baseline & 27.80 ($\pm$16.44) & 0.83 ($\pm$0.12) & 0.91 ($\pm$0.06) & \textcolor{blue}{0.88} ($\pm$0.09) & 54.1\%\\
     \midrule
-    B$_{100MCW}$ & 27.80 ($\pm$16.42) & 0.83 ($\pm$0.12) & 0.91 ($\pm$0.06) & \textcolor{blue}{0.88} ($\pm$0.09) & 50.0\%\\
-    B$_{Y, FB, 80}$ & 29.13 ($\pm$15.17) & 0.86 ($\pm$0.10) & 0.92 ($\pm$0.06) & 0.88 ($\pm$0.11) & 70\%\\
-    B$_{O, FB, 80}$ & \textbf{26.42} ($\pm$8.87) & 0.86 ($\pm$0.10) & \textcolor{blue}{0.92} ($\pm$0.05) & \textbf{0.89} ($\pm$0.10) & 62.2\%\\
-    B$_{Y, FB, 85}$ & 28.16 ($\pm$14.52) & 0.87 ($\pm$0.10) & 0.92 ($\pm$0.06) & 0.88 ($\pm$0.10) & 69.3\%\\
-    B$_{O, FB, 85}$ & 26.79 ($\pm$8.89) & \textcolor{blue}{0.88} ($\pm$0.09) & \textcolor{blue}{0.92} ($\pm$0.05) & 0.88 ($\pm$0.10) & 64.2\%\\
+    % B$_{Y, FB, 80}$ & 29.13 ($\pm$15.17) & 0.86 ($\pm$0.10) & 0.92 ($\pm$0.06) & 0.88 ($\pm$0.11) & 70\%\\
+    % B$_{O, FB, 80}$ & \textbf{26.42} ($\pm$8.87) & 0.86 ($\pm$0.10) & \textcolor{blue}{0.92} ($\pm$0.05) & \textbf{0.89} ($\pm$0.10) & 62.2\%\\
+    B$_{Y, FB}$ & 28.16 ($\pm$14.52) & 0.87 ($\pm$0.10) & 0.92 ($\pm$0.06) & 0.88 ($\pm$0.10) & 69.3\%\\
+    B$_{O, FB}$ & 26.79 ($\pm$8.89) & \textcolor{blue}{0.88} ($\pm$0.09) & \textcolor{blue}{0.92} ($\pm$0.05) & 0.88 ($\pm$0.10) & 64.2\%\\
     B$_{Y, 100MIU}$ & 29.16 ($\pm$14.91) & \textbf{0.89} ($\pm$0.09) & 0.92 ($\pm$0.06) & 0.88 ($\pm$0.11) & 52.5\%\\
     B$_{O, 100MIU}$ & \textcolor{blue}{26.63} ($\pm$8.36) & 0.87 ($\pm$0.10) & 0.92 ($\pm$0.07) & 0.88 ($\pm$0.10) & 53.7\%\\
     \midrule
     D$_{Y, GPT2}$ & 31.95 ($\pm$14.29) & 0.82 ($\pm$0.17) & 0.87 ($\pm$0.14) & 0.83 ($\pm$0.16) & \textbf{77.7\%}\\
     D$_{O, GPT2}$ & 33.63 ($\pm$24.40) & 0.80 ($\pm$0.18) & 0.87 ($\pm$0.11) & 0.81 ($\pm$0.21) & \textcolor{blue}{72.7}\%\\
+    \midrule
+    DGPT baseline & 35.20 ($\pm$10.01) & 0.87 ($\pm$0.11) & 0.90 ($\pm$0.07) & 0.87 ($\pm$0.08) & 78.1\%\\
+    DGPT-100MCW & 35.64 ($\pm$9.72) & 0.86 ($\pm$0.10) & 0.90 ($\pm$0.06) & 0.87 ($\pm$0.08) & 80.7\%\\
     D*$_{Y, DGPT}$ & 41.54 ($\pm$10.87) & 0.91 ($\pm$0.11) & 0.91 ($\pm$0.06) & 0.86 ($\pm$0.09) & \textbf{84.1}\%\\
     D*$_{O, DGPT}$ & 38.16 ($\pm$10.77) & 0.87 ($\pm$0.11) & 0.91 ($\pm$0.06) & 0.87 ($\pm$0.08) & 55.6\%\\
     \bottomrule
     \end{tabular}
-    \caption{\len{Including stopwords.} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \caption{Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
     \label{tab:ctg_results_ws}
 \end{table*}
 
@@ -60,80 +93,105 @@
 %     \label{tab:ctg_results}
 % \end{table*}
 
-\paragraph{Notes on Table \ref{tab:ctg_results}}
+
+%%% THIS ISN'T RELEVANT ANYMORE --CONSIDER DELETING IT %%%%%%%%%%%%%%%%%%%%%%%%%
+% \paragraph{Notes on Table \ref{tab:ctg_results}}
+% \begin{itemize}
+%     \item These are initial results.
+%     \item All metrics are averaged over 120 samples: 30 samples per group of sequence lengths 8, 16, 32, and 64.
+%     \item Young and old accuracy (last two columns) denote the probability of belonging to the young or old age-groups assigned by the best performing BERT-based classifier.
+%     \item I use the same parameter settings as Table 6 of \cite{dathathri2019plug} to make the results comparable, i.e.:
+%     \begin{itemize}
+%         \item Step-size 0.02. Step-size is $\alpha$ in Equation \ref{eq:H_update_rule}.
+%         \item Temperature 1.0.
+%         \item Number of update iterations: 3.
+%         \item $\gamma$ 1.5.
+%         \item GM-scale 0.9.
+%         \item KL-scale 0.01.
+%     \end{itemize}
+%     \item The current baseline is uncontrolled/unperturbed GPT-2.
+%     \item There are four settings for BoW-based control:
+%     \begin{itemize}
+%         \item Young frequency-based wordlist.
+%         \item Old frequency-based wordlist.
+%         \item Young + most informative unigrams as wordlist.
+%         \item Old + most informative unigrams as wordlist.
+%     \end{itemize}
+%     \item Initial observations:
+%     \begin{itemize}
+%         \item Fractions of distinct uni-,bi, and trigrams do not change.
+%         \item Perplexity seems to improve when controlling generation for each age-group, which isn't necessarily what one would expect.
+%         \item The baseline starts off with a higher average probability of belonging to the young age group
+%         \item Controlling for young-language does result in a slightly greater assigned probability of belonging to young age-bracket.
+%         \item Controlling for old-language results in a doubling of the assigned probability of belonging to the old age-bracket.
+%     \end{itemize}
+% \end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{itemize}
-    \item These are initial results.
-    \item All metrics are averaged over 120 samples: 30 samples per group of sequence lengths 8, 16, 32, and 64.
-    \item Young and old accuracy (last two columns) denote the probability of belonging to the young or old age-groups assigned by the best performing BERT-based classifier.
-    \item I use the same parameter settings as Table 6 of \cite{dathathri2019plug} to make the results comparable, i.e.:
-    \begin{itemize}
-        \item Step-size 0.02. Step-size is $\alpha$ in Equation \ref{eq:H_update_rule}.
-        \item Temperature 1.0.
-        \item Number of update iterations: 3.
-        \item $\gamma$ 1.5.
-        \item GM-scale 0.9.
-        \item KL-scale 0.01.
-    \end{itemize}
-    \item The current baseline is uncontrolled/unperturbed GPT-2.
-    \item There are four settings for BoW-based control:
-    \begin{itemize}
-        \item Young frequency-based wordlist.
-        \item Old frequency-based wordlist.
-        \item Young + most informative unigrams as wordlist.
-        \item Old + most informative unigrams as wordlist.
-    \end{itemize}
-    \item Initial observations:
-    \begin{itemize}
-        \item Fractions of distinct uni-,bi, and trigrams do not change.
-        \item Perplexity seems to improve when controlling generation for each age-group, which isn't necessarily what one would expect.
-        \item The baseline starts off with a higher average probability of belonging to the young age group
-        \item Controlling for young-language does result in a slightly greater assigned probability of belonging to young age-bracket.
-        \item Controlling for old-language results in a doubling of the assigned probability of belonging to the old age-bracket.
-    \end{itemize}
+    \item \len{Include examples of same original sequence being perturbed differently at the unigram-level between corresponding young and old BoW-based CTG. E.g., \textit{I think you're a nice person (old)} vs. \textit{I think you're a nice guy (young)}}
 \end{itemize}
 
-\subsection{Bag-of-words control}
+% \subsubsection{Frequency-based wordlist generation}
 
-\subsubsection{Frequency-based wordlist generation}
+% Steps taken to create age-specific wordlists (full imbalanced BNC used):
+% \begin{itemize}
+%     \item Remove all stopwords. List of stopwords from NLTK's English stopword list. \textbf{TODO: does this make sense? What if differences in use of stopwords are strong indicators of an age-group's speech?}
+%     \item Order all unique words by frequency per age-group.
+%     \item For both lists, keep the words that account for at least 80\% of the respective cumulative probability densities.
+%     \item From both sets of words, remove the words that are in the \textit{union} (i.e., the overlapping set) of the young and old sets.
+%     \item For both sets, order the words by frequency.
+%     \item For both remaining lists, keep the words that account for at least 80\% of the respective cumulative probability densities.
+%     \item \textbf{TODO:} remove curse-words?
+%     \item Resulting wordlist lengths:
+%         \begin{itemize}
+%             \item Young (19-29): 90 words
+%             \item Old (50 plus): 225 words
+%         \end{itemize}
+% \end{itemize}
 
-Steps taken to create age-specific wordlists (full imbalanced BNC used):
-\begin{itemize}
-    \item Remove all stopwords. List of stopwords from NLTK's English stopword list. \textbf{TODO: does this make sense? What if differences in use of stopwords are strong indicators of an age-group's speech?}
-    \item Order all unique words by frequency per age-group.
-    \item For both lists, keep the words that account for at least 80\% of the respective cumulative probability densities.
-    \item From both sets of words, remove the words that are in the \textit{union} (i.e., the overlapping set) of the young and old sets.
-    \item For both sets, order the words by frequency.
-    \item For both remaining lists, keep the words that account for at least 80\% of the respective cumulative probability densities.
-    \item \textbf{TODO:} remove curse-words?
-    \item Resulting wordlist lengths:
-        \begin{itemize}
-            \item Young (19-29): 90 words
-            \item Old (50 plus): 225 words
-        \end{itemize}
-\end{itemize}
+% \subsubsection{Most informative unigrams as wordlists}
 
-\subsubsection{Most informative unigrams as wordlists}
-
-\subsection{Discriminator-based control}
+% \subsection{Discriminator-based control}
 
 
 
 
-\textbf{Notes on the experimental details of Table \ref{tab:ctg_results_ws}:}
+% \textbf{Notes on the experimental details of Table \ref{tab:ctg_results_ws}:}
 
-\begin{itemize}
-    \item All sequences are generated unconditionally. I.e., from $\texttt{|<endoftext>|}$ token.
-    \item All results are averaged over 240 samples.
-    \item 
-\end{itemize}
+% \begin{itemize}
+%     \item All sequences are generated unconditionally. I.e., from $\texttt{|<endoftext>|}$ token.
+%     \item All results are averaged over 240 samples.
+%     \item 
+% \end{itemize}
 
 
 \section{Controlled text generation analyses}
+\label{sec:exp2_analyses}
+
+\textit{By means of quantitative and qualitative analyses, we seek to study which relationships drive the grammatical quality and attribute relevance of generated output. We study the relationship between fluency and control, the effects of sequence length, and visualize attention mechanisms. Finally, we provide qualitative inspections of various cases, i.e., high versus low perplexity or assigned BERT$_{FT}$ probability, and a human evaluation of linguistic quality.}
+
+% \len{Introduce the ctg analyses, like we do for the classification results. Talk about which models we're comparing, and why (probably the best performing ones from each class, i.e., best-bow, best-discrim, and best DGPT?... \textit{By means of quantitative and qualitative analyses, we seek to study which relationships drive the quality and control of generated output...  We start by studying the relationship between fluency and control (quant.), ... the effects of sequence length (quant.), ..., visualize attention mechanisms (quant.}. Then we ... summary stats. and qualitative inspection of various cases, i.e., high/low ppl., high/low prob. (qual)., ...and human eval (qual). }
 
 \subsection{Quantitative analyses}
 
 \len{TODO - Add examples of generated sequences along with their model's configurations, age-group, etc. Similar to dialogue snippets earlier.}
+
+\subsubsection{Quantitative 0: the relationship between fluency and control}
+
+Figure~\ref{fig:ctg_lineplot_fluency_vs_control} attempts to depict the relationship between fluency and control, as measured by perplexity and BERT's classification accuracy, respectively. On the y-axis, ``mean accuracy'' refers to the average fraction of generated sequences, controlled for young or old language, that are correctly labeled as such by Experiment 1's best BERT classifier. The bars around the averages in Figure~\ref{fig:ctg_lineplot_fluency_vs_control} are 90\% confidence intervals.
+% It can be seen as a proxy for control, because it indicates how resemblant of an age group's vernacular a generated text is deemed to be. 
+% Perplexity, measured by a different language model (GPT-1 \citep{radford2018improving}), is a measure of a language model's uncertainty when posed with the task of predicting a succession of words. Assuming a language model to be a reliable representation of relationships within an actual language, low perplexity can serve as a rough proxy for fluency of a text. However, a major caveat of perplexity is that it only measures uncertainty w.r.t. one language model, making it less generalizable. To slightly reduce this effect, we choose to evaluate perplexity with respect to a different language model than the one used for generation.
+% \len{Disclose the confidence interval level}
+It appears that increasing perplexity is slightly negatively correlated with accuracy. It is also clear from Figure~\ref{fig:ctg_lineplot_fluency_vs_control} that uncertainty about prediction strongly increases for greater perplexity. These two observations indicate that sentences deemed less coherent by GPT-1 tend to be harder to classify by BERT$_{FT}$ with certainty. BERT$_{FT}$ is pre-trained and fine-tuned to pick up syntactic features from dialogue that can indicate a speaker's age. It is therefore plausible that structural deviations from proper syntax (i.e., high perplexity) can obfuscate the age-related linguistic signal BERT$_{FT}$ leverages. Finally, it seems that, on average, the discriminator-based models are more capable of producing correctly classifiable high-perplexity sentences. \len{Why would that be?} However, none of the differences between the average accuracies are statistically significant at the 10\% level, so this conclusion should be taken tentatively.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/exp2/lineplot_ppl_acc_best_gpt2_disc_bow_ci_90_errstyle_bars.png}
+    \caption{Fluency (perplexity, x-axis) versus control (BERT accuracy, y-axis). Bins chosen to be roughly same order of magnitude. The bars represent 90\% confidence intervals. This plot is best viewed in color.}
+    \label{fig:ctg_lineplot_fluency_vs_control}
+\end{figure}
 
 \subsubsection{Quantitative 1: the effects of generated sequence length}
 
@@ -147,6 +205,122 @@ Steps taken to create age-specific wordlists (full imbalanced BNC used):
     \item \textit{Which patterns do you observe?} 
 \end{itemize}
 
+\textbf{Patterns:}
+\begin{itemize}
+    \item \len{NB: These are all patterns observed in the unprompted results. Once prompted results are in, we can interpret them as if length of dialogue response.}
+    \item Increasing sequence length is correlated with decreasing perplexity. Longer sentences are deemed more coherent by GPT-2
+    \item Increasing length seems very slighty positively correlated with average accuracy (and more uncertainty). I.e., longer sequences are, on average, easier to classify, though less precision.
+    \item BoW-based models significantly more distinct  w.r.t. unigrams than dirscrim-based.
+    \item Overall, repetitiveness seems to increase as generated sequences become longer.
+    \item The differences between young and old perplexity are smaller for BoW-based models than for Discrim-based. Same pattern holds for repetitiveness.
+\end{itemize}
+
+\len{NB: These are all patterns observed in the unprompted results. Once prompted results are in, we can interpret them as if length of dialogue response.}
+
+The number of tokens being generated in an utterance seems to coincide with noticeable differences in our automated evaluation metrics. It is therefore important to get a clearer picture of how the various measures for fluency and control change for varying sequence lengths. Properly understanding this relationship can inform developers of adaptive dialogue systems about preserving output quality for responses of arbitrary lengths.
+
+Figure~\ref{fig:ctg_lineplots_len_vs_metrics} presents plots of the relationships between generated sequence length (on the x-axes) and average perplexity (Figure~\ref{fig:ctg_lineplot_len_vs_ppl}), average BERT$_{FT}$ accuracy (Figure~\ref{fig:ctg_lineplot_len_vs_acc}), and average normalized number of distinct unigrams (Figure~\ref{fig:ctg_lineplot_len_vs_dist1}), bigrams (Figure~\ref{fig:ctg_lineplot_len_vs_dist2}), and trigrams (Figure~\ref{fig:ctg_lineplot_len_vs_dist3}).
+
+
+Starting with Figure~\ref{fig:ctg_lineplot_len_vs_ppl}, it appears that, for all models, increases in generated utterance length coincide with decreases in perplexity. This is most likely attributable to the nature of calculating perplexity than generation properties of the models. Namely, perplexity essentially averages the sum of the negative exponentiated probabilities $p(\texttt{word} | \texttt{context})$, for every word in a sentence. Because the context increases with every successive word, and larger contexts typically result in less uncertainty, shorter sequences are often given unfairly high perplexities.
+
+In Figure~\ref{fig:ctg_lineplot_len_vs_acc}, we can see that increasing length seems very slightly positively correlated with average accuracy (and more uncertainty). That is, longer sequences are, on average, slightly easier to classify, though with less precision. This is probably due to the fact that longer sentences contains more information to base predictions on.
+
+Focusing on repetitive use of unigrams, it appears that BoW-based models generate significantly more diverse utterances than discriminator-based models. 
+
+Repetitiveness w.r.t. bigrams and trigrams seems to increase as generated sequences become longer.
+
+Overall, the differences between young and old perplexity are smaller for BoW-based models than for Discriminator-based. Same pattern holds for repetitiveness.
+
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/lineplot_len_ppl_best_gpt2_disc_bow_ci_90_errstyle_bars.png}
+        \caption{}
+        \label{fig:ctg_lineplot_len_vs_ppl}
+     \end{subfigure}
+    %  \hfill
+    \quad
+     \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/lineplot_len_acc_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+        \caption{}
+        \label{fig:ctg_lineplot_len_vs_acc}
+     \end{subfigure}
+     \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/exp2/lineplot_len_dist1_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+        \caption{}
+        \label{fig:ctg_lineplot_len_vs_dist1}
+     \end{subfigure}
+     
+     \medskip
+     
+     \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/exp2/lineplot_len_dist2_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+        \caption{}
+        \label{fig:ctg_lineplot_len_vs_dist2}
+     \end{subfigure}
+     \quad
+     \begin{subfigure}[b]{0.32\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/exp2/lineplot_len_dist3_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+        \caption{}
+        \label{fig:ctg_lineplot_len_vs_dist3}
+     \end{subfigure}
+     
+     % Main figure caption and label
+        \caption{Various averaged automated evaluation metrics of generated sentences, plotted against increasing sequence length (x-axis), with 90\% confidence intervals. The plots are best viewed in color.}
+        \label{fig:ctg_lineplots_len_vs_metrics}
+\end{figure}
+
+% \begin{figure}[H]
+%      \centering
+%      \begin{subfigure}[b]{0.49\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/exp2/lineplot_len_dist1_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+%         \caption{...}
+%         \label{fig:ctg_lineplot_len_vs_dist1}
+%      \end{subfigure}
+%     %  \hfill
+%      \begin{subfigure}[b]{0.49\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/exp2/lineplot_len_dist2_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+%         \caption{...}
+%         \label{fig:ctg_lineplot_len_vs_dist2}
+%      \end{subfigure}
+%         \caption{}
+%         \label{}
+%     % \hfill
+%      \begin{subfigure}[b]{0.49\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/exp2/lineplot_len_dist3_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+%         \caption{...}
+%         \label{fig:ctg_lineplot_len_vs_dist3}
+%      \end{subfigure}
+%         \caption{}
+%         \label{}
+% \end{figure}
+
+% \begin{figure}[H]
+% \centering
+% \includegraphics[width=.4\textwidth]{figures/exp2/lineplot_len_ppl_best_gpt2_disc_bow_ci_90_errstyle_bars.png}\quad
+% \includegraphics[width=.4\textwidth]{figures/exp2/lineplot_len_acc_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+% % \includegraphics[width=.3\textwidth]{figures/exp2/lineplot_len_dist1_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+
+% \medskip
+% \includegraphics[width=.4\textwidth]{figures/exp2/lineplot_len_dist1_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}\quad
+% \includegraphics[width=.4\textwidth]{figures/exp2/lineplot_len_dist2_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}\quad
+% \includegraphics[width=.4\textwidth]{figures/exp2/lineplot_len_dist3_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
+
+% \caption{Generated sequence length against various automated metrics.}
+% \label{fig:seq_len_vs_auto_metrics}
+% \end{figure}
+
+
 \subsubsection{Quantitative 2: the effects of PPLM-parameters on fluency and control}
 
 \begin{itemize}
@@ -155,7 +329,7 @@ Steps taken to create age-specific wordlists (full imbalanced BNC used):
     \item \len{How much sense does it make to study this, though? Is that the purpose of my thesis? Hasn't this been studied enough in the PPLM-paper? Which parameters do I choose?}
 \end{itemize}
 
-\subsubsection{Quantitative 3: BERT-classifier visualizations.}
+\subsubsection{Quantitative 3: BERT-classifier visualizations. Or (Dialo)GPT visualizations.}
 
 \begin{itemize}
     \item \textit{\textbf{NB:} This is more relevant to the classification experiments, than to the controlled generation experiments.}
@@ -163,6 +337,8 @@ Steps taken to create age-specific wordlists (full imbalanced BNC used):
     \item \textit{Use BertViz to visualize what parts of sequences BERT's transformer heads and neurons are focusing on.}
     
     \item \url{https://github.com/jessevig/bertviz}
+    
+    \item \url{https://towardsdatascience.com/openai-gpt-2-understanding-language-generation-through-visualization-8252f683b2f8}
 \end{itemize}
 
 

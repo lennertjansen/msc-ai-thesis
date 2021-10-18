@@ -1,12 +1,14 @@
 \section{Methodology and experimental setup}
+\label{sec:exp1_methods_exp_setup}
 
-We frame the problem as a $N$-class classification problem: given a fragment of text $X$, we seek to predict
+\textit{The current section contains the methodology and experimental details of our automated age-detection experiments. We frame the problem as a $N$-class classification problem: given a fragment of text $X$, we seek to predict
 the age class of its speaker/writer.
 % its age class. 
-For the dialogue dataset, $N=2$, while $N=3$ for the discourse dataset.
+For the dialogue dataset, $N=2$, while $N=3$ for the discourse dataset.}
+\textit{We experiment with various models, that we briefly describe here below. Details on the training and evaluation of models are given at the end of the sub-section.
+}% : $n$-gram logistic regression, Long Short Term Memory (LSTM) networks, and transformer-based language models BERT and GPT-2.
 
-We experiment with various models, that we briefly describe here below. Details on the training and evaluation of models are given at the end of the sub-section.
-% : $n$-gram logistic regression, Long Short Term Memory (LSTM) networks, and transformer-based language models BERT and GPT-2.
+% \len{TODO - Make this intro/foreword flow a bit smoother. Do I need to mention that we frame the problem as a N-class classification problem etc.?}
 
 \paragraph{\textit{n}-gram} 
 % $n$-gram logistic regression models are the simplest classifiers we consider for our task. For these models,
@@ -43,7 +45,7 @@ The $n$-gram models are trained in a One-vs-Rest (OvR) fashion, and optimized us
 
 % All neural models 
 LSTMs and BERT-based models
-are optimized using Adam \cite{DBLP:journals/corr/KingmaB14}, and trained for 10 epochs, with an early stopping patience of 3 epochs.
+are optimized using Adam \citep{DBLP:journals/corr/KingmaB14}, and trained for 10 epochs, with an early stopping patience of 3 epochs.
 % All results reported in Tables \ref{tab:bnc_classification} and \ref{tab:blog_classification} are averaged over 5 random initializations. 
 The RNN-based models' embeddings are jointly trained, and optimal hyperparameters (i.e., learning rate, embedding size, hidden layer size, and number of layers)  are determined using the validation set and a guided grid-search. %BERT-base-uncased is either used in its unaltered, pre-trained form, or fine-tuned on the validation set for 10 epochs, or until the early stopping criterion is met. 
 BERT$_{FT}$ is fine-tuned on the validation set for 10 epochs, or until the early stopping criterion is met.

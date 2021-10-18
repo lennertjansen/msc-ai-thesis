@@ -1,4 +1,10 @@
 \section{Methods for controlled language generation}
+\label{sec:exp2_methods}
+
+\textit{Plug-and-play language generation entails using a attribute model to make activation-space perturbations on the output of a pre-trained language model. I explain the important architectures involved, and the plug-and-play method in the following sub-sections. Details about how the generation experiments are setup and evaluated are given at the end of the section.}
+
+% \len{TODO - Do I need this short intro?}
+
 \subsection{Transformers}
 
 The Transformer architecture plays a central role in most of the recent advances in NLP. The same holds for the methods used in this thesis to investigate controlled dialogue generation and speaker/author age detection. A brief explanation about the Transformer therefore in order. For a more detailed review of the model architecture, the reader is referred to the original paper (\citep{vaswani2017attention}) or this excellent blog post: \url{https://jalammar.github.io/illustrated-transformer/}.
@@ -41,6 +47,21 @@ A Transformer-based language model (denoted $\texttt{LM}$) is used in this thesi
 
 where $o_{t + 1}$ is the hidden state of the last layer. Finally, after applying a softmax transformation, the next token $x_{t + 1}$ is sampled from the resulting probability distribution, i.e.,  $x_{t + 1} \sim p_{t + 1} = \texttt{softmax} \left( W o_{t + 1} \right)$, where $W$ is a linear mapping from the model's last hidden state to a vector of vocabulary size. This recursive formulation allows for efficient text generation by leveraging cached memories, without repeated forward passes.
 
+
+\subsection{Conversational response generation}
+
+Conversational response generation can be modeled in similar ways to open-domain text generation. \cite{zeng-etal-2020-meddialog} suggest to either formulate it in terms of source-target pairs, much like neural machine translation, or as a language modeling objective, where the next token or utterance is conditioned on the dialogue history. 
+% \len{TODO - Do I need the following sentence?}
+% To remain close to the training objectives of my baseline models (GPT-2 \citep{radford2019language} and DialoGPT \citep{zhang2019dialogpt}) I choose to adopt the language modeling formulation for conversation modeling. 
+More formally, concatenate all dialogue turns in a multi-turn dialogue session into a long text: $x_1, ..., x_N$. Denote the source sentence or dialogue history as $S = x_1, ..., x_m$ and the target sentence (ground truth response) as $T = x_{m + 1}, ..., x_N$. The conditional probability of dialogue continuation given its history $P(T | S)$ can be written as
+
+\begin{equation}
+    p(T | S) = \prod_{n = m + 1}^N p(x_n | x_1, ..., x_{n - 1}).
+\end{equation}
+
+A multi-turn dialogue session $T_1, ..., T_K$ can be written as $p(T_K, ..., T_2 | T_1)$ which is essentially the product of all source-target pairs probabilities $p(T_i | T_1, ..., T_{i - 1})$. This formulation also shows that optimising the single objective $p(T_K, ..., T_2 | T_1)$ is equivalent to optimising all source-target pair probabilities.
+
+
 \subsection{Plug-and-play modeling}
 \label{sec:ppm}
 
@@ -52,6 +73,16 @@ Plug-and-play language model (PPLM) \cite{dathathri2019plug} works by using a te
     \frac{p(X) p(a | X)}{p(a)} \propto
     p(X)p(a | X).
 \end{equation}
+
+% \len{TODOs -
+% \begin{itemize}
+%     \item Maybe this isn't the best spot, but somewhere in the methodology motivate the choice of using a unigram wordlist as BoW, and a linear classifier trained with a transformer-based architecture.
+%     \item Also emphasize the continuing narrative between Experiment 1 and Experiment 2. Namely, how the best performing systems in Exp1 are used to inform choices during Exp2 (trigram and BERT best classifiers --> use unigram and linear layer used for PPLM).
+%     \item Also explain how the PPLM setup is not compatible with lists of $n$-grams (for $n>1$), as it makes perturbations at the unigram level. And adapting the system to fit trigram BoW's implies retraining the entire underlying language model (like GPT-2) for trigrams, defeating the purpose of PPLM (leveraging large scale language models for controllability, without having to finetune the massive architectures).
+%     \item Then go on to argue that the unigram classifier is on par with trigram, making it a viable choice for the 100MIU BoW.
+%     \item Also mention that your work extends the original BoW-PPLM by using various empirically generated BoWs, instead of curated wordlists. Making it more reproducible.
+%     \item Double-check if you should make this last argument in the methodology, and not in related work or experimental details.
+% \end{itemize}}
 
 To control the generated text, PPLM shifts the aforementioned history $H_t$ (i.e., all Transformer key-value pairs generated up to time $t$) in the direction of the sum of two gradients:
 
@@ -98,54 +129,140 @@ where $\beta$ is a normalization constant, $p_{t + 1}$ and $\tilde{p}_{t + 1}$ d
 
 It is important to realize that the plug-and-play method applied by \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug} is different from fine-tuning. Note that in Equation \ref{eq:H_update_rule} the gradient updates are restricted to the history $H_t$, and do not affect the model's parameters. Because the key-value pairs $(K_t^{(i)}, V_t^{(i)})$ that comprise $H_t$ are activations and not model-weights, the updates only take place in the activation-space. This means that PPLM leaves the underlying (conversational) language model untouched.
 
-Contrary to fine-tuning often massive LMs, PPLM does not incur a significant training cost (depending of course on the complexity of the discriminator or attribute model). However, \cite{madotto-etal-2020-plug} show that PPLM needs a fixed number of $m$ update-steps to for every generated token. This makes the original PPLM setup unsuitable for online interactive applications, like conversational systems. Addressing this problem, they introduce plug-and-play conversational models (PPCM), which extends PPLM by using the original model setup to generate dialogue datasets with the desired attribute $a$, and then use optimized residual adapters \citep{bapna-firat-2019-simple} to control $\texttt{LM}$'s output distribution. 
+Contrary to fine-tuning often massive LMs, PPLM does not incur a significant training cost (depending of course on the complexity of the discriminator or attribute model). However, \cite{madotto-etal-2020-plug} show that PPLM needs a fixed number of $m$ update-steps to for every generated token. This makes the original PPLM setup unsuitable for online interactive applications, like conversational systems. Addressing this problem, they introduce plug-and-play conversational models (PPCM), which extends PPLM by using the original model setup to generate dialogue datasets with the desired attribute $a$, and then use optimized residual adapters \citep{bapna-firat-2019-simple} to control $\texttt{LM}$'s output distribution. However, a fully interactive plug-and-play conversational model is out of the scope of this thesis.
 
-Residual adapters are optimizable modules stacked on every Transformer-layer of a pre-trained (language) model. The adapter module then steers the Transformer's output distribution without changing the pre-trained model's weights. A Layer Normalization module \citep{DBLP:journals/corr/BaKH16} followed by an auto-encoder with residual a connection constitutes a residual adapter module. More specifically, the residual adapter block can be expressed as the following function composition:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% METHODOLOGY ABOUT PPCM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%% CONSIDER WHERE THIS INFORMATION MIGHT STILL BE USEFUL. MAYBE A VERY SHORT SUMMARY IN THE DISCUSSION AS A PROPERLY THOUGHT OUT FUTURE RESEARCH DIRECTION
 
-\begin{equation}
-\begin{gathered}
-    f_{\theta_i} (x) = \texttt{ReLU}(\texttt{LayerNorm} (x) \cdot W_i^E) \cdot W_i^D, \\
-    \texttt{Adapter} (o_{:t}^i) = f_{\theta_i}(o_{:t}^i) + o_{:t}^i
-\end{gathered}
-\end{equation}
+% Residual adapters are optimizable modules stacked on every Transformer-layer of a pre-trained (language) model. The adapter module then steers the Transformer's output distribution without changing the pre-trained model's weights. A Layer Normalization module \citep{DBLP:journals/corr/BaKH16} followed by an auto-encoder with residual a connection constitutes a residual adapter module. More specifically, the residual adapter block can be expressed as the following function composition:
+
+% \begin{equation}
+% \begin{gathered}
+%     f_{\theta_i} (x) = \texttt{ReLU}(\texttt{LayerNorm} (x) \cdot W_i^E) \cdot W_i^D, \\
+%     \texttt{Adapter} (o_{:t}^i) = f_{\theta_i}(o_{:t}^i) + o_{:t}^i
+% \end{gathered}
+% \end{equation}
 
 
-where $o_{:t}^i \in \mathbb{R}^{t \times d}$ denotes the Transformer's $i$-th layer's latent output at step $t$, $d$ is the hidden state's size, $W_i^E$ and $W_i^D$ are learnable parameter-matrices of sizes $d \times m$ and $m \times d$, respectively. Finally, $m$ is the auto-encoder's bottle-neck dimension, which is a tunable hyper-parameter for changing the residual adapter's capacity. In practice, \cite{madotto-etal-2020-plug} use PPLM to generate $n$ attribute-adherent dialogue datasets $\mathscr{D}^a = \{\mathcal{D}^1, ..., \mathcal{D}^n\}$, for attribute $a$. These generated dialogue datasets are then used to train the residual adapter, which they aptly name a plug-and-play adapter, so it can be used to control the language model's output distribution. So for every attribute $a$, they train the plug-and-play adapter's parameters $\Theta_a := \{\theta^{a}_0, ..., \theta^{a}_l\}$, where $\theta^{a}_i := \{W_i^{E, a},W_i^{D, a}\}$, such that negative log-likelihood over the corresponding dialogue dataset $\mathscr{D}^a$ is minimized:
+% where $o_{:t}^i \in \mathbb{R}^{t \times d}$ denotes the Transformer's $i$-th layer's latent output at step $t$, $d$ is the hidden state's size, $W_i^E$ and $W_i^D$ are learnable parameter-matrices of sizes $d \times m$ and $m \times d$, respectively. Finally, $m$ is the auto-encoder's bottle-neck dimension, which is a tunable hyper-parameter for changing the residual adapter's capacity. In practice, \cite{madotto-etal-2020-plug} use PPLM to generate $n$ attribute-adherent dialogue datasets $\mathscr{D}^a = \{\mathcal{D}^1, ..., \mathcal{D}^n\}$, for attribute $a$. These generated dialogue datasets are then used to train the residual adapter, which they aptly name a plug-and-play adapter, so it can be used to control the language model's output distribution. So for every attribute $a$, they train the plug-and-play adapter's parameters $\Theta_a := \{\theta^{a}_0, ..., \theta^{a}_l\}$, where $\theta^{a}_i := \{W_i^{E, a},W_i^{D, a}\}$, such that negative log-likelihood over the corresponding dialogue dataset $\mathscr{D}^a$ is minimized:
 
-\begin{equation}
-    \Theta_a \text{ s.t. } 
-    \min \mathcal{L} (\mathscr{D}^a) = - \sum_{k}^{|\mathscr{D}^a|} \sum_{i}^n 
-    \log p(s_i^k | s_{<i}^k, \mathcal{D}^k_t),
-\end{equation}
+% \begin{equation}
+%     \Theta_a \text{ s.t. } 
+%     \min \mathcal{L} (\mathscr{D}^a) = - \sum_{k}^{|\mathscr{D}^a|} \sum_{i}^n 
+%     \log p(s_i^k | s_{<i}^k, \mathcal{D}^k_t),
+% \end{equation}
 
-where $s_i^k$ is the $i$-th generated token of response $S_t^k = \{s_0^k, ..., s_n^k\}$ with maximum sequence length $n$.
+% where $s_i^k$ is the $i$-th generated token of response $S_t^k = \{s_0^k, ..., s_n^k\}$ with maximum sequence length $n$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % \textbf{TODO: Motivate the use of discriminators (as opposed to BoW) as attribute models. Emphasize that discriminators do not require human selected word-lists. Frequency-based word-lists, though easily produced based on simple heuristics, still often require human second-opinion to confirm their validity. And mention the use of discriminators that are more complex than single-layer linear classifiers.}
 
 % Finally, in the original PPLM paper, the authors experiment with controlled language generation using as attribute models both trained single-layer discriminators, as bag-of-words (BoW) classifiers, where BoW essentially requires providing a human-selected word-list.
 
-\subsection{Experimental setup and evaluation}
+% \len{TODOs -
+% \begin{itemize}
+%     \item Maybe this isn't the best spot, but somewhere in the methodology motivate the choice of using a unigram wordlist as BoW, and a linear classifier trained with a transformer-based architecture.
+%     \item Also emphasize the continuing narrative between Experiment 1 and Experiment 2. Namely, how the best performing systems in Exp1 are used to inform choices during Exp2 (trigram and BERT best classifiers --> use unigram and linear layer used for PPLM).
+%     \item Also explain how the PPLM setup is not compatible with lists of $n$-grams (for $n>1$), as it makes perturbations at the unigram level. And adapting the system to fit trigram BoW's implies retraining the entire underlying language model (like GPT-2) for trigrams, defeating the purpose of PPLM (leveraging large scale language models for controllability, without having to finetune the massive architectures).
+%     \item Then go on to argue that the unigram classifier is on par with trigram, making it a viable choice for the 100MIU BoW.
+%     \item Also mention that your work extends the original BoW-PPLM by using various empirically generated BoWs, instead of curated wordlists. Making it more reproducible.
+%     \item Double-check if you should make this last argument in the methodology, and not in related work or experimental details.
+% \end{itemize}}
 
-\subsubsection{Automatic evaluation}
+\subsection{Experimental details and evaluation}
 
-\subsubsection{Control (attribute-adherence)}
 
-\textit{How do you measure how representative of the stylistic attribute $a$ the generated text is? Specifically, is the generated text similar to that of the age-group you're controlling for?}
+The workflow of my controlled text generation experiments can be divided into three phases, attribute model development, generation, and evaluation. The following paragraphs describe and motivate the steps and choices per phase. All experiments are conducted on an NVIDIA TitanRTX GPU.
 
-\paragraph{Fluency}
+\paragraph{Attribute model development}
+During attribute model development, either a discriminator is trained on the dialogue data, or a bag-of-words is statistically constructed from the same corpus.
 
-\textit{How do you measure how grammatically correct and fluent the generated texts are?}
+When training the discriminators, the dialogue dataset is randomly split into a training (90\%) and test (10\%) set. The frozen embeddings of either GPT-2-medium \citep{radford2019language} or DialoGPT-medium \citep{zhang2019dialogpt} are fed into trainable linear classifiers, seeking to distinguish between transcribed dialogue utterances from young (ages 19 to 29) and old (ages 50 and over) speakers. The discriminators are trained using Adam \citep{DBLP:journals/corr/KingmaB14} with a learning rate of $1\cdot10^{-4}$ and default values for all other parameters, with a maximum sequence length of 512 tokens, for 20 epochs, and a batch size of 64. The discriminator parameters are used of the epoch with the highest test accuracy.
 
-\begin{itemize}
-    \item Perplexity
-        \begin{itemize}
-            \item \textbf{TODO:} When explaining and motivating the use of perplexity as an evaluation metric for (controlled) language models, re-read this piece of documentation about perplexity by Hugging face: \url{https://huggingface.co/transformers/perplexity.html}
+A simple bag-of-words can also serve as an attribute model. Lists of unigrams are used as BoWs, because the PPLM setup is not compatible with lists of $n$-grams for $n > 1$, as it relies on perturbations at the unigram-level. Making a PPLM-system compatible with, e.g., trigrams, would amount of retraining the entire underlying language model (like GPT-2), thereby defeating the purpose of PPLM, i.e., leveraging large LMs for controllability, without incurring significant re-training costs. However, to continue the narrative between Experiment 1 and 2 (allowing the best-performing classifiers to inform decisions about generation), we use the best unigram's list of most informative features. This is a viable choice, because the unigram and trigram classifiers are on par (See Table~\ref{tab:bnc_classification_ws}).
+
+
+
+I extend the methodology of \cite{dathathri2019plug} that relies on curated wordlists, by applying two empirical approaches to extract wordlists from the dialogue corpus. An empirical approach has the benefit of being more reproducible, and not requiring a domain expert to manually curate a list. In the first approach, the BoW consists of the 100 most informative unigrams of the unigram classifier used during the text classification experiments (See Table \ref{tab:bnc_classification_ws} for the results). The most informative unigrams per age groups are deemed the most distinguishing features by the unigram classifier. They could therefore be used to make sensible perturbations to a language model's output, yielding more effective control.
+
+The second method of wordlist extraction is fully frequency-based, these setups are labeled $FB$ in Table \ref{tab:ctg_results_ws}. The goal of this extraction method is to yield two distinct sets of words that are representative of each age group's language. The frequency-based wordlists per age group are constructed from the \textit{imbalanced} dialogue dataset as follows: Per age group, all unique words are ordered by frequency of occurrence in the corpus. For both ordered lists of word counts, the most frequent words are kept that account for at least 85\% of the cumulative probability mass of the full age-specific distribution of words. Then, the words are removed that appear in both lists (i.e., the overlapping set of words is discarded). Of the resulting two non-overlapping ordered lists of words and their numbers of occurrences, only the words are kept that account for at least 85\% of the respective wordlist's summed occurrences. The resulting lists consist of 56 (young), and 92 (old) words. The 85-th percentile cutoff points are chosen to yield wordlists of similar lengths as those used by \cite{dathathri2019plug}. Both pairs of wordlists are included Section \ref{sec:wordlists}.
+
+% \len{TODO - rephrase this last paragraph to make it clearer.}
+
+% Convert these steps into a description of how the FB wordlists are constructed:
+
+% Steps taken to create age-specific wordlists (full imbalanced BNC used):
+% \begin{itemize}
+%     \item Remove all stopwords. List of stopwords from NLTK's English stopword list. \textbf{TODO: does this make sense? What if differences in use of stopwords are strong indicators of an age-group's speech?}
+%     \item Order all unique words by frequency per age-group.
+%     \item For both lists, keep the words that account for at least 80\% of the respective cumulative probability densities.
+%     \item From both sets of words, remove the words that are in the \textit{union} (i.e., the overlapping set) of the young and old sets.
+%     \item For both sets, order the words by frequency.
+%     \item For both remaining lists, keep the words that account for at least 80\% of the respective cumulative probability densities.
+%     \item \textbf{TODO:} remove curse-words?
+%     \item Resulting wordlist lengths:
+%         \begin{itemize}
+%             \item Young (19-29): 90 words
+%             \item Old (50 plus): 225 words
+%         \end{itemize}
+% \end{itemize}
+
+\paragraph{Generation}
+
+% \len{
+% \begin{itemize}
+%     \item Argue why you choose to use GPT-based models as base LMs for PPLM setup and not best BERT classifier.
+%     \item Make my results easier to compare to results in PPLM (and PPCM?) paper.
+%     \item BERT is an encoder-based architecture (i.e., more suitable for classification). GPT(-2) is a decoder-based architecture (i.e., more suitable for generation). FIND A REFERENCE FOR THIS STATEMENT OR AT LEAST VERIFY IT.
+%     \item exp1 was about comparing model classes (ngram, rnn, transformer). Same type of comparison persists (bow ie ngrams, gpt2 classifier head (transformer))
+%     \item EMPHASIZE HOW EXP1 and EXP2 ARE CONNECTED. Here if fits into narrative, but do it somewhere.
+% \end{itemize}
+% }
+
+Controlled text generation experiments are performed using PPLM-setups that differ with respect to \textbf{(1)} pre-trained language model (GPT-2 or DialoGPT), \textbf{(2)} type of attribute model (BoW or discriminator), \textbf{(3)} attribute (young, old, or uncontrolled), and \textbf{(4)} whether the model was prompted or not. An unprompted model conditions its generated output on the \texttt{<|endoftext|>} token. BoW-based configurations can also differ in their wordlist extraction method (most informative unigrams or frequency-based). 
+
+Every PPLM-setup generates 30 sequences per output length 6, 12, 24, 30, 36, 42, 48, 54, and 60 tokens. Sub-sample sizes of 30 are chosen to satisfy the Central Limit Theorem (CLT), making it possible to assume the sub-samples approximate normal distributions \citep{CLT2008springer}. The results in Table \ref{tab:ctg_results_ws} are averaged over $N = 30 \cdot 9 = 270$ samples.
+% \len{Motivate the choice of lengths and sample size} 
+Note that perturbations of the base language model's output can affect the controlled sequence length, so the final sequence length may differ by a few tokens from the given one. All other PPLM-parameters are kept at their default values, as recommended by \cite{dathathri2019plug}. 
+
+Each reported PPLM-configuration represents the best initialization, if the term applies. The pre-trained language models are kept equal across configurations, as using different initializations of these large models is infeasible, and would defeat the purpose of PPLM. A BoW-based setup uses a single list of words as an attribute model, thereby not having random parameters to initialize. And finally, discriminator-based setups use comparatively small linear classifiers (a few hundred parameters), the initialization effects of which have been found to be negligible on performance.
+
+\len{TODO - Motivate the choice of prompts}
+
+\paragraph{Evaluation}
+
+The generated sequences are evaluated along two main axes: fluency and control. Fluency refers to the degree to which a text passage appears natural, grammatical, and non-repetitive. Control is the extent to which the produced language resembles that of the attribute being controlled for. Evaluation is done using both automated metrics and human opinions. Fluency is measured automatically by perplexity (denoted ppl) with respect to a different language model, GPT-1 \citep{radford2018improving}, expressed as
+
+\begin{equation}
+    \text{ppl}(\textbf{x}) = \exp \left\{ - \frac{1}{t} \sum_{i}^t \ln p_{\theta}(x_i | x_{<i})\right\}.    
+\end{equation}
+
+$\textbf{x}$ represents a sequence of tokens, $t$ is sequence length, $x_i$ is the $i$-th token, and $\theta$ denotes GPT's parameters. Perplexity is a measure of a language model's uncertainty when posed with the task of predicting a succession of words. Assuming a language model to be a reliable representation of relationships within a natural language, low perplexity can serve as a rough proxy for fluency of a text. However, a major caveat of perplexity is that it only measures uncertainty w.r.t. one language model, making it less generalizable. To slightly reduce this effect, we choose to evaluate perplexity with respect to a different language model than the one used for generation (GPT-2 or DialoGPT).
+
+Furthermore, the normalized number of distinct unigrams (Dist-1), bigrams (Dist-2), and trigrams (Dist-3), are used as measures of text diversity. Experiment 1's best BERT-classifier's classification accuracy on a set of sequences generated by a single generation model is used as an automated measure of attribute control. It can be seen as a proxy for control, because it indicates how resemblant of an age group's vernacular a generated text is deemed to be.
+
+Two types of baselines are used when evaluating text generation performance: a pre-trained model baseline, and a corpus-specific baseline. The pre-trained model baseline refers to the uncontrolled language model setting, being either GPT-2 or DialoGPT. Therefore all controlled generation models that use GPT-2 as their language model, should be compared to the uncontrolled GPT-2 baseline. The same holds for DialoGPT. The second type of baseline combines the underlying language model with a bag-of-words consisting of the 100 most common words in the balanced dialogue corpus, irrespective of age. This setting is included to give an indication of how biased the balanced BNC's frequently occurring words might be towards a specific age group.
+
+\len{TODO - Describe human evaluation}
+
+
+% \textit{How do you measure how representative of the stylistic attribute $a$ the generated text is? Specifically, is the generated text similar to that of the age-group you're controlling for?}
+
+% \paragraph{Fluency}
+
+% \textit{How do you measure how grammatically correct and fluent the generated texts are?}
+
+% \begin{itemize}
+%     \item Perplexity
+%         \begin{itemize}
+%             \item \textbf{TODO:} When explaining and motivating the use of perplexity as an evaluation metric for (controlled) language models, re-read this piece of documentation about perplexity by Hugging face: \url{https://huggingface.co/transformers/perplexity.html}
             
-            \item $\text{PPL}(\textbf{x}) = \exp \left\{ - \frac{1}{t} \sum_{i}^t \ln p_{\theta}(x_i | x_{<i})\right\}$
-        \end{itemize}
-    \item Also checkout this blogpost by The Gradient about Evaluation Metrics for Language Modeling (NB: contains BibTeX citation at the bottom): \url{https://thegradient.pub/understanding-evaluation-metrics-for-language-models/}
-\end{itemize}
+%             \item $\text{PPL}(\textbf{x}) = \exp \left\{ - \frac{1}{t} \sum_{i}^t \ln p_{\theta}(x_i | x_{<i})\right\}$
+%         \end{itemize}
+%     \item Also checkout this blogpost by The Gradient about Evaluation Metrics for Language Modeling (NB: contains BibTeX citation at the bottom): \url{https://thegradient.pub/understanding-evaluation-metrics-for-language-models/}
+% \end{itemize}
 
-\subsubsection{Human evaluation}
+% \subsubsection{Human evaluation}
 
-\textbf{TODO:} find humans.
+% \textbf{TODO:} find humans.

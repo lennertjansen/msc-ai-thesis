@@ -150,7 +150,7 @@ by\\[0.2cm]
 
 \emph{Supervisor:} \\
 
-\red{Dr \textsc{Sandro Pezzelle} }% Supervisor's Name
+\red{Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabella Sinclair}}% Supervisor's Name
 
 \end{flushleft}
 
@@ -164,7 +164,9 @@ by\\[0.2cm]
 
 \emph{Assessor:} \\
 
-\red{Dr \textsc{Raquel Fernández}}\\
+\red{???}
+
+% \red{Dr \textsc{Raquel Fernández}}\\
 
 \end{flushright}
 
@@ -230,7 +232,7 @@ by\\[0.2cm]
 
 \input{sections/experiment2/exp2_intro}
 
-\input{sections/experiment2/exp2_data}
+% \input{sections/experiment2/exp2_data}
 
 \input{sections/experiment2/exp2_methods}
 
@@ -253,10 +255,36 @@ by\\[0.2cm]
 % \input{sections/results/dialogue_generation}
 
 \chapter{Discussion}
-\dots
+
+\paragraph{Discussion points about classification}
+\begin{itemize}
+    \item Can any ML architecture pick up signals from 1-6 token sequences? (See workshop paper submission feedback).
+    \item age-related linguistic features that inform classification lie more at the syntactic level than at the lexical level.
+    \item \len{Re-read the relevant sections of the workshop paper submission}
+\end{itemize}
+
+\paragraph{Discussion points about generation}
+\begin{itemize}
+    \item What are the effects of prompts on generation? \len{This should probably be an analysis question.}
+    \item What are the limitations of your setup?
+    \item Does this make the world better? How can this help people? --> It can help personalize virtual assistants (especially useful for new speakers of a language. E.g., the difference between young/informal/spoken French and French that is taught in school and courses is large. User-age personalization can adapt use of language of virtual assistants to variant of language spoken by user.)
+    \item What are the dangers of these methods? --> Read up on paper by Ebru et al
+    \item What are interesting future research directions?
+    \item My research is a promising step towards the development of personalized virtual assistants.
+    \item Future research idea: adapting the PPLM-setup to work with $n$-gram lists for arbitrary $n$.
+        \begin{itemize}
+            \item Finding a way to by-pass the need to retrain GPT-2 for arbitrary n-grams
+        \end{itemize}
+    \item Future research idea: real-time interactivity of age-adaptive conversational systems. I.e., a pipeline that (1) "starts off neutral", (2) classifies user's age based on minimal amount of utterances, (2*) uses bayesian modelling or reinforcement learning to constantly update belief, (3) adapts use of language to perceived user age.
+\end{itemize}
 
 \chapter{Conclusion}
-\dots
+
+\begin{itemize}
+    \item Sum up what this thesis/research entailed.
+    \item Repeat most salient conclusions and insights of thesis.
+    \item \dots
+\end{itemize}
 
 % References ---------------------------------------------------------------
 \newpage

@@ -1,3 +1,27 @@
 \section{Introduction}
 
-\len{Briefly introduce the problem you seek to solve (i.e., plug-and-play adaptive dialogue generation), your hypotheses, and give an overview of the chapter (i.e., data (only BNC, no blogs), methods and models, results, and analyses).}
+% \len{TODO - Emphasize the connection between Experiment 1 and Experiment 2: \textit{we’ve shown that it’s possible to classify younger vs older age groups based on language; we now want to check whether it’s possible to generate language than encompasses these features (2). We’ll use state-of-art models for language generation (1)….}}
+
+% \len{Sandro's advice for this introduction and chapter: \textit{I think something important to stress is the connection at the dialogue-level: we’ve used BNC to train the classifier, which is a dialogue dataset. Now, in generating, I think it’s important that we generate something similar to a dialogue turn, i.e., a response to a dialogue “prompt”.}}
+
+% \len{TODO - Motivate the choice of GPT for generation, and BERT for classification}
+
+% \len{
+% \begin{itemize}
+%     \item Here make the argument for using the best BERT-ft classifier from Exp1
+%     \item BERT more suitable for classification.
+%     \item Exp1 uses fully finetuned BERT (ca 110M parameters). For GPT2 (ca 345M parameters) this is infeasible with my computational resources.
+%     \item Using a separate model class (i.e., BERT) for evaluation of GPT-based generation models makes the results more generalizable.
+% \end{itemize}
+% }
+
+In the previous chapter, we have shown that it is possible to classify younger versus older age groups based on linguistic features. We now aim to check whether it is possible to generate language that encompasses these features. Experiment 1's classifier, which evaluates the generated output of Experiment 2's models, is trained on the spoken component of the BNC, which is a dialogue dataset. Now, in generating, it is important that we generate something similar to a dialogue turn, i.e., a response to a dialogue “prompt”. 
+
+We will use state-of-art models, GPT-2 \citep{radford2019language} and DialoGPT \citep{zhang2019dialogpt}, for (controlled) language generation. The deliberate choice to use BERT-based models for classification (and evaluation of generated output), and GPT-based models for generation is motivated by the following reasons. BERT's encoder-based bidirectional architecture makes it more suitable for sequence classification than for generation \citep{devlin-etal-2019-bert}. By similar reasoning, GPT's decoder-based structure makes it a more suitable choice for generation tasks. Furthermore, Experiment 1's best classifier is a fully fine-tuned BERT model (ca 110M parameters), while fine-tuning GPT-2-medium (ca 345M parameters) is infeasible with my computational resources. Finally, using a separate model class (i.e., BERT) for evaluation of GPT-based generation models makes the results more generalizable.
+
+This chapter covers the methodology, experimental setup, results, and analyses relating to the language generation experiments of this thesis. The central problem of this chapter is a plug-and-play approach to age-adaptive dialogue generation. In other words, I seek to use large pre-trained language models for controllable dialogue generation, using activation-space perturbations instead of fine-tuning. Either GPT-2-medium or DialoGPT-medium is used as a base language model. And adaptation of the generated language to a certain age group is achieved using either a linear discriminator or a bag-of-words (BoW), trained or empirically constructed from the dialogue dataset \citep{love-spoken-bnc-2014}. Using GPT-2 and DialoGPT as baselines, a set of automated and human evaluation metrics are used to evaluate the fluency and control of the proposed models. I expect discriminator-based control to be more detectable and fine-grained than BoW-based control. I also expect BoW-based control to take a smaller toll on fluency.
+
+The rest of this chapter is structured as follows. Section \ref{sec:exp2_methods} contains detailed descriptions of the most important methods and models involved: Transformers, conversational language modeling, and plug-and-play language models. This section ends with the experimental details, and an explanation of the chosen evaluation metrics. The results of the language generation experiments are presented and interpreted in Section \ref{sec:exp2_results}, followed by the outcomes of various quantitative and qualitative analyses in Section \ref{sec:exp2_analyses}. A separate section about data is omitted in this chapter, because we use the previously mentioned dialogue dataset for these experiments. The reader is directed to Sub-section \ref{subsec:dialogue_dataset} for a detailed description of that corpus, and our pre-processing steps.
+
+% \len{TODO - Does it suffice to redirect the reader to the previous sub-section about the dialogue dataset? Or am I missing an explanation about the dialogue corpus in this chapter?}
+

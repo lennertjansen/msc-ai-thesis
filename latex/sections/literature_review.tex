@@ -1,6 +1,6 @@
-\len{TODO - Add a brief general introduction to the chapter here. See Sandro's comment. E.g:}
+% \len{TODO - Add a brief general introduction to the chapter here. See Sandro's comment. E.g:}
 
-\textit{We provide a literature review ... to introduce important concepts ... and work related to ours.}
+\textit{This chapter is a two-part literature review. The first section, Background or Section \ref{sec:background}, provides an overview of this thesis' central problem of controllable dialogue generation, and the components involved, i.e., dialogue, (controllable) language generation, dialogue response generation, and age modeling. In the second section, Related work or Section \ref{sec:related_work}, I discuss previous approaches, relevant to my work, that have been proposed to tackle each of these components, either separately or jointly. Approaches to different, but strongly related, problems, like text style transfer, are also described in Section \ref{sec:related_work}.} 
 
 \section{Background}
 \label{sec:background}
@@ -28,8 +28,6 @@
 %     \item Explain concepts that must be understood to grasp my research topic (i.e., give theoretical background information for the rest of your thesis).
 % \end{itemize}
 
-Controllable dialogue generation encompasses several concepts in natural language processing and linguistics that must be understood to approach the problem. This subsection highlights these topics and positions the central problem of this thesis in its relevant theoretical background.
-
 \len{Keep in mind the following distinction between Background and Related Work - The Background section should give
 an overview of the problem and the components involved: dialogue,
 language generation, dialogue response generation, age modelling, etc.,
@@ -37,6 +35,13 @@ without focusing on one or the other approach — in Related Work, you
 describe approaches that have been proposed to tackle each of these
 components, separately or jointly, and which are related or relevant to
 your own work for some reason}
+
+
+% \len{Comment by Sandro - \textit{This intro needs to be more explicitly connected to your work. I would recap once more what you are after (“We focus on controllable generation, i.e. … and apply it to dialogue … This naturally involves having a model for language generation that can be controlled to … In what follows, we introduce the crucial concepts behind this: models for language generation, methods to control the output … dialogue … ”}}
+
+We focus on controllable language generation, i.e., endowing automatically produced text with certain desired linguistic characteristics, and apply it to dialogue. This naturally involves having a model for language generation that can be controlled to write texts passages with different linguistic styles. In what follows, we introduce the crucial concepts behind this: models for language generation, methods to control the output, dialogue, and age modeling.
+
+\len{isn't this redundant, given the chapter's introduction?}
 
 \subsection{Language Models}
 
@@ -100,52 +105,68 @@ Controllable text generation or CTG is a more challenging problem than vanilla t
 
 \subsection{Dialogue}
 
-\len{TODO - Add a sub-section here about dialogue (also think of a better title for the sub-section). This is necessary because dialogue is the main focus of your thesis. So before you discuss dialogue response generation (which is the NLP-operationalization of dialogue), formally introduce the concept of dialogue. What is it? What does it look like? How is it different from discourse? Provide some examples like we did in the paper-submission.}
+% \len{TODO - Add a sub-section here about dialogue (also think of a better title for the sub-section). This is necessary because dialogue is the main focus of your thesis. So before you discuss dialogue response generation (which is the NLP-operationalization of dialogue), formally introduce the concept of dialogue. What is it? What does it look like? How is it different from discourse? Provide some examples like we did in the paper-submission.}
 
-\len{See Sandro's suggestions for this subsection.}
-
-
-Contents: 
-\begin{itemize}
-    \item introduce what is dialogue, 
-    \item what it looks like, 
-    \item how it differs from discourse, etc. 
-    \item Some examples would also be useful. (maybe from the BNC?)
-\end{itemize}
-
-\subsection{Dialogue response generation}
-Text generation is suitable to tackle tasks such as machine translation, abstractive summarization, and paraphrasing. Dialogue response generation is also a special case of language generation. It can be seen as language generation where the prompt is a turn in a dialogue session. Conversational response generation shares open-domain text generation's overarching objective of producing grammatically correct fluent text, while remaining relevant to the prompt. However, computational dialogue modeling distinguishes itself from most NLP domains due to the challenges associated with modeling human conversation: informal, noisy, unstructured, and even erroneous real-world responses, possibly competing goals of interlocutors, or an inherently more diverse set of acceptable responses. \len{Comment by SF about the previous sentence: \textit{all these aspects could be introduced/described in this subsection about (human) dialogue}}
-
-\len{Consider moving the following paragraph to the methodology. FROM HERE...}
-
-Despite these differences, conversational response generation can be modeled in similar ways to open-domain text generation. \cite{zeng-etal-2020-meddialog} suggest to either formulate it in terms of source-target pairs, much like neural machine translation, or as a language modeling objective, where the next token or utterance is conditioned on the dialogue history. To remain close to the training objectives of my baseline models (GPT-2 \citep{radford2019language} and DialoGPT \citep{zhang2019dialogpt}) I choose to adopt the language modeling formulation for conversation modeling. I.e., concatenate all dialogue turns in a multi-turn dialogue session into a long text: $x_1, ..., x_N$. Denote the source sentence or dialogue history as $S = x_1, ..., x_m$ and the target sentence (ground truth response) as $T = x_{m + 1}, ..., x_N$. The conditional probability of dialogue continuation given its history $P(T | S)$ can be written as
-
-\begin{equation}
-    p(T | S) = \prod_{n = m + 1}^N p(x_n | x_1, ..., x_{n - 1}).
-\end{equation}
-
-A multi-turn dialogue session $T_1, ..., T_K$ can be written as $p(T_K, ..., T_2 | T_1)$ which is essentially the product of all source-target pairs probabilities $p(T_i | T_1, ..., T_{i - 1})$. This formulation also shows that optimising the single objective $p(T_K, ..., T_2 | T_1)$ is equivalent to optimising all source-target pair probabilities.
+% \len{See Sandro's suggestions for this subsection.}
 
 
+% Contents: 
 % \begin{itemize}
-%     \item What is (computational) dialogue modeling?
-%     \item What do we aim to understand with CDM?
-%     \item How is (controllable) text generation related to CDM?
-%     \item Is dialogue generation ``simply'' a special case of text generation? If so, explain what are the conditions that constitute this special case.
+%     \item introduce what is dialogue, 
+%     \item what it looks like, 
+%     \item how it differs from discourse, etc. 
+%     \item Some examples would also be useful. (maybe from the BNC?)
 % \end{itemize}
 
+Dialogue can be described as a written or spoken conversational exchange between two or more interlocutors. Generally speaking, its purpose is to exchange information or build relationships between interlocutors. A dialogue typically consists of interlocutors exchanging utterances in turns. 
 
-\len{...TO HERE.}
+\len{\textbf{TODO} - Give an example of a dialogue snippet (from the BNC)}
+
+Dialogue distinguishes itself from discourse in that it necessarily involves two or more participants exchanging information and contributing to the conversation, whereas discourse can be a one-way exchange of information, like a lecture or blog-post.
+
+The NLP operationalization of dialogue, dialogue generation, is a fundamental component for real-world virtual assistants such as Siri and Alexa. It is the task of automatically generate a response given a prompt by the user.
+
+Computational dialogue modeling distinguishes itself from most NLP domains due to the challenges associated with modeling human conversation: informal, noisy, unstructured, and even erroneous real-world responses, possibly competing goals of interlocutors, or an inherently more diverse set of acceptable responses.
+
+
+\subsection{Dialogue response generation}
+Text generation is suitable to tackle tasks such as machine translation, abstractive summarization, and paraphrasing. Dialogue response generation is also a special case of language generation. It can be seen as language generation where the prompt is a turn in a dialogue session. Conversational response generation shares open-domain text generation's overarching objective of producing grammatically correct fluent text, while remaining relevant to the prompt. 
+% However, computational dialogue modeling distinguishes itself from most NLP domains due to the challenges associated with modeling human conversation: informal, noisy, unstructured, and even erroneous real-world responses, possibly competing goals of interlocutors, or an inherently more diverse set of acceptable responses. \len{Comment by SF about the previous sentence: \textit{all these aspects could be introduced/described in this subsection about (human) dialogue}}
+
+%%%%%% THE FOLLOWING PARAGRAPH HAS BEEN MOVED TO THE METHODOLOGY. FROM HERE ..... %%%%%%%%%
+% \len{Consider moving the following paragraph to the methodology. FROM HERE...}
+
+% Despite these differences, conversational response generation can be modeled in similar ways to open-domain text generation. \cite{zeng-etal-2020-meddialog} suggest to either formulate it in terms of source-target pairs, much like neural machine translation, or as a language modeling objective, where the next token or utterance is conditioned on the dialogue history. To remain close to the training objectives of my baseline models (GPT-2 \citep{radford2019language} and DialoGPT \citep{zhang2019dialogpt}) I choose to adopt the language modeling formulation for conversation modeling. I.e., concatenate all dialogue turns in a multi-turn dialogue session into a long text: $x_1, ..., x_N$. Denote the source sentence or dialogue history as $S = x_1, ..., x_m$ and the target sentence (ground truth response) as $T = x_{m + 1}, ..., x_N$. The conditional probability of dialogue continuation given its history $P(T | S)$ can be written as
+
+% \begin{equation}
+%     p(T | S) = \prod_{n = m + 1}^N p(x_n | x_1, ..., x_{n - 1}).
+% \end{equation}
+
+% A multi-turn dialogue session $T_1, ..., T_K$ can be written as $p(T_K, ..., T_2 | T_1)$ which is essentially the product of all source-target pairs probabilities $p(T_i | T_1, ..., T_{i - 1})$. This formulation also shows that optimising the single objective $p(T_K, ..., T_2 | T_1)$ is equivalent to optimising all source-target pair probabilities.
+
+
+% % \begin{itemize}
+% %     \item What is (computational) dialogue modeling?
+% %     \item What do we aim to understand with CDM?
+% %     \item How is (controllable) text generation related to CDM?
+% %     \item Is dialogue generation ``simply'' a special case of text generation? If so, explain what are the conditions that constitute this special case.
+% % \end{itemize}
+
+
+% \len{...TO HERE.}
+%%%%%%%%%%%%%%%% ...TO HERE
 
 \subsection{Controllable dialogue generation}
 
-\len{Sandro suggests to move the entire following subsection to the Related Work section. See comment. FROM HERE...}
+% \len{Sandro suggests to move the entire following subsection to the Related Work section. See comment. FROM HERE...}
 
-Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI. This objective is difficult to reach because of the challenge of representing personality traits via language expression and the lack of large-scale persona-labeled dialogue datasets \citep{zheng2019personalized}. Assuming an encoder-decoder setup, \cite{zheng2019personalized} argue that most personalized neural conversation models can be classified as one of two types: implicit and explicit personalisation models. For implicit personalization models, each speaker has its own vector representation, which implicitly captures the speaking style of the speaker in the decoding process. These models enjoy the benefit of having a more granular and realistic representation of speaking style, as opposed to a simple discrete set of traits (as is the case for explicit personalization models). On the other hand, it is unclear how speaker style is captured and should be interpreted, as all the information about a speaker's style is encoded in a real-valued vector. Furthermore, these methods suffer from a data sparsity issue, because each dialogue should be tagged with a speaker identifier and there should be sufficient dialogues from each trait-group to train a reliable trait-adaptive model. \len{This should be in the related work. See comment.} This last drawback is a bigger hurdle for the method proposed by \citeauthor{zheng2019personalized} than it is for mine, as their work deals with personalization for intersections of multiple traits, whereas this thesis focuses on adaptation to a small number of age groups.
+Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI. This objective is difficult to reach because of the challenge of representing personality traits via language expression and the lack of large-scale persona-labeled dialogue datasets. Assuming an encoder-decoder setup, most personalized neural conversation models can be classified as one of two types: implicit and explicit personalisation models \citep{zheng2019personalized}. For implicit personalization models, each speaker has its own vector representation, which implicitly captures the speaking style of the speaker in the decoding process. These models enjoy the benefit of having a more granular and realistic representation of speaking style, as opposed to a simple discrete set of traits (as is the case for explicit personalization models). On the other hand, it is unclear how speaker style is captured and should be interpreted, as all the information about a speaker's style is encoded in a real-valued vector. Furthermore, these methods suffer from a data sparsity issue, because each dialogue should be tagged with a speaker identifier and there should be sufficient dialogues from each trait-group to train a reliable trait-adaptive model. 
+% \len{This should be in the related work. See comment.} 
+% This last drawback is a bigger hurdle for the method proposed by \cite{zheng2019personalized} than it is for mine, as their work deals with personalization for intersections of multiple traits, whereas this thesis focuses on adaptation to a small number of age groups.
 
-For explicit personalization models, the generated responses are conditioned either on a given personal profile, text-described persona, or simply an attribute label. That is, speaker traits are represented as key-value pairs or descriptions about age, gender, etc. This can be seen as conditioning the decoder's output on an attribute $a$, much like the PPLM setup of \cite{dathathri2019plug}. Speakers with same set of personality traits can share attribute representations, so it does not require a speaker-specific representation vector. Such structured character descriptions are more explicit, straight-forward, and interpretable. However, explicit personalization models require manually labeled or crowdsourced datasets for development, making it difficult to scale these models to large-scale dialogue datasets.
+When generating responses, \textit{explicit} personalization models are conditioned either on a given personal profile, text-described persona, or simply an attribute label. That is, speaker traits are represented as key-value pairs or descriptions about age, gender, etc. This can be seen as conditioning the decoder's output on an attribute $a$. Speakers with same set of personality traits can share attribute representations, so it does not require a speaker-specific representation vector. Such structured character descriptions are more explicit, straight-forward, and interpretable. However, explicit personalization models require manually labeled or crowdsourced datasets for development, making it difficult to scale these models to large-scale dialogue datasets.
 
-\len{...TO HERE}
+% \len{...TO HERE}
 
 % \begin{enumerate}
 %     \item \textit{Implicit personalization models}
@@ -178,7 +199,8 @@ The relationship between a person's age and use of language is a thoroughly stud
 
 Detectable linguistic differences between age-groups can often be attributed to the use of language fads or references to age-specific popular culture. For instance, \cite{schler2006effects} find that the use of slang and neologisms (such as \textit{lol} and \textit{ur}) are strong indicators of youth. Similarly, words like `facebook', `instagram', and `netflix' appear in the most frequently used words by younger participants of conversational data collection efforts, like that of the British National Corpus' spoken component \citep{love-spoken-bnc-2014}.
 
-More recent studies, like that of \cite{nguyen-etal-2011-author}, \cite{zheng2019personalized}, and \cite{abdallah2020age}, frame age prediction from text as traditional machine learning problems, like linear regression, support vector machines, or neural architectures. These modeling approaches tend to reveal that strong indicators of age lie at the syntactic or structural level of language use, as opposed to the more content-based lexical level. Furthermore, this could explain why automatic detection from text of more content-based traits, like topic or sentiment, tend to be easier problems to solve than age prediction from text. To emphasize one such complicating factor, \cite{nguyen2014gender} argue that differences in language use are often relation to the speaker's social identity, which could differ from their biological identity. This idea that age prediction from text is more challenging than topic or sentiment prediction could be an indication that controlled language generation for age-differences is also a more nuanced problem than topical steered text generation.
+% More recent studies, like that of \cite{nguyen-etal-2011-author}, \cite{zheng2019personalized}, and \cite{abdallah2020age}, frame age prediction from text as traditional machine learning problems, like linear regression, support vector machines, or neural architectures. These modeling approaches tend to reveal that strong indicators of age lie at the syntactic or structural level of language use, as opposed to the more content-based lexical level. Furthermore, this could explain why automatic detection from text of more content-based traits, like topic or sentiment, tend to be easier problems to solve than age prediction from text. To emphasize one such complicating factor, \cite{nguyen2014gender} argue that differences in language use are often relation to the speaker's social identity, which could differ from their biological identity. 
+% This idea that age prediction from text is more challenging than topic or sentiment prediction could be an indication that controlled language generation for age-differences is also a more nuanced problem than topical steered text generation.
 
 
 % \textbf{Keep in mind:}
@@ -196,16 +218,34 @@ More recent studies, like that of \cite{nguyen-etal-2011-author}, \cite{zheng201
 
 \len{Keep in mind the following distinction between Background and Related Work - The Background section should give
 an overview of the problem and the components involved: dialogue,
-language generation, dialogue response generation, age modelling, etc.,
+language generation, dialogue response generation, age modeling, etc.,
 without focusing on one or the other approach — in Related Work, you
 describe approaches that have been proposed to tackle each of these
 components, separately or jointly, and which are related or relevant to
 your own work for some reason}
 
+\subsection{Automated age detection}
+
+\len{Consider adding a small sub-section about automated age detection from text, because you often bring up the problem and other researchers' approaches to solving it in the Background section.}
+
+\dots
+
+\len{work this into this subsection. Taken from workshop paper submission}
+
+\textit{Previous work on age detection in dialogue has focused on speech features, which are known to systematically vary across age groups. For example,  \citet{wolters2009age} learn logistic regression age classifiers from a small dialogue dataset %of 448 dialogues 
+using different acoustic cues supplemented with a small set of hand-crafted lexical features, while \citet{li2013automatic} develop SVM classifiers using acoustic and prosodic features extracted from scripted utterances spoken by participants interacting with an artificial system. In contrast to this line of work, we investigate whether different age groups can be detected from textual linguistic information rather than voice-related cues. We explore whether, and to what extent, various state-of-the-art NLP models are able to capture such differences in dialogue data as a preliminary step to age-group adaptation by conversational agents.
+We build on the work of~\citet{schler2006effects}, who focus on age detection in written discourse using a corpus of blog posts. The authors learn a Multi-Class Real Winnow classifier leveraging a set of pre-determined style- and content-based features, including part-of-speech categories, function words, and the 1000 unigrams with the highest information gain in the training set. They find that content features (lexical unigrams) yield higher accuracy ($\sim$ 74\%) than style features ($\sim$72\%), while their best results are obtained with their combination ($\sim$76\%). 
+We extend this investigation in several key ways: (1) we leverage state-of-the-art NLP models that allow us to learn representations end-to-end, without the need to specify concrete features in advance; (2) we apply this approach to dialogue data, using a large-scale dataset of transcribed, spontaneous open-domain dialogues; (3) we show that text-based models can indeed detect age-related differences in both discourse and dialogue, even in the case of very sparse signal at the level of dialogue utterances; and finally (4) we carry out an in-depth analysis of the models' predictions to gain insight on which elements of language use are most informative. }
+
+\dots
+
+More recent studies, like that of \cite{nguyen-etal-2011-author}, \cite{zheng2019personalized}, and \cite{abdallah2020age}, frame age prediction from text as traditional machine learning problems, like linear regression, support vector machines, or neural architectures. These modeling approaches tend to reveal that strong indicators of age lie at the syntactic or structural level of language use, as opposed to the more content-based lexical level. Furthermore, this could explain why automatic detection from text of more content-based traits, like topic or sentiment, tend to be easier problems to solve than age prediction from text. To emphasize one such complicating factor, \cite{nguyen2014gender} argue that differences in language use are often relation to the speaker's social identity, which could differ from their biological identity. 
+
+
 \subsection{Controllable language generation}
 Previous approaches to controlled language generation require fine-tuning large Transformer-based language models or training conditional generative LMs from scratch. Most notably CTRL \citep{keskarCTRL2019}, which achieves controllable generation by training a generative Transformer for a number of control codes. CTG models that require fine-tuning for control, like CTRL, can produce high quality fluent text because they are specifically trained to maximize the likelihood of generated sequences, given an attribute (denoted $p(\textbf{x} | a)$), but require training massive language models with computational costs.
 
-Other recent examples of controllable language generation models that are not Transformer-based also exist. \cite{li-etal-2020-optimus} introduce OPTIMUS, a large pre-trained Variational Autoencoder (VAE) \citep{Kingma2014} that can be fine-tuned for specific natural language tasks, like guided sentence generation. They demonstrate OPTIMUS' ability to perform controlled text generation from latent style embeddings, with fluency at par with GPT-2. They also show how OPTIMUS generalizes better for low-resource languages than BERT \citep{devlin-etal-2019-bert}. Nevertheless, much like the previously mentioned CTG models, OPTIMUS still incurs a significant computational cost for fine-tuning per NLP task.
+Other recent examples of controllable language generation models that are not Transformer-based also exist. \cite{li-etal-2020-optimus} introduce OPTIMUS, a large pre-trained Variational Autoencoder (VAE) \citep{Kingma2014} that can be fine-tuned for specific natural language tasks, like guided sentence generation. They demonstrate OPTIMUS' ability to perform controlled text generation from latent style-embeddings, with fluency at par with GPT-2. They also show how OPTIMUS generalizes better for low-resource languages than BERT \citep{devlin-etal-2019-bert}. Nevertheless, much like the previously mentioned CTG models, OPTIMUS still incurs a significant computational cost for fine-tuning per NLP task.
 
 % The plug-and-play language model (PPLM) \citep{dathathri2019plug} is a recent approach to leverage powerful large-scale language models and make them controllable for a wide variety of linguistic attributes, while avoiding incurring significant costs of fine-tuning these massive language models. Nevertheless avoiding these costs is anything but trivial. The plug-and-play setup of the PPLM model forms one of the main theoretical foundations of this work. It is both logical and promising for every day engineers to be able to leverage the grammatical fluency of pre-trained language models for more specific downstream tasks, e.g., specifying linguistic characteristic to enforce on an automatically written text. Their setup consists of a symbiosis of GPT-2 as their powerful large-scale language model, and a significantly smaller and therefore easier to train and fine-tune attribute model. This attribute model is often a small classifier, and can range in complexity from a simple bag of words model with a logistic classifier to a more complicated transformer encoder head. The main benefit of this setup is the extensibility it brings with it. Namely, such large-scale language models are open-source and available online and can be tailored to their specific needs using a significantly easier to train attribute model of your own liking. \cite{dathathri2019plug} demonstrate the applicability of their model on a wide variety of tasks ranging from text style transfer to language detoxification (all of which can be seen as sub-problems of controllable text generation). Other real-world applications include: being able to automatically re-write or adjust a draft text for an editorial, automatic generation of brand specific vacancy ads, or personalized chatbot assistance or even personalized education. What this work also provides is a starting point for new applications, namely controllable dialogue generation.
 
@@ -250,13 +290,13 @@ Dialogue generation is the essential precursor to this thesis' ultimate task of 
 
 
 \subsection{Controlled Dialogue Generation}
-Controlled dialogue generation is the task of steering automatically generated conversational responses to possess certain desired stylistic aspects, like sentiment, specific topic, or more abstract writing style characteristics.
+Controlled dialogue generation is the task of steering automatically generated conversational responses to possess desired attributes, like sentiment, topic, or more abstract writing style characteristics.
 % Nowadays, dialogue systems like Siri, Alexa, or Google Assistant, play large roles making technology easier to use, it is of great commercial interest to be able to control (e.g., personalize) the style of their responses. Medical applications too have been found for controllable dialogue generation.
 \cite{zeng-etal-2020-meddialog} explore the applications of fine-tuning large language models, like GPT, on (Mandarin and English) medical consultation data. The resulting dialogue systems succeed at generating clinically correct and human-like responses to patients' medical questions. Medical dialogue systems like these can help make healthcare services more accessible and aid medical doctors to improve patient care.
 
-\cite{zheng2019personalized} investigate the problem of incorporating explicit personal characteristics in dialogue generation to deliver personalized conversation. They introduce a dataset \texttt{PersonalDialog}, which is a large-scale multi-turn dialogue dataset with personality trait labeling (i.e., \texttt{Age}, \texttt{Gender}, \texttt{Location}, \texttt{Interest Tags}, etc.) for a large number of speakers. And \cite{zheng2019personalized} propose persona-aware models that apply a trait fusion module in the encoder-decoder framework to capture and address personality traits in dialogue generation. Persona-aware attention mechanisms and bias are used to incorporate personality information in the decoding process. All their tested classification and dialogue generation models are either variations of RNNs (such as LSTMs or gated recurrent units (GRUs)), convolutional neural networks (CNNs), or hybrids of these systems (LSTM-outputs fed into a CNN, known as recurrent convolutional neural networks (RCNNs)). The authors study the influence of age, gender, and location on dialogue classification and generation, and use both automatic (perplexity, trait accuracy, and generated response diversity measures) and human evaluation. They find dialogues to be distinguishable by gender (about 90.61\% test accuracy), then age (78.32\% test accuracy), and finally location (62.04\% test accuracy). Both automatic and human evaluation of the generated responses show that the best performing models benefit greatly from the persona-aware attention mechanism, possibly making a case to consider more attention-based architectures instead of RNNs.
+\cite{zheng2019personalized} investigate the problem of incorporating explicit personal characteristics in dialogue generation to deliver personalized conversation. They introduce a dataset \texttt{PersonalDialog}, which is a large-scale multi-turn dialogue dataset with personality trait labeling (i.e., \texttt{Age}, \texttt{Gender}, \texttt{Location}, \texttt{Interest Tags}, etc.) for a large number of speakers. \cite{zheng2019personalized} also propose persona-aware models that include a trait fusion module in the encoder-decoder framework to capture and address personality traits in dialogue generation. Persona-aware attention mechanisms and bias are used to incorporate personality information in the decoding process. All their tested classification and dialogue generation models are either variations of RNNs (such as LSTMs or gated recurrent units (GRUs)), convolutional neural networks (CNNs), or hybrids of these systems (LSTM-outputs fed into a CNN, known as recurrent convolutional neural networks (RCNNs)). The authors study the influence of age, gender, and location on dialogue classification and generation, and use both automatic (perplexity, trait accuracy, and generated response diversity measures) and human evaluation. They find dialogues to be distinguishable by gender (about 90.61\% test accuracy), then age (78.32\% test accuracy), and finally location (62.04\% test accuracy). Both automatic and human evaluation of the generated responses show that the best performing models benefit greatly from the persona-aware attention mechanism, possibly making a case to consider more attention-based architectures instead of RNNs.
 
-Although the previously mentioned architectures are able to produce \hl{human-like fluent} conversational responses, sometimes even leveraging the fluency of large pre-trained LMs, they all suffer from the same computational drawback. They all require massive amounts of computational power to adapt their language styles, because in their cases, guided generation implies fine-tuning (or even retraining) large attribute-specific dialogue datasets. For general controlled language generation, this obstacle is overcome by \cite{dathathri2019plug}'s previously mentioned PPLM setup. The conversational analog of this idea, plug-and-play conversational model (PPCM), is proposed by \cite{madotto-etal-2020-plug}. Similar to PPLM, PPCM achieves guided dialogue generation via activation-space perturbations using easy to train attribute models. 
+Although the previously mentioned architectures are able to produce human-like conversational responses, sometimes even leveraging the fluency of large pre-trained LMs, they all suffer from the same computational drawback. They all require massive amounts of computational power to adapt their language styles, because in their cases, guided generation implies fine-tuning (or even retraining) large attribute-specific dialogue datasets. For general controlled language generation, this obstacle is overcome by \cite{dathathri2019plug}'s previously mentioned PPLM setup. The conversational analog of this idea, plug-and-play conversational model (PPCM), is proposed by \cite{madotto-etal-2020-plug}. Similar to PPLM, PPCM achieves guided dialogue generation via activation-space perturbations using easy to train attribute models. 
 % In this configuration, they can achieve controllable response generation without needing dialogue data or having to fine-tune a large language model. 
 Due to the computational complexity of PPLM's decoding process, PPLM is unusable as practical conversational system. PPCM solves this problem by using residual adapters \citep{bapna-firat-2019-simple} to tweak the decoding procedure such that it does not require more computational resources. See Section \ref{sec:ppm} for a detailed explanation of the mechanisms behind PPLM and PPCM. \cite{madotto-etal-2020-plug} show, using both human and automatic evaluation, that PPCM can balance grammatical fluency and high degrees of attribute-adherence in its generated responses. PPCM uses DialoGPT as its base language model, and is tested for topical or sentimental attributes (i.e., positive, negative, sports, business, or science \& tech). 
 Previous work on controllable language generation focuses on content (e.g., topical attributes, or sentiment), rather than more abstract linguistic features, which I hypothesize are more challenging to model and control. The previously mentioned work by \cite{zheng2019personalized} is a notable exception, as their approach deals with controlling dialogue systems for linguistic features, like age, gender, and geographical region. However, \cite{zheng2019personalized} still suffers from significant computational costs, because control is achieved by fine-tuning a large system for every specific set of attributes. Furthermore, their proposed architectures are RNN-based, as opposed to my Transformer-based approach. My work therefore aims to extend the applicability of plug-and-play controlled generation to more abstract linguistic characteristics than those explored by \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug}, and without the significant fine-tuning cost of \cite{zheng2019personalized}.

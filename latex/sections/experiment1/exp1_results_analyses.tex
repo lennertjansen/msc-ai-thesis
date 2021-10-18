@@ -1,13 +1,13 @@
-\textit{The experiments of this study are divided into two phases: (1) automated age detection from written texts or dialogue transcriptions, and (2) age-adaptive dialogue generation.}
-
 \section{Detecting Age-Related Linguistic Patterns in Dialogue}
+\label{sec:exp1_results}
 
 We first report results on \emph{discourse}
 % dataset
 to check whether we replicate
 previous findings. Then, we focus on \emph{dialogue} to answer our research questions. We report accuracy and $F_1$ for each age group.
 
-\subsection{Classification performance on discourse} Table~\ref{tab:blog_classification} reports the results.
+\subsection{Classification performance on discourse}
+Table~\ref{tab:blog_classification} reports the results.
 % obtained by all tested models.
 % on the \emph{discourse} dataset.
 %, BAC. 
@@ -36,7 +36,7 @@ hand-crafted features that are specific to the dataset, (as mentioned in the Int
 which could constitute an advantage.
 
 \subsection{Classification performance on dialogue}
-Table~\ref{tab:bnc_classification} reports the results. As can be seen, BERT fine-tuned on the task is again the best-performing model in terms of accuracy (0.710), which confirms the effectiveness of this model in detecting age-related linguistic differences. At the same time, it can be noted that the model based on trigrams is basically on par with it in terms of accuracy (0.709) and well above both LSTM and BiLSTM (0.696 and 0.684, respectively). A similar pattern is shown for $F_1$ scores, where BERT fine-tuned and the trigram model achieve comparable performance, with LSTMs being overall behind (except for the LSTM on age group 50+). 
+Table~\ref{tab:bnc_classification_ws} reports the results. As can be seen, BERT fine-tuned on the task is again the best-performing model in terms of accuracy (0.729), which confirms the effectiveness of this model in detecting age-related linguistic differences. At the same time, it can be noted that the model based on trigrams is basically on par with it in terms of accuracy (0.722) and well above both LSTM and BiLSTM (0.693 and 0.691, respectively). A similar pattern is shown for $F_1$ scores, where BERT fine-tuned and the trigram model achieve comparable performance, with LSTMs being overall behind. 
 
 Overall, our results indicate that predicting the age group to which a speaker belongs, using text-based models, is possible also for \emph{dialogue} data, though the task appears to be somehow more challenging compared to when performed on discourse 
 (note that the improvement with respect to the majority/random baseline is lower in dialogue). 
@@ -101,8 +101,6 @@ This deserves further analysis, which we carry out in the next section.
     \label{tab:blog_classification}
 \end{table*}
 
-
-
 \begin{table*}[h]
     \centering
     % \resizebox{\columnwidth}{!}{
@@ -121,25 +119,63 @@ This deserves further analysis, which we carry out in the next section.
     & 0.500 
     % (0.000)
     \\ \midrule
-    unigram & 0.702 (0.006) & 0.713 (0.006)  & 0.690 (0.006)\\
-    bigram & 0.703 (0.006) & 0.713 (0.005) & 0.693 (0.008)\\
-    trigram &  \textcolor{blue}{0.709} (0.007) & \textbf{0.718} (0.007) & 0.700 (0.008)\\ \midrule
-    LSTM & 0.696 (0.005) & 0.689 (0.018) & \textcolor{blue}{0.701} (0.016)\\
-    BiLSTM & 0.684 (0.007) & 0.688 (0.018) & 0.679 (0.016) \\ \midrule
+    unigram & 0.701 (0.007) & 0.708 (0.009)  & 0.693 (0.004)\\
+    bigram & 0.719 (0.002) & 0.724 (0.003) & 0.714 (0.003)\\
+    trigram &  \textcolor{blue}{0.722} (0.001) & \textcolor{blue}{0.727} (0.003) & \textcolor{blue}{0.717} (0.001)\\ \midrule
+    LSTM &  0.693 (0.003) & 0.696 (0.005) & 0.691 (0.007)\\
+    BiLSTM & 0.691 (0.009) & 0.702 (0.017) & 0.679 (0.007) \\ \midrule
     BERT$_{frozen}$
     % -base uncased (frozen) 
-    & 0.673 (0.005) & 0.679 (0.013) & 0.667 (0.018)\\
+    & 0.675 (0.003) & 0.677 (0.008) & 0.673 (0.010)\\
     BERT$_{FT}$
     % -base uncased (fine-tuned) 
-    & \textbf{0.710} (0.006) & \textcolor{blue}{0.717} (0.007) & \textbf{0.703} (0.014)\\
+    & \textbf{0.729} (0.002) & \textbf{0.730} (0.011) & \textbf{0.727} (0.010)\\
     % \hline
     % GPT-2 medium (frozen) & 0.671 (0.003) & 0.665 (0.014) & 0.675 (0.017) \\
     \bottomrule
     \end{tabular}
     % }
     \caption{Dialogue dataset. Test set results averaged over 5 random initializations. Format: \textit{average metric (standard error)}. Values in \textbf{bold} are the highest in the column; in \textcolor{blue}{blue}, the second highest.}
-    \label{tab:bnc_classification}
+    \label{tab:bnc_classification_ws}
 \end{table*}
+
+% \begin{table*}[h]
+%     \centering
+%     % \resizebox{\columnwidth}{!}{
+%     \begin{tabular}{l c c c}
+%     \toprule
+%     \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1^{(19-29)}$  & $\boldsymbol{F}_1^{(50+)}$ \\ 
+%     % -plus)}$ \\
+%      & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better \\
+%     \midrule
+%     Random
+%     % Baseline (random guessing) 
+%     & 0.500
+%     % (0.000) 
+%     & 0.500
+%     % (0.000) 
+%     & 0.500 
+%     % (0.000)
+%     \\ \midrule
+%     unigram & 0.702 (0.006) & 0.713 (0.006)  & 0.690 (0.006)\\
+%     bigram & 0.703 (0.006) & 0.713 (0.005) & 0.693 (0.008)\\
+%     trigram &  \textcolor{blue}{0.709} (0.007) & \textbf{0.718} (0.007) & 0.700 (0.008)\\ \midrule
+%     LSTM & 0.696 (0.005) & 0.689 (0.018) & \textcolor{blue}{0.701} (0.016)\\
+%     BiLSTM & 0.684 (0.007) & 0.688 (0.018) & 0.679 (0.016) \\ \midrule
+%     BERT$_{frozen}$
+%     % -base uncased (frozen) 
+%     & 0.673 (0.005) & 0.679 (0.013) & 0.667 (0.018)\\
+%     BERT$_{FT}$
+%     % -base uncased (fine-tuned) 
+%     & \textbf{0.710} (0.006) & \textcolor{blue}{0.717} (0.007) & \textbf{0.703} (0.014)\\
+%     % \hline
+%     % GPT-2 medium (frozen) & 0.671 (0.003) & 0.665 (0.014) & 0.675 (0.017) \\
+%     \bottomrule
+%     \end{tabular}
+%     % }
+%     \caption{Dialogue dataset \len{Excluding stopwords}. Test set results averaged over 5 random initializations. Format: \textit{average metric (standard error)}. Values in \textbf{bold} are the highest in the column; in \textcolor{blue}{blue}, the second highest.}
+%     \label{tab:bnc_classification}
+% \end{table*}
 
 \begin{table*}[h]
 \resizebox{\linewidth}{!}{
@@ -172,7 +208,7 @@ where both models are correct/wrong or only BERT$_{FT}$/trigram is correct.}\lab
      \hfill
      \begin{subfigure}[b]{0.45\textwidth}
         \centering
-        \includegraphics[width=1\columnwidth]{figures/bnc_rb_trigram_bert_case_dist_hue_age.png}
+        \includegraphics[width=1\columnwidth]{figures/bnc_rb_trigram_bert_case_dist_hue_age_ws.png}
         \caption{Distribution of predicted cases by trigram and BERT$_{FT}$ models for dialogue, split by age groups.}
         \label{fig:bnc_tri_bert_cases_age}
      \end{subfigure}
@@ -181,13 +217,13 @@ where both models are correct/wrong or only BERT$_{FT}$/trigram is correct.}\lab
 \end{figure}
 
 \section{Age detection analyses}
-
-We focus our analysis on dialogue. In particular, we compare the two best-performing models, namely BERT$_{FT}$
+\label{sec:exp1_analyses}
+\textit{We focus our analysis on dialogue. In particular, we compare the two best-performing models, namely BERT$_{FT}$
 and the one using trigrams, and aim to shed light on  what cues they use to solve the task.
 We first analyze how these models perform with respect to utterances of various topics.
 Secondly, we compare the prediction patterns of the two models, which allows us to highlight easy and hard examples.
 Finally, we focus on the trigram model and report the $n$-grams that turn out to be most informative to distinguish between age groups.
-
+}
 
 \subsection{Performance Against Topic}
 
@@ -198,8 +234,8 @@ Secondly, some topics appear to be easier for one model rather than the other, a
 
 \subsection{Comparing Model Predictions}
 We split the data for analysis by whether or not both models make the same correct or incorrect prediction, or whether they differ. Table~\ref{tab:bnc_tri_bert_cases} shows the breakdown of these results.
-As can be seen, a quite large fraction of samples are correctly classified by both models (63.6\%), while in 22.9\% cases neither of the models make a correct prediction. The remaining cases are almost evenly split between cases where only one of the two is correct. %, but the other is not.
-As shown in Figure~\ref{fig:bnc_tri_bert_cases_age}, the 19-29 age group appears to be be slightly easier compared to the 50+ group, where models are observed to make more errors: the trigram misclassifies 50+ utterances 1.26 times as often as 19-29 utterances, and 1.20 times as often by BERT$_{FT}$.
+As can be seen, a quite large fraction of samples are correctly classified by both models (63.17\%), while in 19.78\% cases neither of the models make a correct prediction. The remaining cases are comparably split between cases where only one of the two is correct, with BERT slightly outperforming Trigram by 1.23 percentage points. %, but the other is not.
+As shown in Figure~\ref{fig:bnc_tri_bert_cases_age}, the 19-29 age group appears to be be slightly easier compared to the 50+ group, where models are observed to make more errors: the trigram misclassifies 50+ utterances 1.12 times as often as 19-29 utterances, and 1.17 times as often by BERT$_{FT}$.
 
 To qualitatively inspect what the utterances falling into these classes look like, in Table~\ref{tab:qualexamples} we show a few cherry-picked cases for each age group. 
 % \raq{
@@ -217,38 +253,67 @@ on average, shorter utterances contain less signal. On the other hand, short utt
 \subsection{Most Informative N-grams}
 %\js{todo: analysis on trigrams: both quant and qual because we select them based on their effectiveness (top 10) + perform more qual investigation (e.g. nouns, content words, idiosyncratic expressions; also related to point below) (optional, but very nice) analysis of features wrt topics: are there features that are not dependent on the topic under discussion (i.e., more "linguistic" features)?}
 
-
-
-\begin{table}[b!]
+\begin{table}[H]
     \centering
     \begin{tabular}{@{}l l @{\hspace*{25pt}} l l@{}}
     \toprule
     \multicolumn{2}{c}{19-29} & \multicolumn{2}{c}{50+}\\
     \textbf{coef.} & \textbf{n-gram} & \textbf{coef.} & \textbf{n-gram}\\
     \midrule
-    -3.19 & um & 2.29 & yes\\
-    -2.91 & cool & 2.21 & wonderful\\
-    -2.70 & s**t & 1.91 & building\\
-    -2.25 & cute & 1.86 & right right\\
-    -2.15 & uni & 1.80 & something like\\
-    -2.14 & hmm & 1.73 & garden\\
-    -1.97 & wanna & 1.69 & right\\
-    -1.93 & f**k & 1.68 & ordinary\\
-    -1.91 & like & 1.67 & shed\\
-    -1.85 & massive & 1.63 & operation\\
-    -1.83 & yeah course & 1.58 & born\\
-    -1.81 & love & 1.57 & mother\\
-    -1.79 & tut & 1.55 & photographs\\
-    -1.74 & b***h & 1.51 & email\\
-    -1.68 & like oh & 1.08 & anything like\\
+    -3.20 & um & 2.37 & yes\\
+    -2.84 & cool & 2.12 & you know\\
+    -2.58 & s**t & 2.09 & wonderful\\
+    -2.12 & hmm & 1.90 & how weird\\
+    -2.09 & like & 1.84 & chinese\\
+    -2.02 & was like & 1.73 & right\\
+    -1.96 & love & 1.71 & building\\
+    -1.96 & as well & 1.66 & right right\\
+    -1.88 & as in & 1.55 & so erm\\
+    -1.84 & cute & 1.43 & mm mm\\
+    -1.82 & uni & 1.41 & cheers\\
+    -1.79 & massive & 1.39 & shed\\
+    -1.79 & wanna & 1.37 & pain\\
+    -1.79 & f**k & 1.36 & we know\\
+    -1.72 & tut & 1.08 & yeah exactly\\
     \bottomrule
     \end{tabular}
     \caption{For each age group, top 15 most informative $n$-grams used by the trigram model. \textbf{coef.} is the coefficient (and sign) of the corresponding $n$-gram for the logistic regression model: the higher its absolute value, the higher the utterance's odds to belong to one age group.
     % Greater absolute value of \textbf{coef.} indicates occurrence of the $n$-gram results in the model assigning higher odds to the utterance belonging to a certain age group.
     * indicates masking of foul language.}
     % present in the dialogue.}
-    \label{tab:top_ngrams}
+    \label{tab:top_ngrams_ws}
 \end{table}
+
+% \begin{table}[b!]
+%     \centering
+%     \begin{tabular}{@{}l l @{\hspace*{25pt}} l l@{}}
+%     \toprule
+%     \multicolumn{2}{c}{19-29} & \multicolumn{2}{c}{50+}\\
+%     \textbf{coef.} & \textbf{n-gram} & \textbf{coef.} & \textbf{n-gram}\\
+%     \midrule
+%     -3.19 & um & 2.29 & yes\\
+%     -2.91 & cool & 2.21 & wonderful\\
+%     -2.70 & s**t & 1.91 & building\\
+%     -2.25 & cute & 1.86 & right right\\
+%     -2.15 & uni & 1.80 & something like\\
+%     -2.14 & hmm & 1.73 & garden\\
+%     -1.97 & wanna & 1.69 & right\\
+%     -1.93 & f**k & 1.68 & ordinary\\
+%     -1.91 & like & 1.67 & shed\\
+%     -1.85 & massive & 1.63 & operation\\
+%     -1.83 & yeah course & 1.58 & born\\
+%     -1.81 & love & 1.57 & mother\\
+%     -1.79 & tut & 1.55 & photographs\\
+%     -1.74 & b***h & 1.51 & email\\
+%     -1.68 & like oh & 1.08 & anything like\\
+%     \bottomrule
+%     \end{tabular}
+%     \caption{For each age group, top 15 most informative $n$-grams used by the trigram model. \textbf{coef.} is the coefficient (and sign) of the corresponding $n$-gram for the logistic regression model: the higher its absolute value, the higher the utterance's odds to belong to one age group.
+%     % Greater absolute value of \textbf{coef.} indicates occurrence of the $n$-gram results in the model assigning higher odds to the utterance belonging to a certain age group.
+%     * indicates masking of foul language.}
+%     % present in the dialogue.}
+%     \label{tab:top_ngrams}
+% \end{table}
 
 
 Analyzing the most informative $n$-grams 
@@ -263,7 +328,8 @@ We find, firstly and intuitively, that colloquial language seems somewhat genera
 % and foul language such as \emph{s**t}, \emph{f**k} and \emph{b***h}, and
 % \textit{`awesome' and `col' `massive' `lol' `literally' `mate'}, 
 for older speakers, words like
-\emph{wonderful} and  \emph{ordinary}.
+\emph{wonderful}.
+% and  \emph{ordinary}.
 % \textit{`cheers' `gosh' `right' `wonderful'} 
 % \san{some of these examples are not in the table} 
 These unigrams are both informative to the model and indicative of differences in both formality and `slang' use across age groups.
@@ -283,32 +349,47 @@ such as negative foul words, and positive \textit{love, cute, cool}; all words w
 %\textit{hate, really good, oh gosh, excited, scared}, whereas older speakers are comparatively more moderate. \san{Not sure we have examples of dramatic language in the table anymore; in any case, this paragraph needs to be updated} 
 This prompts us to hypothesize that further inspection is needed to determine whether the same sentiment pattern will be true of dialogue as it has been reported to be in discourse.
 
-
 \begin{table}[H]
     \centering
     \begin{tabular}{@{}l  c  c @{}}
     \toprule
     \textbf{} & \textbf{\% cases} & \textbf{avg.\ length ($\pm$std)*}\\
     \midrule
-    both correct & 63.57\% & 7.33 ($\pm$10.10) \\
-    both wrong & 22.89\% & 3.77 ($\pm$4.53) \\
-    only Trigram correct & 6.68 \% & 6.37 ($\pm$6.16) \\
-    only BERT correct & 6.86 \% & 6.86 ($\pm$7.87) \\ \bottomrule
+    both correct & 63.17\% & 13.51 ($\pm$18.98) \\
+    both wrong & 19.78\% & 5.82 ($\pm$8.33) \\
+    only Trigram correct & 7.91 \% & 10.44 ($\pm$11.66) \\
+    only BERT correct & 9.14 \% & 11.53 ($\pm$12.12) \\ \bottomrule
     \end{tabular}
     \caption{Percentage (\% cases) of (non-)overlapping (in)correctly predicted cases between trigram and BERT$_{FT}$. *Utterance length measured in tokens.}
     % \caption{Percentages of (non-)overlapping (in)correctly predicted cases between trigram and BERT$_{FT}$ models for BNC. *Pre-processed sequence length is measured in tokens.}
     \label{tab:bnc_tri_bert_cases}
 \end{table}
 
-Notes on the imbalanced BNC.
-\begin{itemize}
-    \item Attempts were made to account for the original BNC's bias (i.e., the 19-29 age bracket accounts for roughly 80\% of the total considered subset).
-    \item Method 1: weighted loss.
-    \item Method 2: weighted random sampling (i.e., up-sampling of the minority class).
-    \item Weighted random sampling outperformed weighted loss in terms of validation accuracy and $F_1$ scores, but still failed to surpass the baseline.
-    \item  \textit{In terms of test accuracy}, the $n$-gram models succeeded in beating the baseline (predicting the majority class), whereas the best LSTM and fine-tuned BERT-based failed to do so.
-    \item However, the neural discriminators still outperformed all the other models with respect to minority class $F_1$ scores, indicating that (1) the $n$-gram models aren't very useful for correctly classifying the minority class, and that (2) weighted random sampling improved the models' efficacy with respect to the minority class.
-    \item See Appendix \ref{age_disc_bnc} for these results.
-\end{itemize}
+% \begin{table}[H]
+%     \centering
+%     \begin{tabular}{@{}l  c  c @{}}
+%     \toprule
+%     \textbf{} & \textbf{\% cases} & \textbf{avg.\ length ($\pm$std)*}\\
+%     \midrule
+%     both correct & 63.57\% & 7.33 ($\pm$10.10) \\
+%     both wrong & 22.89\% & 3.77 ($\pm$4.53) \\
+%     only Trigram correct & 6.68 \% & 6.37 ($\pm$6.16) \\
+%     only BERT correct & 6.86 \% & 6.86 ($\pm$7.87) \\ \bottomrule
+%     \end{tabular}
+%     \caption{Percentage (\% cases) of (non-)overlapping (in)correctly predicted cases between trigram and BERT$_{FT}$. *Utterance length measured in tokens.}
+%     % \caption{Percentages of (non-)overlapping (in)correctly predicted cases between trigram and BERT$_{FT}$ models for BNC. *Pre-processed sequence length is measured in tokens.}
+%     \label{tab:bnc_tri_bert_cases_no_stopwords}
+% \end{table}
+
+% Notes on the imbalanced BNC.
+% \begin{itemize}
+%     \item Attempts were made to account for the original BNC's bias (i.e., the 19-29 age bracket accounts for roughly 80\% of the total considered subset).
+%     \item Method 1: weighted loss.
+%     \item Method 2: weighted random sampling (i.e., up-sampling of the minority class).
+%     \item Weighted random sampling outperformed weighted loss in terms of validation accuracy and $F_1$ scores, but still failed to surpass the baseline.
+%     \item  \textit{In terms of test accuracy}, the $n$-gram models succeeded in beating the baseline (predicting the majority class), whereas the best LSTM and fine-tuned BERT-based failed to do so.
+%     \item However, the neural discriminators still outperformed all the other models with respect to minority class $F_1$ scores, indicating that (1) the $n$-gram models aren't very useful for correctly classifying the minority class, and that (2) weighted random sampling improved the models' efficacy with respect to the minority class.
+%     \item See Appendix \ref{age_disc_bnc} for these results.
+% \end{itemize}
 
 

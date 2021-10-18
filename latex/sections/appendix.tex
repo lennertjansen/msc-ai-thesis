@@ -1,3 +1,17 @@
+\section{Wordlists for BoW-based approaches}
+\label{sec:wordlists}
+
+\len{TODO - Censor foul language?}
+
+\paragraph{100 most informative unigrams - young (19-29)} um, cool, shit, hmm, uni, cute, tut, massive, awesome, gym, bitch, lol, grand, pizza, like, excited, yawn, Korea, cigarette, fuck, fairness, Jesus, annoying, Facebook, quicker, definitely, guess, Sunderland, oo, wanna, mountain, scared, piss, love, miss, Middlesbrough, mhm, specifically, ooh, website, roundabout, photo, nope, blanket, management, ridiculous, mental, pregnant, beers, hate, log, fucking, cry, cheaper, skinny, plural, burger, hilarious, hint, drunk, fridge, cousin, coke, genuinely, James, mates, smaller, option, balance, saving, basically, leather, nev, shut, frig, mate, yay, invite, maid, nickname, badly, garlic, CD, jokes, Uzbekistan, boyfriend, date, added, Manchester, blah, shitty, lang, tempted, stadium, wee, eh, baking, city, honestly, exam
+
+\paragraph{100 most informative unigrams - old (50 plus)} ordinary, Chinese, wonderful, yes, tend, father, photographs, vegetables, hospice, operation, shed, pension, areas, mother, hanging, hospices, glasses, chap, anyhow, tank, surgery, container, cheers, born, church, pain, several, workshop, right, horses, building, extraordinary, vegetarian, biscuit, americano, engine, luck, paint, emperor, lipsy, trombone, occasional, supper, lord, architect, council, roast, schools, bath, asbestos, endometrial, concrete, poodle, recall, diabetes, misty, report, heavens, enormous, lawn, potatoes, email, junk, scabies, mousse, Ebola, churches, sewing, plants, rackets, marmalade, engineering, furniture, photograph, sandwiches, unemployment, xylophone, Piccadilly, flu, claim, arab, nineteen, forgotten, sensible, blancmange, spencer, yards, emails, yellow, scruffy, fungi, garden, boiler, lodge, mostly, Robson, tricky, shark, robin, contracture
+
+\paragraph{Frequency-based young (19-29)} um,
+shit, cool, fucking, definitely, guess, friends, everyone, literally, dad, sounds, weekend, loads, watch, fair, fuck, amazing, friend, ha, huh, hate, fun, stay, girl, holiday, blah, hours, uni, month, horrible, massive, Friday, stupid, film, parents, thirty, spend, mate, honest, change, hope, yourself, annoying, wear, wait, ridiculous, anyone, Saturday, tea, dinner, sit, crazy, hell, pound, nine, expensive
+
+\paragraph{Frequency-based old (50 plus)} building, may, water, mother, perhaps, door, lots, business, cancer, area, although, worked, open, cut, number, under, young, nineteen, everybody, garden, church, case, shop, children, certainly, set, coffee, email, gave, white, along, doctor, hear, often, possibly, group, father, outside, wonderful, taken, seem, places, green, given, hand, early, women, space, front, language, dear, light, huge, supposed, country, hospital, otherwise, asked, putting, bits, gosh, wall, woman, almost, particularly, across, word, age, rest, flat, turned, decided, finished, needed, red, bin, hospice, running, slightly, its, middle, local, percent, Chinese, paper, check, high, milk, piece, near, nobody, usually
+
 \section{Where to put these?}
 
 \begin{figure}[H]
@@ -52,29 +66,98 @@
     \multicolumn{2}{c}{19-29} & \multicolumn{2}{c}{50+}\\
     \textbf{coef.} & \textbf{n-gram} & \textbf{coef.} & \textbf{n-gram}\\
     \midrule
-    -3.20 & um & 2.37 & yes\\
-    -2.84 & cool & 2.12 & you know\\
-    -2.58 & s**t & 2.09 & wonderful\\
-    -2.12 & hmm & 1.90 & how weird\\
-    -2.09 & like & 1.84 & chinese\\
-    -2.02 & was like & 1.73 & right\\
-    -1.96 & love & 1.71 & building\\
-    -1.96 & as well & 1.66 & right right\\
-    -1.88 & as in & 1.55 & so erm\\
-    -1.84 & cute & 1.43 & mm mm\\
-    -1.82 & uni & 1.41 & cheers\\
-    -1.79 & massive & 1.39 & shed\\
-    -1.79 & wanna & 1.37 & pain\\
-    -1.79 & f**k & 1.36 & we know\\
-    -1.72 & tut & 1.08 & yeah exactly\\
+    -3.19 & um & 2.29 & yes\\
+    -2.91 & cool & 2.21 & wonderful\\
+    -2.70 & s**t & 1.91 & building\\
+    -2.25 & cute & 1.86 & right right\\
+    -2.15 & uni & 1.80 & something like\\
+    -2.14 & hmm & 1.73 & garden\\
+    -1.97 & wanna & 1.69 & right\\
+    -1.93 & f**k & 1.68 & ordinary\\
+    -1.91 & like & 1.67 & shed\\
+    -1.85 & massive & 1.63 & operation\\
+    -1.83 & yeah course & 1.58 & born\\
+    -1.81 & love & 1.57 & mother\\
+    -1.79 & tut & 1.55 & photographs\\
+    -1.74 & b***h & 1.51 & email\\
+    -1.68 & like oh & 1.08 & anything like\\
     \bottomrule
     \end{tabular}
-    \caption{\len{Including stopwords.} For each age group, top 15 most informative $n$-grams used by the trigram model. \textbf{coef.} is the coefficient (and sign) of the corresponding $n$-gram for the logistic regression model: the higher its absolute value, the higher the utterance's odds to belong to one age group.
+    \caption{\len{Excluding stopwords.} For each age group, top 15 most informative $n$-grams used by the trigram model. \textbf{coef.} is the coefficient (and sign) of the corresponding $n$-gram for the logistic regression model: the higher its absolute value, the higher the utterance's odds to belong to one age group.
     % Greater absolute value of \textbf{coef.} indicates occurrence of the $n$-gram results in the model assigning higher odds to the utterance belonging to a certain age group.
     * indicates masking of foul language.}
     % present in the dialogue.}
-    \label{tab:top_ngrams_ws}
+    \label{tab:top_ngrams}
 \end{table}
+
+% \begin{table}[H]
+%     \centering
+%     \begin{tabular}{@{}l l @{\hspace*{25pt}} l l@{}}
+%     \toprule
+%     \multicolumn{2}{c}{19-29} & \multicolumn{2}{c}{50+}\\
+%     \textbf{coef.} & \textbf{n-gram} & \textbf{coef.} & \textbf{n-gram}\\
+%     \midrule
+%     -3.20 & um & 2.37 & yes\\
+%     -2.84 & cool & 2.12 & you know\\
+%     -2.58 & s**t & 2.09 & wonderful\\
+%     -2.12 & hmm & 1.90 & how weird\\
+%     -2.09 & like & 1.84 & chinese\\
+%     -2.02 & was like & 1.73 & right\\
+%     -1.96 & love & 1.71 & building\\
+%     -1.96 & as well & 1.66 & right right\\
+%     -1.88 & as in & 1.55 & so erm\\
+%     -1.84 & cute & 1.43 & mm mm\\
+%     -1.82 & uni & 1.41 & cheers\\
+%     -1.79 & massive & 1.39 & shed\\
+%     -1.79 & wanna & 1.37 & pain\\
+%     -1.79 & f**k & 1.36 & we know\\
+%     -1.72 & tut & 1.08 & yeah exactly\\
+%     \bottomrule
+%     \end{tabular}
+%     \caption{\len{Including stopwords.} For each age group, top 15 most informative $n$-grams used by the trigram model. \textbf{coef.} is the coefficient (and sign) of the corresponding $n$-gram for the logistic regression model: the higher its absolute value, the higher the utterance's odds to belong to one age group.
+%     % Greater absolute value of \textbf{coef.} indicates occurrence of the $n$-gram results in the model assigning higher odds to the utterance belonging to a certain age group.
+%     * indicates masking of foul language.}
+%     % present in the dialogue.}
+%     \label{tab:top_ngrams_ws}
+% \end{table}
+
+% \begin{table*}[h]
+%     \centering
+%     % \resizebox{\columnwidth}{!}{
+%     \begin{tabular}{l c c c}
+%     \toprule
+%     \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1^{(19-29)}$  & $\boldsymbol{F}_1^{(50+)}$ \\ 
+%     % -plus)}$ \\
+%      & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better \\
+%     \midrule
+%     Random
+%     % Baseline (random guessing) 
+%     & 0.500
+%     % (0.000) 
+%     & 0.500
+%     % (0.000) 
+%     & 0.500 
+%     % (0.000)
+%     \\ \midrule
+%     unigram & 0.701 (0.007) & 0.708 (0.009)  & 0.693 (0.004)\\
+%     bigram & 0.719 (0.002) & 0.724 (0.003) & 0.714 (0.003)\\
+%     trigram &  \textcolor{blue}{0.722} (0.001) & \textcolor{blue}{0.727} (0.003) & \textcolor{blue}{0.717} (0.001)\\ \midrule
+%     LSTM &  0.693 (0.003) & 0.696 (0.005) & 0.691 (0.007)\\
+%     BiLSTM & 0.691 (0.009) & 0.702 (0.017) & 0.679 (0.007) \\ \midrule
+%     BERT$_{frozen}$
+%     % -base uncased (frozen) 
+%     & 0.675 (0.003) & 0.677 (0.008) & 0.673 (0.010)\\
+%     BERT$_{FT}$
+%     % -base uncased (fine-tuned) 
+%     & \textbf{0.729} (0.002) & \textbf{0.730} (0.011) & \textbf{0.727} (0.010)\\
+%     % \hline
+%     % GPT-2 medium (frozen) & 0.671 (0.003) & 0.665 (0.014) & 0.675 (0.017) \\
+%     \bottomrule
+%     \end{tabular}
+%     % }
+%     \caption{Dialogue dataset \len{Including stopwords.}. Test set results averaged over 5 random initializations. Format: \textit{average metric (standard error)}. Values in \textbf{bold} are the highest in the column; in \textcolor{blue}{blue}, the second highest.}
+%     \label{tab:bnc_classification_ws}
+% \end{table*}
 
 \begin{table*}[h]
     \centering
@@ -94,24 +177,24 @@
     & 0.500 
     % (0.000)
     \\ \midrule
-    unigram & 0.701 (0.007) & 0.708 (0.009)  & 0.693 (0.004)\\
-    bigram & 0.719 (0.002) & 0.724 (0.003) & 0.714 (0.003)\\
-    trigram &  \textcolor{blue}{0.722} (0.001) & \textcolor{blue}{0.727} (0.003) & \textcolor{blue}{0.717} (0.001)\\ \midrule
-    LSTM &  0.693 (0.003) & 0.696 (0.005) & 0.691 (0.007)\\
-    BiLSTM & 0.691 (0.009) & 0.702 (0.017) & 0.679 (0.007) \\ \midrule
+    unigram & 0.702 (0.006) & 0.713 (0.006)  & 0.690 (0.006)\\
+    bigram & 0.703 (0.006) & 0.713 (0.005) & 0.693 (0.008)\\
+    trigram &  \textcolor{blue}{0.709} (0.007) & \textbf{0.718} (0.007) & 0.700 (0.008)\\ \midrule
+    LSTM & 0.696 (0.005) & 0.689 (0.018) & \textcolor{blue}{0.701} (0.016)\\
+    BiLSTM & 0.684 (0.007) & 0.688 (0.018) & 0.679 (0.016) \\ \midrule
     BERT$_{frozen}$
     % -base uncased (frozen) 
-    & 0.675 (0.003) & 0.677 (0.008) & 0.673 (0.010)\\
+    & 0.673 (0.005) & 0.679 (0.013) & 0.667 (0.018)\\
     BERT$_{FT}$
     % -base uncased (fine-tuned) 
-    & \textbf{0.729} (0.002) & \textbf{0.730} (0.011) & \textbf{0.727} (0.010)\\
+    & \textbf{0.710} (0.006) & \textcolor{blue}{0.717} (0.007) & \textbf{0.703} (0.014)\\
     % \hline
     % GPT-2 medium (frozen) & 0.671 (0.003) & 0.665 (0.014) & 0.675 (0.017) \\
     \bottomrule
     \end{tabular}
     % }
-    \caption{Dialogue dataset \len{Including stopwords.}. Test set results averaged over 5 random initializations. Format: \textit{average metric (standard error)}. Values in \textbf{bold} are the highest in the column; in \textcolor{blue}{blue}, the second highest.}
-    \label{tab:bnc_classification_ws}
+    \caption{Dialogue dataset \len{Excluding stopwords}. Test set results averaged over 5 random initializations. Format: \textit{average metric (standard error)}. Values in \textbf{bold} are the highest in the column; in \textcolor{blue}{blue}, the second highest.}
+    \label{tab:bnc_classification}
 \end{table*}
 
 \begin{table*}[h]
@@ -140,3 +223,6 @@
     \caption{\len{Excluding stopwords.} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Young and old accuracy are the assigned probabilities of belonging to the young or old age categories.}
     \label{tab:ctg_results}
 \end{table*}
+
+
+
