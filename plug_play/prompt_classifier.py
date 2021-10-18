@@ -31,8 +31,8 @@ def preprocess_col(df):
     df['clean_text'] = df['clean_text'].apply(lambda x: x.strip())
 
     # remove stop words
-    stopwords_dict = set(stopwords.words('english')) # use set (hash table) data structure for faster lookup
-    df['clean_text'] = df['clean_text'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords_dict]))
+    # stopwords_dict = set(stopwords.words('english')) # use set (hash table) data structure for faster lookup
+    # df['clean_text'] = df['clean_text'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords_dict]))
 
     # Remove instances empty strings
     df.drop(df[df.clean_text == ''].index, inplace = True)
@@ -124,13 +124,16 @@ def bert_pred(model, criterion, device, data_loader, data='bnc_rb', writer=None,
 
 def classify_prompts(prompt, age_cat, multiple, device='cpu'):
 
+    print(f"Device: {device}")
+
     if not multiple:
         criterion = torch.nn.CrossEntropyLoss()  # combines LogSoftmax and NLL
 
         # LJ: Initialize, move to device, and load saved model
         bert_model = TextClassificationBERT(num_classes=2)
         bert_model.to(device)
-        bert_model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt'  # TODO: CHANGE TO BERT TRAINED WITH STOPWORDS!!!!!
+        # bert_model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt'  # TODO: CHANGE TO BERT TRAINED WITH STOPWORDS!!!!!
+        bert_model_path = 'bert_bnc_rb_ws_ca_seed_4_24_Sep_2021_BEST.pt' # Trained With stopwords
         bert_model.load_state_dict(torch.load(bert_model_path, map_location=device))
 
         # LJ: Setup data stuff
@@ -161,7 +164,6 @@ def classify_prompts(prompt, age_cat, multiple, device='cpu'):
         bert_probs = np.array(bert_probs)  # for easier slicing
         young_probs = bert_probs[:, 0]
         old_probs = bert_probs[:, 1]
-
         print(f"Young: {young_probs}")
         print(f"Old: {old_probs}")
     else:
@@ -182,6 +184,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--multiple", action="store_true",
         help="Compute young and old probs of a csv file of prompts."
+    )
+    parser.add_argument(
+        "--device", default=torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     )
 
     args = parser.parse_args()
