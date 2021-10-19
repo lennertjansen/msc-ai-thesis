@@ -463,7 +463,7 @@ def train(seed,
     elif mode == 'train':
         print('Saving best model...')
         cur_datetime = datetime.now().strftime('%d_%b_%Y_%H_%M_%S')
-        save_path = f'models/{model_type}/{model_type}_{data}_ws_ca_seed_{seed}_{cur_datetime}.pt'
+        save_path = f'models/{data}/{model_type}/{model_type}_{data}_ws_ca_seed_{seed}_{cur_datetime}.pt'
         torch.save(best_model.state_dict(), save_path)
         print("Starting testing...")
         _, _ = evaluate_performance(model=best_model, data_loader=test_loader,
