@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=classif_BLOGS_ws_best_BiLSTM_lr_1emin4_emb_64_hid_128_nl_1_savepath_corrected
+#SBATCH --job-name=classif_BLOGS_ws_best_LSTM_lr_1emin4_emb_256_hid_512_nl_1_savepath_corrected
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_BLOGS_ws_best_BiLSTM_lr_1emin4_emb_64_hid_128_nl_1_savepath_corrected.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/classif_BLOGS_ws_best_LSTM_lr_1emin4_emb_256_hid_512_nl_1_savepath_corrected.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -67,8 +67,8 @@ do
          --mode 'train' \
          --seed "$seed" \
          --batch_size 32 \
-         --embedding_dim 64 \
-         --hidden_dim 128 \
+         --embedding_dim 256 \
+         --hidden_dim 512 \
          --num_layers 1 \
          --batch_first \
          --epochs 10 \
@@ -81,7 +81,6 @@ do
          --no_tb \
          --w_sampling \
          --w_loss \
-         --bidirectional \
          --dropout 0.1
 done
 
