@@ -730,8 +730,8 @@ def preprocess_col(df):
     df['clean_text'] = df['clean_text'].apply(lambda x: x.strip())
 
     # remove stop words
-    stopwords_dict = set(stopwords.words('english')) # use set (hash table) data structure for faster lookup
-    df['clean_text'] = df['clean_text'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords_dict]))
+    # stopwords_dict = set(stopwords.words('english')) # use set (hash table) data structure for faster lookup
+    # df['clean_text'] = df['clean_text'].apply(lambda x: ' '.join([words for words in x.split() if words not in stopwords_dict]))
 
     # Remove instances empty strings
     df.drop(df[df.clean_text == ''].index, inplace = True)
@@ -949,11 +949,19 @@ def run_pplm_example(
         seed=0,
         no_cuda=False,
         colorama=False,
-        verbosity='regular'
+        verbosity='regular',
+        prompt_type='unknown_prompt'
 ):
     # set Random seed
     torch.manual_seed(seed)
     np.random.seed(seed)
+
+    # LJ
+    start_lj = datetime.now()
+
+    # LJ
+    if uncond:
+        prompt_type = 'unprompted'
 
     # set verbosiry
     verbosity_level = VERBOSITY_LEVELS.get(verbosity.lower(), REGULAR)
@@ -1090,7 +1098,10 @@ def run_pplm_example(
     generated_texts = []
 
     # LJ: placeholder dataframe for generated texts to be evaluated
-    gen_text_df = pd.DataFrame(columns=['label', 'text'])
+    if uncond:
+        cond_text = tokenizer.bos_token
+
+    gen_text_df = pd.DataFrame(columns=['label', 'prompt', 'text'])
 
     bow_word_ids = set()
     if bag_of_words and colorama:
@@ -1139,10 +1150,14 @@ def run_pplm_example(
 
         # LJ: append generated text and label to df
         gen_text_df.loc[0 if pd.isnull(gen_text_df.index.max()) else gen_text_df.index.max() + 1] = [class_label] + \
-                                                                                                    [pert_gen_text[13:]]
+                                                                                                    [cond_text] + \
+                                                                                                    [pert_gen_text[len(tokenizer.bos_token) + len(cond_text):].replace("\n","")]
+
 
     # LJ: add column for text length
     gen_text_df['text_length'] = gen_text_df['text'].apply(lambda x: len(x.split()))
+
+
 
     #######################
     # LJ: Time to test BERT
@@ -1152,7 +1167,8 @@ def run_pplm_example(
     # LJ: Initialize, move to device, and load saved model
     bert_model = TextClassificationBERT(num_classes=2)
     bert_model.to(device)
-    bert_model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt' # TODO: CHANGE TO BERT TRAINED WITH STOPWORDS!!!!!
+    # bert_model_path = 'bert_bnc_rb_case_analysis_seed_4_BEST.pt' # TODO: CHANGE TO BERT TRAINED WITH STOPWORDS!!!!!
+    bert_model_path = 'bert_bnc_rb_ws_ca_seed_4_24_Sep_2021_BEST.pt'
     bert_model.load_state_dict(torch.load(bert_model_path, map_location=device))
 
     # LJ: Setup data stuff
@@ -1207,15 +1223,15 @@ def run_pplm_example(
     if pretrained_model.__contains__("/"):
         pretrained_model_no_slash = pretrained_model.replace('/', '-')
         if num_iterations == 0 or stepsize == 0:
-            output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_NA_WS_baseline.csv'
+            output_path = f'plug_play/output/{prompt_type}/{pretrained_model_no_slash}/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_NA_WS_baseline.csv'
         else:
-            output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS_baseline.csv'
+            output_path = f'plug_play/output/{prompt_type}/{pretrained_model_no_slash}/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS.csv'
     else:
 
         if num_iterations == 0 or stepsize == 0:
-            output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_NA_WS_baseline.csv'
+            output_path = f'plug_play/output/{prompt_type}/{pretrained_model}/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_NA_WS_baseline.csv'
         else:
-            output_path = f'plug_play/output/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS.csv'
+            output_path = f'plug_play/output/{prompt_type}/{pretrained_model}/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS.csv'
 
 
     # create csv file with header if non-existent, append if already exists
@@ -1319,6 +1335,12 @@ if __name__ == '__main__':
                         choices=(
                             "quiet", "regular", "verbose", "very_verbose"),
                         help="verbosiry level")
+    # Added by LJ
+    parser.add_argument("--prompt_type", type=str, default="unknown_prompt",
+                        choices=(
+                            "young_prompt", "neutral_prompt",
+                            "old_prompt", "unknown_prompt", "unprompted"
+                        ), help="Type of prompt being used.")
 
     args = parser.parse_args()
     run_pplm_example(**vars(args))
