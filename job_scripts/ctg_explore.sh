@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_explore_bow_based_30_per_dialogpt_configs
+#SBATCH --job-name=ctg_neutral_prompt_unpert_baseline_discrim_young_and_old
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_explore_bow_based_30_per_dialogpt_configs.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_neutral_prompt_unpert_baseline_discrim_young_and_old.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -157,74 +157,74 @@ echo "Running python code..."
 ### --> if prompted set prompt to ???
 
 #declare -a pretrained_models=("gpt2-medium" "microsoft/DialoGPT-medium")
-declare -a pretrained_models=("microsoft/DialoGPT-medium")
-declare -a attributes=("baseline" "young" "old")
-declare -a conditions=("unprompted" "prompted")
-
-for pretrained_model in "${pretrained_models[@]}"
-do
-
-  for attribute in "${attributes[@]}"
-  do
-
-    case "$attribute" in
-
-      "baseline")
-        bow="plug_play/wordlists/bnc_rb_ws_100_most_common.txt"
-        label=0
-        ;;
-
-      "young")
-        bow="plug_play/wordlists/bnc_young_mcwu_ws_pct_85.txt"
-        label=0
-        ;;
-
-      "old")
-        bow="plug_play/wordlists/bnc_old_mcwu_ws_pct_85.txt"
-        label=1
-        ;;
-
-      *)
-        echo -n "unknown"
-        ;;
-    esac
-
-    for condition in "${conditions[@]}"
-    do
-      if [ "$condition" = "unprompted" ]
-      then
-        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | bow: $bow |class_label: $label | prompt: $condition |"
-
-        python plug_play/run_pplm.py \
-          --pretrained_model "$pretrained_model" \
-          --uncond \
-          --num_samples 30 \
-          --bag_of_words "$bow" \
-          --length 50 \
-          --seed 2021 \
-          --sample \
-          --class_label $label \
-          --verbosity "quiet"
-
-      else
-        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | bow: $bow | class_label: $label | prompt: Tell me about your holidays. Sure! I went to Greece and had a very fun time. |"
-
-        python plug_play/run_pplm.py \
-          --pretrained_model "$pretrained_model" \
-          --cond_text "Tell me about your holidays. Sure! I went to Greece and had a very fun time." \
-          --num_samples 30 \
-          --bag_of_words "$bow" \
-          --length 50 \
-          --seed 2021 \
-          --sample \
-          --class_label $label \
-          --verbosity "quiet"
-      fi
-    done
-
-  done
-
-done
+#declare -a pretrained_models=("microsoft/DialoGPT-medium")
+#declare -a attributes=("baseline" "young" "old")
+#declare -a conditions=("unprompted" "prompted")
+#
+#for pretrained_model in "${pretrained_models[@]}"
+#do
+#
+#  for attribute in "${attributes[@]}"
+#  do
+#
+#    case "$attribute" in
+#
+#      "baseline")
+#        bow="plug_play/wordlists/bnc_rb_ws_100_most_common.txt"
+#        label=0
+#        ;;
+#
+#      "young")
+#        bow="plug_play/wordlists/bnc_young_mcwu_ws_pct_85.txt"
+#        label=0
+#        ;;
+#
+#      "old")
+#        bow="plug_play/wordlists/bnc_old_mcwu_ws_pct_85.txt"
+#        label=1
+#        ;;
+#
+#      *)
+#        echo -n "unknown"
+#        ;;
+#    esac
+#
+#    for condition in "${conditions[@]}"
+#    do
+#      if [ "$condition" = "unprompted" ]
+#      then
+#        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | bow: $bow |class_label: $label | prompt: $condition |"
+#
+#        python plug_play/run_pplm.py \
+#          --pretrained_model "$pretrained_model" \
+#          --uncond \
+#          --num_samples 30 \
+#          --bag_of_words "$bow" \
+#          --length 50 \
+#          --seed 2021 \
+#          --sample \
+#          --class_label $label \
+#          --verbosity "quiet"
+#
+#      else
+#        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | bow: $bow | class_label: $label | prompt: Tell me about your holidays. Sure! I went to Greece and had a very fun time. |"
+#
+#        python plug_play/run_pplm.py \
+#          --pretrained_model "$pretrained_model" \
+#          --cond_text "Tell me about your holidays. Sure! I went to Greece and had a very fun time." \
+#          --num_samples 30 \
+#          --bag_of_words "$bow" \
+#          --length 50 \
+#          --seed 2021 \
+#          --sample \
+#          --class_label $label \
+#          --verbosity "quiet"
+#      fi
+#    done
+#
+#  done
+#
+#done
 
 
 #### Before running python script, echo current configuration
@@ -242,71 +242,96 @@ done
 ### --> if unprompted set --uncond
 ### --> if prompted set prompt to ???
 
-#declare -a pretrained_models=("gpt2-medium" "microsoft/DialoGPT-medium")
-#declare -a attributes=("uncontrolled" "young" "old")
+declare -a pretrained_models=("gpt2-medium" "microsoft/DialoGPT-medium")
+declare -a attributes=("uncontrolled" "young" "old")
+#declare -a attributes=("uncontrolled")
 #declare -a conditions=("unprompted" "prompted")
-#
-#for pretrained_model in "${pretrained_models[@]}"
-#do
-#
-#  # set discriminator weights
-#  [ "$pretrained_model" = "gpt2-medium" ] &&
-#    discrim_weights="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_epoch_19.pt" ||
-#    discrim_weights="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt"
-#
-#  # set discriminator meta-data
-#  [ "$pretrained_model" = "gpt2-medium" ] &&
-#    discrim_meta="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_meta.json" ||
-#    discrim_meta="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json"
-#
-#  for attribute in "${attributes[@]}"
-#  do
-#    [ "$attribute" = "uncontrolled" ] && stepsize=0 || stepsize=0.02
-#    [ "$attribute" = "uncontrolled" ] && num_iterations=0 || num_iterations=3
-#
-#    [ "$attribute" = "uncontrolled" ] || [ "$attribute" = "young" ] && label=0 || label=1
-#
-#    for condition in "${conditions[@]}"
-#    do
-#      if [ "$condition" = "unprompted" ]
-#      then
-#        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta |class_label: $label | prompt: $condition | stepsize: $stepsize | iterations: $num_iterations |"
-#
-#        python plug_play/run_pplm.py \
-#             --pretrained_model "$pretrained_model" \
-#             --uncond \
-#             --num_samples 30 \
-#             --discrim 'generic' \
-#             --length 50 \
-#             --seed 2021 \
-#             --sample \
-#             --stepsize $stepsize \
-#             --num_iterations $num_iterations \
-#             --class_label $label \
-#             --verbosity "quiet" \
-#             --discrim_weights "$discrim_weights" \
-#             --discrim_meta "$discrim_meta"
-#
-#      else
-#        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta | class_label: $label | prompt: Tell me about your holidays. Sure! I went to Greece and had a very fun time. | stepsize: $stepsize | iterations: $num_iterations |"
-#
-#        python plug_play/run_pplm.py \
-#             --pretrained_model "$pretrained_model" \
-#             --cond_text "Tell me about your holidays. Sure! I went to Greece and had a very fun time." \
-#             --num_samples 30 \
-#             --discrim 'generic' \
-#             --length 50 \
-#             --seed 2021 \
-#             --sample \
-#             --stepsize $stepsize \
-#             --num_iterations $num_iterations \
-#             --class_label $label \
-#             --verbosity "quiet" \
-#             --discrim_weights "$discrim_weights" \
-#             --discrim_meta "$discrim_meta"
-#      fi
-#    done
-#
-#  done
-#
-#done
+declare -a conditions=("prompted")
+
+#TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
+declare -a neutral_prompts=("Hey." "Hello, tell me about your latest holiday." "Hi, how's it going?" "Can we talk?" "Good weather we're having.") #TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
+prompt_type="neutral_prompt"
+#declare -a old_prompts=("Hello, tell me about yourself." "Hello, how are you?" "I had a splendid weekend.") #TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
+#prompt_type="old_prompt"
+#declare -a young_prompts=("Awesome! I actually haven't been there. When did you go?" "Can I add you on Facebook?" "What are you wearing?") #TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
+#prompt_type="young_prompt"
+
+for pretrained_model in "${pretrained_models[@]}"
+do
+
+  # set discriminator weights
+  [ "$pretrained_model" = "gpt2-medium" ] &&
+    discrim_weights="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_epoch_19.pt" ||
+    discrim_weights="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_epoch_17.pt"
+
+  # set discriminator meta-data
+  [ "$pretrained_model" = "gpt2-medium" ] &&
+    discrim_meta="plug_play/discriminators/gpt2_incl_sw_nac/generic_pm_gpt2-medium_ml_512_lr_0.0001_classifier_head_meta.json" ||
+    discrim_meta="plug_play/discriminators/dialogpt-medium/generic_pm_microsoft-DialoGPT-medium_ml_512_lr_0.0001_classifier_head_meta.json"
+
+  for attribute in "${attributes[@]}"
+  do
+    [ "$attribute" = "uncontrolled" ] && stepsize=0 || stepsize=0.02
+    [ "$attribute" = "uncontrolled" ] && num_iterations=0 || num_iterations=3
+
+    [ "$attribute" = "uncontrolled" ] || [ "$attribute" = "young" ] && label=0 || label=1
+
+    for condition in "${conditions[@]}"
+    do
+      if [ "$condition" = "unprompted" ]
+      then
+        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta |class_label: $label | prompt: $condition | stepsize: $stepsize | iterations: $num_iterations |"
+
+        for length in 6 12 18 24 30 36 42 48 54 60
+        do
+
+          python plug_play/run_pplm.py \
+               --pretrained_model "$pretrained_model" \
+               --uncond \
+               --num_samples 30 \
+               --discrim 'generic' \
+               --length $length \
+               --seed 2021 \
+               --sample \
+               --stepsize $stepsize \
+               --num_iterations $num_iterations \
+               --class_label $label \
+               --verbosity "quiet" \
+               --discrim_weights "$discrim_weights" \
+               --discrim_meta "$discrim_meta"
+
+        done
+
+      else
+        echo "Configuration --> pm: $pretrained_model | attribute: $attribute | weights: $discrim_weights | meta: $discrim_meta | class_label: $label | prompt: $prompt | stepsize: $stepsize | iterations: $num_iterations |"
+
+        for length in 6 12 18 24 30 36 42 48 54 60
+        do
+
+          for prompt in "${neutral_prompts[@]}"
+          do
+
+            python plug_play/run_pplm.py \
+                 --pretrained_model "$pretrained_model" \
+                 --cond_text "$prompt" \
+                 --num_samples 6 \
+                 --discrim 'generic' \
+                 --length $length \
+                 --seed 2021 \
+                 --sample \
+                 --stepsize $stepsize \
+                 --num_iterations $num_iterations \
+                 --class_label $label \
+                 --verbosity "quiet" \
+                 --discrim_weights "$discrim_weights" \
+                 --discrim_meta "$discrim_meta" \
+                 --prompt_type "$prompt_type"
+          done
+
+        done
+      fi
+    done
+
+  done
+
+done
