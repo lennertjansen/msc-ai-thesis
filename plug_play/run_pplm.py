@@ -1220,18 +1220,32 @@ def run_pplm_example(
 
     age_group = 'young' if class_label == 0 else 'old'
 
+    # "young_prompt", "neutral_prompt",
+    # "old_prompt", "unknown_prompt", "unprompted"
+
+    if prompt_type == "young_prompt":
+        prompt_tag = "young"
+    elif prompt_type == "neutral_prompt":
+        prompt_tag = "neutral"
+    elif prompt_type == "old_prompt":
+        prompt_tag = "old"
+    elif prompt_type == "unknown_prompt":
+        prompt_tag = "unk"
+    elif prompt_type == "unprompted":
+        prompt_tag = "unprompted"
+
     if pretrained_model.__contains__("/"):
         pretrained_model_no_slash = pretrained_model.replace('/', '-')
         if num_iterations == 0 or stepsize == 0:
-            output_path = f'plug_play/output/{prompt_type}/{pretrained_model_no_slash}/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_NA_WS_baseline.csv'
+            output_path = f'plug_play/output/{prompt_type}/{pretrained_model_no_slash}/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_prompt_{prompt_tag}_wl_{wordlist}_age_NA_WS_baseline.csv'
         else:
-            output_path = f'plug_play/output/{prompt_type}/{pretrained_model_no_slash}/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_wl_{wordlist}_age_{age_group}_WS.csv'
+            output_path = f'plug_play/output/{prompt_type}/{pretrained_model_no_slash}/ctg_out_am_{attr_model}_pm_{pretrained_model_no_slash}_prompt_{prompt_tag}_wl_{wordlist}_age_{age_group}_WS.csv'
     else:
 
         if num_iterations == 0 or stepsize == 0:
-            output_path = f'plug_play/output/{prompt_type}/{pretrained_model}/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_NA_WS_baseline.csv'
+            output_path = f'plug_play/output/{prompt_type}/{pretrained_model}/ctg_out_am_{attr_model}_pm_{pretrained_model}_prompt_{prompt_tag}_wl_{wordlist}_age_NA_WS_baseline.csv'
         else:
-            output_path = f'plug_play/output/{prompt_type}/{pretrained_model}/ctg_out_am_{attr_model}_pm_{pretrained_model}_wl_{wordlist}_age_{age_group}_WS.csv'
+            output_path = f'plug_play/output/{prompt_type}/{pretrained_model}/ctg_out_am_{attr_model}_pm_{pretrained_model}_prompt_{prompt_tag}_wl_{wordlist}_age_{age_group}_WS.csv'
 
 
     # create csv file with header if non-existent, append if already exists
