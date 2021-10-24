@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_old_prompt_unpert_baseline_discrim_young_and_old
+#SBATCH --job-name=ctg_old_prompt_unpert_baseline_discrim_young_and_old_CORRECTION
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_old_prompt_unpert_baseline_discrim_young_and_old.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_old_prompt_unpert_baseline_discrim_young_and_old_CORRECTION.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -308,7 +308,7 @@ do
         for length in 6 12 18 24 30 36 42 48 54 60
         do
 
-          for prompt in "${neutral_prompts[@]}"
+          for prompt in "${old_prompts[@]}"
           do
 
             python plug_play/run_pplm.py \
