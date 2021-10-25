@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=ctg_neutral_prompt_100mcw_baseline_bow_fb_and_miu_young_and_old
+#SBATCH --job-name=ctg_OLD_prompt_100mcw_baseline_bow_fb_and_miu_young_and_old
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_neutral_prompt_100mcw_baseline_bow_fb_and_miu_young_and_old.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/ctg_explore/ctg_OLD_prompt_100mcw_baseline_bow_fb_and_miu_young_and_old.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -163,10 +163,10 @@ declare -a attributes=("baseline" "young" "old" "young_miu" "old_miu")
 declare -a conditions=("prompted")
 
 #TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
-declare -a neutral_prompts=("Hey." "Hello, tell me about your latest holiday." "Hi, how's it going?" "Can we talk?" "Good weather we're having.") #TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
-prompt_type="neutral_prompt"
-#declare -a old_prompts=("Hello, tell me about yourself." "Hello, how are you?" "I had a splendid weekend." "Good afternoon." "Tell me about your family.") #TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
-#prompt_type="old_prompt"
+#declare -a neutral_prompts=("Hey." "Hello, tell me about your latest holiday." "Hi, how's it going?" "Can we talk?" "Good weather we're having.") #TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
+#prompt_type="neutral_prompt"
+declare -a old_prompts=("Hello, tell me about yourself." "Hello, how are you?" "I had a splendid weekend." "Good afternoon." "Tell me about your family.") #TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
+prompt_type="old_prompt"
 #declare -a young_prompts=("Awesome! I actually haven't been there. When did you go?" "Can I add you on Facebook?" "Do you have any hobbies?" "What do you wanna eat?" "What are your plans this week?") #TODO: CHANGE PROMPT-TYPE VARIABLE ACCORDINGLY
 #prompt_type="young_prompt"
 
@@ -232,7 +232,7 @@ do
         for length in 6 12 18 24 30 36 42 48 54 60
         do
 
-          for prompt in "${neutral_prompts[@]}"
+          for prompt in "${old_prompts[@]}"
           do
 
             python plug_play/run_pplm.py \
