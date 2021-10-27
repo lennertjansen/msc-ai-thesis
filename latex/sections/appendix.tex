@@ -161,6 +161,47 @@ shit, cool, fucking, definitely, guess, friends, everyone, literally, dad, sound
 
 \begin{table*}[h]
     \centering
+    \begin{tabular}{l c c c c}
+    \toprule
+    \textbf{Model} & \textbf{Accuracy} & $\boldsymbol{F}_1^{(13-17)}$ & $\boldsymbol{F}_1^{(23-27)}$ & $\boldsymbol{F}_1^{(33+)}$\\
+    % -plus)}$\\
+     & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    % Baseline (
+    Majority class
+    % ) 
+    & 0.472
+    % (0.000) 
+    & * & 0.642
+    % (0.000)
+    & *\\
+    % Best model by \citeauthor
+    \citet{schler2006effects} & 0.762 & 0.860 & 0.748 & 0.504 \\
+    \midrule
+    unigram & 0.601 (0.001) & 0.764 (0.001) & 0.704 (0.001) & 0.498 (0.003)\\
+    bigram & 0.625 (0.001) & 0.790 (0.001) & 0.712 (0.001) & \textcolor{blue}{0.518} (0.001)\\
+    trigram & 0.623 (0.001) & \textcolor{blue}{0.790} (0.001) & 0.712 (0.002) & 0.498 (0.002)\\
+    \midrule
+    LSTM & 0.663 (0.005) & 0.748 (0.003) & 0.664 (0.010) & 0.502 (0.004) \\
+    BiLSTM & 0.618 (0.008) & 0.732 (0.003) & 0.579 (0.016) & 0.509 (0.004)\\
+    \midrule
+    % BERT$_{frozen}$
+    % -base-uncased (frozen)
+    % & 0.604 (0.001) & 0.627 (0.011) & 0.666 (0.005) & 0.198 (0.018)\\
+    BERT$_{FT}$
+    % -base-uncased (fine-tuned)
+    & \textbf{0.742} (0.010) & \textbf{0.813} (0.007) & \textbf{0.749} (0.013) & \textbf{0.592} (0.009)\\
+    % \hline
+    % GPT-2 medium (frozen) & 0.621 (0.003) & 0.654 (0.012) & 0.678 (0.009) & 0.247 (0.032)\\
+    \bottomrule
+    \end{tabular}
+    \caption{Discourse dataset. \len{Including stopwords} Test set results averaged over 5 random initializations. Format: \textit{average metric (standard error)}. Values in \textbf{bold} are the highest in the column; in \textcolor{blue}{blue}, the second highest. *: $F_1$ is actually $0/0$.}
+    % \san{If we agree with the abbreviations used in this table, we could use them also in Table 3}}
+    \label{tab:blog_classification}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
     % \resizebox{\columnwidth}{!}{
     \begin{tabular}{l c c c}
     \toprule
@@ -225,4 +266,152 @@ shit, cool, fucking, definitely, guess, friends, everyone, literally, dad, sound
 \end{table*}
 
 
+\section{Placeholders for final CTG results tables}
 
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l | c c c c | c c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & $\boldsymbol{\bar{P}_Y}$ & $\boldsymbol{\bar{P}_O}$ & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & & & $\uparrow$ better\\
+    \midrule
+    \midrule
+    G-baseline & 27.50 ($\pm$6.58) & 0.87 ($\pm$0.09) & 0.94 ($\pm$0.04) & 0.90 ($\pm$0.06) & 0.62 ($\pm$0.42) & 0.38 & -\\
+    G-100MCW & 27.56 ($\pm$6.60) & 0.86 ($\pm$0.10) & 0.93 ($\pm$0.04) & 0.90 ($\pm$0.05) & 0.63 ($\pm$0.42) & 0.37 & -\\
+    \midrule
+    G-B$_{FB,Y}$ & 27.91 ($\pm$7.18) & 0.87 ($\pm$0.10) & 0.93 ($\pm$0.05) & 0.90 ($\pm$0.06) & 0.69 ($\pm$0.41) & 0.31 & 70.4\%\\
+    G-B$_{FB,O}$ & 27.58 ($\pm$7.07) & 0.86 ($\pm$0.10) & 0.93 ($\pm$0.04) & 0.90 ($\pm$0.06) & 0.58 ($\pm$0.42) & 0.42 & 43.0\%\\
+    G-B$_{100MIU,Y}$ & 28.37 ($\pm$7.31) & 0.87 ($\pm$0.09) & 0.93 ($\pm$0.04) & 0.90 ($\pm$0.06) & 0.67 ($\pm$0.41) & 0.33 & 67.4\%\\
+    G-B$_{100MIU,O}$ & 27.25 ($\pm$6.15) & 0.87 ($\pm$0.09) & 0.93 ($\pm$0.04) & 0.90 ($\pm$0.06) & 0.62 ($\pm$0.42) & 0.38 & 37.4\%\\
+    \midrule
+    G-D$_{Y}$ & 32.09 ($\pm$18.98) & 0.77 ($\pm$0.20) & 0.86 ($\pm$0.13) & 0.84 ($\pm$0.15) & 0.66 ($\pm$0.43) & 0.34 & 67.8\%\\
+    G-D$_{O}$ & 47.15 ($\pm$47.56) & 0.73 ($\pm$0.24) & 0.75 ($\pm$0.28) & 0.75 ($\pm$0.27) & 0.24 ($\pm$0.36) & 0.76 & 74.3\%\\
+    \midrule
+    \midrule
+    D-baseline & 37.52 ($\pm$12.06) & 0.86 ($\pm$0.13) & 0.90 ($\pm$0.08) & 0.85 ($\pm$0.10) & 0.76 ($\pm$0.37) & 0.24 & -\\
+    D-100MCW & 37.80 ($\pm$10.89) & 0.85 ($\pm$0.14) & 0.89 ($\pm$0.10) & 0.85 ($\pm$0.10) & 0.82 ($\pm$0.33) & 0.18 & -\\
+    \midrule
+    D-B$_{FB,Y}$ & 38.53 ($\pm$12.64) & 0.87 ($\pm$0.12) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.10) & 0.82 ($\pm$0.33) & 0.18 & 83.0\%\\
+    D-B$_{FB,O}$ & 37.85 ($\pm$11.17) & 0.87 ($\pm$0.12) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.09) & 0.78 ($\pm$0.35) & 0.22 & 21.5\%\\
+    D-B$_{100MIU,Y}$ & 38.67 ($\pm$11.70) & 0.88 ($\pm$0.11) & 0.91 ($\pm$0.07) & 0.86 ($\pm$0.10) & 0.87 ($\pm$0.28) & 0.13 & 88.5\%\\
+    D-B$_{100MIU,O}$ & 37.91 ($\pm$12.27) & 0.87 ($\pm$0.11) & 0.90 ($\pm$0.07) & 0.85 ($\pm$0.10) & 0.79 ($\pm$0.34) & 0.22 & 21.9\%\\
+    \midrule
+    D-D$_{Y}$ & 42.01 ($\pm$16.94) & 0.90 ($\pm$0.12) & 0.86 ($\pm$0.14) & 0.77 ($\pm$0.22) & 0.86 ($\pm$0.29) & 0.14 & 85.9\%\\
+    D-D$_{O}$ & 41.17 ($\pm$20.72) & 0.87 ($\pm$0.12) & 0.89 ($\pm$0.13) & 0.83 ($\pm$0.16) & 0.43 ($\pm$0.41) & 0.57 & 56.7\%\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Neutral prompt} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. $\boldsymbol{\bar{P}_Y}$ and $\boldsymbol{\bar{P}_O}$ are the respective average young and old probabilities assigned by the best BERT$_{FT}$. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_neutral_prompt}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l | c c c c | c c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & $\boldsymbol{\bar{P}_Y}$ & $\boldsymbol{\bar{P}_O}$ & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & & & $\uparrow$ better\\
+    \midrule
+    \midrule
+    G-baseline & 28.05 ($\pm$6.12) & 0.85 ($\pm$0.13) & 0.91 ($\pm$0.08) & 0.88 ($\pm$0.08) & 0.80 ($\pm$0.33) & 0.20 & -\\
+    G-100MCW & 27.71 ($\pm$6.20) & 0.85 ($\pm$0.12) & 0.91 ($\pm$0.09) & 0.88 ($\pm$0.09) & 0.75 ($\pm$0.37) & 0.25 & -\\
+    \midrule
+    G-B$_{FB, Y}$ & 28.81 ($\pm$7.09) & 0.86 ($\pm$0.12) & 0.92 ($\pm$0.08) & 0.89 ($\pm$0.08) & 0.82 ($\pm$0.32) & 0.18 & 83.3\%\\
+    G-B$_{FB, O}$ & 28.54 ($\pm$6.45) & 0.86 ($\pm$0.12) & 0.92 ($\pm$0.08) & 0.89 ($\pm$0.08) & 0.77 ($\pm$0.36) & 0.23 & 22.6\%\\
+    G-B$_{100MIU, Y}$ & 28.49 ($\pm$6.49) & 0.86 ($\pm$0.12) & 0.91 ($\pm$0.08) & 0.88 ($\pm$0.08) & 0.83 ($\pm$0.32) & 0.17 & 83.0\%\\
+    G-B$_{100MIU, O}$ & 28.18 ($\pm$5.70) & 0.87 ($\pm$0.11) & 0.92 ($\pm$0.08) & 0.89 ($\pm$0.09) & 0.79 ($\pm$0.34) & 0.21 & 21.5\%\\
+    \midrule
+    G-D$_{Y}$ & 39.32 ($\pm$37.49) & 0.84 ($\pm$0.21) & 0.61 ($\pm$0.40) & 0.57 ($\pm$0.40) & 0.70 ($\pm$0.40) & 0.30 & 70.7\%\\
+    G-D$_{O}$ & 85.40 ($\pm$150.28) & 0.67 ($\pm$0.30) & 0.62 ($\pm$0.31) & 0.62 ($\pm$0.32) & 0.29 ($\pm$0.40) & 0.71 & 70.5\%\\
+    \midrule
+    \midrule
+    D-baseline & 36.69 ($\pm$9.11) & 0.87 ($\pm$0.10) & 0.91 ($\pm$0.06) & 0.87 ($\pm$0.08) & 0.90 ($\pm$0.24) & 0.10 & -\\
+    D-100MCW & 36.93 ($\pm$9.18) & 0.86 ($\pm$0.11) & 0.91 ($\pm$0.06) & 0.88 ($\pm$0.07) & 0.90 ($\pm$0.25) & 0.10 & -\\
+    \midrule
+    D-B$_{FB, Y}$ & 37.35 ($\pm$8.60) & 0.88 ($\pm$0.10) & 0.91 ($\pm$0.06) & 0.87 ($\pm$0.08) & 0.90 ($\pm$0.26) & 0.10 & 90.0\%\\
+    D-B$_{FB, O}$ & 37.25 ($\pm$9.45) & 0.87 ($\pm$0.11) & 0.91 ($\pm$0.06) & 0.87 ($\pm$0.08) & 0.88 ($\pm$0.29) & 0.12 & 11.1\%\\
+    D-B$_{100MIU, Y}$ & 37.87 ($\pm$8.32) & 0.88 ($\pm$0.10) & 0.91 ($\pm$0.07) & 0.87 ($\pm$0.09) & 0.91 ($\pm$0.24) & 0.09 & 92.6\%\\
+    D-B$_{100MIU, O}$ & 37.04 ($\pm$8.78) & 0.88 ($\pm$0.10) & 0.91 ($\pm$0.05) & 0.88 ($\pm$0.07) & 0.85 ($\pm$0.32) & 0.15 & 15.2\%\\
+    \midrule
+    D-D$_{Y}$ & 39.22 ($\pm$14.96) & 0.89 ($\pm$0.12) & 0.86 ($\pm$0.19) & 0.79 ($\pm$0.23) & 0.89 ($\pm$0.25) & 0.11 & 91.1\%\\
+    D-D$_{O}$ & 38.46 ($\pm$14.91) & 0.82 ($\pm$0.15) & 0.87 ($\pm$0.15) & 0.83 ($\pm$0.17) & 0.52 ($\pm$0.44) & 0.48 & 47.4\%\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Young prompt} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_young_prompt}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l | c c c c | c c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & $\boldsymbol{\bar{P}_Y}$ & $\boldsymbol{\bar{P}_O}$ & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & & & $\uparrow$ better\\
+    \midrule
+    \midrule
+    G-baseline & 29.34 ($\pm$10.30) & 0.86 ($\pm$0.09) & 0.94 ($\pm$0.04) & 0.90 ($\pm$0.06) & 0.60 ($\pm$0.43) & 0.40 & -\\
+    G-100MCW & 29.14 ($\pm$10.11) & 0.86 ($\pm$0.10) & 0.93 ($\pm$0.04) & 0.90 ($\pm$0.06) & 0.60 ($\pm$0.44) & 0.40 & -\\
+    \midrule
+    G-B$_{Y, FB}$ & 29.61 ($\pm$10.28) & 0.86 ($\pm$0.10) & 0.93 ($\pm$0.04) & 0.91 ($\pm$0.06) & 0.62 ($\pm$0.43) & 0.38 & 61.1\%\\
+    G-B$_{O, FB}$ & 28.81 ($\pm$10.10) & 0.86 ($\pm$0.10) & 0.93 ($\pm$0.05) & 0.90 ($\pm$0.06) & 0.59 ($\pm$0.43) & 41 & 41.1\%\\
+    G-B$_{Y, 100MIU}$ & 29.51 ($\pm$0.09) & 0.87 ($\pm$0.09) & 0.93 ($\pm$0.05) & 0.90 ($\pm$0.06) & 0.68 ($\pm$0.42) & 0.32 & 68.5\%\\
+    G-B$_{O, 100MIU}$ & 29.05 ($\pm$9.80) & 0.86 ($\pm$0.09) & 0.93 ($\pm$0.04) & 0.90 ($\pm$0.06) & 0.60 ($\pm$0.43) & 0.40 & 39.6\%\\
+    \midrule
+    G-D$_{Y}$ & 32.34 ($\pm$19.88) & 0.77 ($\pm$0.20) & 0.84 ($\pm$0.19) & 0.80 ($\pm$0.23) & 0.65 ($\pm$0.43) & 0.35 & 65.4\%\\
+    G-D$_{O}$ & 95.21 ($\pm$174.42) & 0.65 ($\pm$0.27) & 0.78 ($\pm$0.18) & 0.78 ($\pm$0.18) & 0.90 ($\pm$0.25) & 0.10 & 90.3\%\\
+    \midrule
+    \midrule
+    D-baseline & 38.18 ($\pm$12.03) & 0.86 ($\pm$0.12) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.09) & 0.72 ($\pm$0.38) & 0.28 & -\\
+    D-100MCW & 37.73 ($\pm$11.88) & 0.85 ($\pm$0.13) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.09) & 0.73 ($\pm$0.39) & 0.27 & -\\
+    \midrule
+    D-B$_{Y, FB}$ & 38.24 ($\pm$11.53) & 0.86 ($\pm$0.12) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.10) & 0.81 ($\pm$0.34) & 0.19 & 82.6\%\\
+    D-B$_{O, FB}$ & 37.8 ($\pm$11.74) & 0.86 ($\pm$0.12) & 0.90 ($\pm$0.07) & 0.87 ($\pm$0.08) & 0.72 ($\pm$0.39) & 0.28 & 29.3\%\\
+    D-B$_{Y, 100MIU}$ & 38.66 ($\pm$11.57) & 0.85 ($\pm$0.12) & 0.90 ($\pm$0.07) & 0.86 ($\pm$0.09) & 0.81 ($\pm$0.33) & 0.19 & 80.7\%\\
+    D-B$_{O, 100MIU}$ & 36.93 ($\pm$11.68) & 0.87 ($\pm$0.12) & 0.90 ($\pm$0.09) & 0.86 ($\pm$0.09) & 0.69 ($\pm$0.41) & 0.31 & 29.6\%\\
+    \midrule
+    D-D$_{Y}$ & 42.93 ($\pm$20.18) & 0.90 ($\pm$0.14) & 0.79 ($\pm$0.22) & 0.68 ($\pm$0.28) & 0.84 ($\pm$0.30) & 0.16 & 85.2\%\\
+    D-D$_{O}$ & 45.58 ($\pm$38.59) & 0.86 ($\pm$0.14) & 0.86 ($\pm$0.13) & 0.79 ($\pm$0.20) & 0.40 ($\pm$0.42) & 0.60 & 59.7\%\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Old prompt} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_old_prompt}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l c c c c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    \midrule
+    GPT-2 baseline & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    GPT-2 100MCW baseline & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    \midrule
+    GPT-2 B$_{Y, FB}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    GPT-2 B$_{O, FB}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    GPT-2 B$_{Y, 100MIU}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    GPT-2 B$_{O, 100MIU}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    \midrule
+    GPT-2 D$_{Y}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    GPT-2 D$_{O}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    \midrule
+    \midrule
+    DGPT baseline & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    DGPT-100MCW & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    \midrule
+    DGPT B$_{Y, FB}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    DGPT B$_{O, FB}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    DGPT B$_{Y, 100MIU}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    DGPT B$_{O, 100MIU}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    \midrule
+    DGPT$_{Y}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    DGPT$_{O}$ & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots ($\pm$\dots) & \dots\%\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Unprompted} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_unprompted}
+\end{table*}
