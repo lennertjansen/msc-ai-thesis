@@ -162,16 +162,19 @@ class TextClassificationBERT(nn.Module):
         super(TextClassificationBERT, self).__init__()
 
         options_name = "bert-base-uncased"
-        config = BertConfig.from_pretrained(options_name)
+        config = BertConfig.from_pretrained(options_name, output_attentions=True)
         config.num_labels = num_classes
         # config.max_position_embeddings = 1024
         self.encoder = BertForSequenceClassification.from_pretrained(options_name, config=config)
 
-    def forward(self, text, label):
-        loss, text_fea = self.encoder(text, labels=label)[:2]
+    def forward(self, text, label, bertviz=False, token_type_ids=None):
 
-        return loss, text_fea
-
+        if bertviz:
+            # returns loss, text_features, attentions
+            return self.encoder(text, labels=label, token_type_ids=token_type_ids)
+        else:
+            loss, text_fea = self.encoder(text, labels=label)[:2]
+            return loss, text_fea
 
 class FrozenBERT(nn.Module):
     """
