@@ -78,7 +78,7 @@ In recent years, the attention-based models, Transformers \citep{vaswani2017atte
 %     \item One of the main challenges in CTG using large-scale LMs is the cost of fine-tuning. Expand on this. How can this be solved?
 % \end{itemize}
 
-In text generation, a language model $p(\textbf{x})$ is asked to produce text $\textbf{x}$ given a prompt by sampling from the distribution of words that are assigned the highest likelihood of following the primer text. Text generation in itself is the task of generating a piece of text given an input text. This process can be seen as sampling from a conditional distribution. Controllable text generation refers to the more restrictive problem of enforcing higher-level linguistic features on the generated text during sampling. This can be seen as a sub-problem of vanilla text generation, because the conditioning factor for the output text is further constrained to also include some predefined textual attribute. This attribute represents a linguistic characteristic of the text, like sentiment, topic, or writing style. 
+In text generation, a language model $p(\textbf{x})$ is asked to produce text $\textbf{x}$ given a prompt by sampling from the distribution of words that are assigned the highest likelihood of following the primer text \citep{radford2019language}. Text generation in itself is the task of generating a piece of text given an input text. This process can be seen as sampling from a conditional distribution. Controllable text generation refers to the more restrictive problem of enforcing higher-level linguistic features on the generated text during sampling \citep{dathathri2019plug, prabhumoye-etal-2020-exploring}. This can be seen as a sub-problem of vanilla text generation, because the conditioning factor for the output text is further constrained to also include some predefined textual attribute. This attribute represents a linguistic characteristic of the text, like sentiment, topic, or writing style. 
 
 % \begin{itemize}
 %     \item base language model $p(\textbf{x})$
@@ -86,7 +86,7 @@ In text generation, a language model $p(\textbf{x})$ is asked to produce text $\
 %     \item CTG model $p(\textbf{x} | a ) \propto p(a | \textbf{x})p(\textbf{x})$
 % \end{itemize}
 
-Controllable text generation or CTG is a more challenging problem than vanilla text generation for a number of reasons. First, defining the desired attribute to be controlled for in a manner that it is intelligible for a machine is a challenge in itself. Second, like many NLP problems, there are not many parallel corpora. In the context of controllable generation, parallel corpora are datasets of target and source texts that only differ with respect to some attribute. Furthermore, the measure of attribute adherence is a very vague and ambiguous concept. Namely, a text can be written in an extremely positive sentiment in multiple formulations, all of which adhere to the positive sentiment. Another important hurdle for controllable text generation, especially when CTG is combined to leverage the linguistic power of large-scale language models, is that the cost of fine-tuning or pre-training a model to control for a linguistic attribute can be very high. 
+Controllable text generation or CTG is a more challenging problem than vanilla text generation for a number of reasons. First, defining the desired attribute to be controlled for in a manner that it is intelligible for a machine is a challenge in itself \citep{zheng2019personalized}. Second, like many NLP problems, there are not many parallel corpora \citep{dai2019style}. In the context of controllable generation, parallel corpora are datasets of target and source texts that only differ with respect to some attribute. Furthermore, the measure of attribute adherence is a very vague and ambiguous concept \citep{dathathri2019plug, dai2019style}. Namely, a text can be written to have an extremely positive sentiment in multiple formulations, all of which adhere to the positive sentiment. Another important hurdle for controllable text generation, especially when CTG is combined to leverage the linguistic power of large-scale language models, is that the cost of fine-tuning or pre-training a model to control for a linguistic attribute can be very high \citep{dathathri2019plug, madotto-etal-2020-plug}. 
 
 %=================================================================================
 %%%%%%% THE FOLLOWING PARAGRAPH HAS BEEN MOVED TO THE RELATED WORK SECTION %%%%%%%
@@ -103,7 +103,21 @@ Controllable text generation or CTG is a more challenging problem than vanilla t
 
 % Following the success of open AI's pre-trained transformer model they went on to produce a series of generative pre-train transformers that I have been trained in a unsupervised language modelling session.
 
-\subsection{Dialogue}
+\subsection{Dialogue, Dialogue Systems, and Dialogue Generation}
+
+\len{
+    \begin{itemize}
+        \item Think of better title.
+        \item Flesh out this section more.
+        \item Add more references. E.g., \cite{welleck-etal-2019-dialogue} have good definitions for Dialogue Generation and Persona-Based Dialogue.
+        \item Properly introduce the concept of a dialogue with references.
+        \item Properly introduce Dialogue Systems and their general scheme. E.g., \cite{Kushneryk2019IntelligentDS} provide good figures for these concepts.
+        \item Emphasize that the focus of this thesis is on Open-Domain dialogue systems. Talk about open-domain dialogue systems
+        \item \textit{Open-domain conversational systems are a special case of language models where the prefix is the dialogue history and the continuation is a humanlike response.} \citep{madotto-etal-2020-plug}
+        \item Very briefly mention that the focus of your research is on the natural language generation part of a dialogue system.
+    \end{itemize}
+}
+
 
 % \len{TODO - Add a sub-section here about dialogue (also think of a better title for the sub-section). This is necessary because dialogue is the main focus of your thesis. So before you discuss dialogue response generation (which is the NLP-operationalization of dialogue), formally introduce the concept of dialogue. What is it? What does it look like? How is it different from discourse? Provide some examples like we did in the paper-submission.}
 
@@ -118,18 +132,24 @@ Controllable text generation or CTG is a more challenging problem than vanilla t
 %     \item Some examples would also be useful. (maybe from the BNC?)
 % \end{itemize}
 
-Dialogue can be described as a written or spoken conversational exchange between two or more interlocutors. Generally speaking, its purpose is to exchange information or build relationships between interlocutors. A dialogue typically consists of interlocutors exchanging utterances in turns. 
+A dialogue a written or spoken conversational exchange between two or more interlocutors \len{Are you sure it requires two or more? And not just one or more?}. Generally speaking, its purpose is to exchange information or build relationships between interlocutors \citep{bohm2013dialogue}. A dialogue typically consists of interlocutors exchanging utterances in turns. 
 
 \len{\textbf{TODO} - Give an example of a dialogue snippet (from the BNC)}
 
-Dialogue distinguishes itself from discourse in that it necessarily involves two or more participants exchanging information and contributing to the conversation, whereas discourse can be a one-way exchange of information, like a lecture or blog-post.
+Dialogue distinguishes itself from discourse in that it necessarily involves two or more participants exchanging information and contributing to the conversation, whereas discourse can be a one-way exchange of information, like a lecture or blog-post. \len{Verify if this is true. Is that really the difference? Why does dialogue require at least two participants?}
 
-The NLP operationalization of dialogue, dialogue generation, is a fundamental component for real-world virtual assistants such as Siri and Alexa. It is the task of automatically generate a response given a prompt by the user.
+Developing dialogue systems is a very complex task and many approaches have been proposed for this \citep{mctear2020conversational}. \len{Find specific examples of these approaches, mention a few along with references.}
+
+The focus of my thesis is on dialogue generation, a particular operationalization of dialogue in NLP. 
+
+It is the task of automatically generate a response given a prompt by the user \citep{madotto-etal-2020-plug}.
+
+Dialogue generation can be framed as a next utterance prediction problem \citep{welleck-etal-2019-dialogue}. In this framework, an utterance is a sequence of tokens representing a dialogue turn. The next utterance utterance is predicted conditioned on a dialogue prefix or prompt (e.g., a single previous dialogue turn, or the entire conversation history). Continuing with the framework of \cite{welleck-etal-2019-dialogue}, a sequence of utterances can be interpreted as a dialogue between agents.
 
 Computational dialogue modeling distinguishes itself from most NLP domains due to the challenges associated with modeling human conversation: informal, noisy, unstructured, and even erroneous real-world responses, possibly competing goals of interlocutors, or an inherently more diverse set of acceptable responses.
 
+\len{TODO - work out best way to merge previous and next paragraph(s)}
 
-\subsection{Dialogue response generation}
 Text generation is suitable to tackle tasks such as machine translation, abstractive summarization, and paraphrasing. Dialogue response generation is also a special case of language generation. It can be seen as language generation where the prompt is a turn in a dialogue session. Conversational response generation shares open-domain text generation's overarching objective of producing grammatically correct fluent text, while remaining relevant to the prompt. 
 % However, computational dialogue modeling distinguishes itself from most NLP domains due to the challenges associated with modeling human conversation: informal, noisy, unstructured, and even erroneous real-world responses, possibly competing goals of interlocutors, or an inherently more diverse set of acceptable responses. \len{Comment by SF about the previous sentence: \textit{all these aspects could be introduced/described in this subsection about (human) dialogue}}
 
@@ -156,15 +176,15 @@ Text generation is suitable to tackle tasks such as machine translation, abstrac
 % \len{...TO HERE.}
 %%%%%%%%%%%%%%%% ...TO HERE
 
-\subsection{Controllable dialogue generation}
+\subsection{Controllable Dialogue Generation}
 
 % \len{Sandro suggests to move the entire following subsection to the Related Work section. See comment. FROM HERE...}
 
-Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI. This objective is difficult to reach because of the challenge of representing personality traits via language expression and the lack of large-scale persona-labeled dialogue datasets. Assuming an encoder-decoder setup, most personalized neural conversation models can be classified as one of two types: implicit and explicit personalisation models \citep{zheng2019personalized}. For implicit personalization models, each speaker has its own vector representation, which implicitly captures the speaking style of the speaker in the decoding process. These models enjoy the benefit of having a more granular and realistic representation of speaking style, as opposed to a simple discrete set of traits (as is the case for explicit personalization models). On the other hand, it is unclear how speaker style is captured and should be interpreted, as all the information about a speaker's style is encoded in a real-valued vector. Furthermore, these methods suffer from a data sparsity issue, because each dialogue should be tagged with a speaker identifier and there should be sufficient dialogues from each trait-group to train a reliable trait-adaptive model. 
+Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI \citep{edlund2008towards, scheutz2011toward, madotto-etal-2020-plug}. \cite{zheng2019personalized} argue that this objective is difficult to reach because of the challenge of representing personality traits via language expression and the lack of large-scale persona-labeled dialogue datasets. Assuming an encoder-decoder setup, the same authors postulate that most personalized neural conversation models can be classified as one of two types: implicit and explicit personalisation models. For implicit personalization models, each speaker has its own vector representation, which implicitly captures the speaking style of the speaker in the decoding process \citep{ijcai2017-521, li-etal-2016-persona}. These models enjoy the benefit of having a more granular and realistic representation of speaking style, as opposed to a simple discrete set of traits (as is the case for explicit personalization models). On the other hand, it is unclear how speaker style is captured and should be interpreted, as all the information about a speaker's style is encoded in a real-valued vector. Furthermore, these methods suffer from a data sparsity issue, because each dialogue should be tagged with a speaker identifier and there should be sufficient dialogues from each trait-group to train a reliable trait-adaptive model. 
 % \len{This should be in the related work. See comment.} 
 % This last drawback is a bigger hurdle for the method proposed by \cite{zheng2019personalized} than it is for mine, as their work deals with personalization for intersections of multiple traits, whereas this thesis focuses on adaptation to a small number of age groups.
 
-When generating responses, \textit{explicit} personalization models are conditioned either on a given personal profile, text-described persona, or simply an attribute label. That is, speaker traits are represented as key-value pairs or descriptions about age, gender, etc. This can be seen as conditioning the decoder's output on an attribute $a$. Speakers with same set of personality traits can share attribute representations, so it does not require a speaker-specific representation vector. Such structured character descriptions are more explicit, straight-forward, and interpretable. However, explicit personalization models require manually labeled or crowdsourced datasets for development, making it difficult to scale these models to large-scale dialogue datasets.
+When generating responses, \textit{explicit} personalization models are conditioned either on a given personal profile \citep{ijcai2018-595}, text-described persona \citep{zhang-etal-2018-personalizing}, or simply an attribute label \citep{madotto-etal-2020-plug}. That is, speaker traits are represented as key-value pairs or descriptions about age, gender, etc. This can be seen as conditioning the decoder's output on an attribute $a$. Speakers with same set of personality traits can share attribute representations, so it does not require a speaker-specific representation vector. Such structured character descriptions are more explicit, straight-forward, and interpretable. However, explicit personalization models require manually labeled or crowdsourced datasets for development, making it difficult to scale these models to large-scale dialogue datasets \cite{zheng2019personalized, madotto-etal-2020-plug}.
 
 % \len{...TO HERE}
 
@@ -183,7 +203,7 @@ When generating responses, \textit{explicit} personalization models are conditio
 %         \end{itemize}
 % \end{enumerate}
 
-\subsection{Language and age}
+\subsection{Language and Age}
 The relationship between a person's age and use of language is a thoroughly studied subject with a decades long history and inherent challenges \citep{pennebaker2003words, nguyen2014gender, zheng2019personalized}. A number factors like community membership (e.g., gender, socioeconomic status, or political affiliation), experimental condition (e.g., emotional versus non-emotional disclosure), mode of disclosure (writing versus talking), and other confounding variables complicate the study of age's relation to language \citep{nguyen-etal-2011-author}. The relatively recent advent of widely available computational resources and vast amounts of textual data made it possible to leverage machine learning methods to help detect patterns in language that eluded conventional sociolinguistic research. Early computational investigations into the connection between a person's age and use of language is typically a combination of qualitative and statistical methods. For instance, using a mix between their proprietary count-based text analysis framework, Linguistic Inquiry and Word Count (LIWC) and sociolinguistic theory, \cite{pennebaker2003words} study the changes in written and spoken language use with increasing age. They discuss four important areas of a person's character that have been found to change with age: emotional experience and expression, identity and social relationships, time orientation, and cognitive abilities. These four axes and their hypothesized relationships with language use and age can be interpreted in the following ways:
 \begin{enumerate}
     \item \textit{Emotional experience and expression:} This is the relationship between increasing age and linguistically observable manifestations of a person's experienced emotions. In practical terms, this is framed as detectable instances of positive and negative affect in language. This complex relationship between age and emotional expression is characterized by decreased levels of negative affect and slightly non-decreasing levels of positive affect. This is also confirmed by the findings of \cite{schler2006effects}.
@@ -213,7 +233,7 @@ Detectable linguistic differences between age-groups can often be attributed to 
 %     \item Mention confounding factors like community membership (like gender, socioeconomic status, or political affiliation), experimental condition (e.g., emotional versus non-emotional disclosure), mode of disclosure (writing versus talking), and other confounding factors that complicate age prediction from language.
 % \end{itemize}
 
-\section{Related work}
+\section{Related Work}
 \label{sec:related_work}
 
 \len{Keep in mind the following distinction between Background and Related Work - The Background section should give
@@ -224,7 +244,7 @@ describe approaches that have been proposed to tackle each of these
 components, separately or jointly, and which are related or relevant to
 your own work for some reason}
 
-\subsection{Automated age detection}
+\subsection{Automated Age Detection}
 
 \len{Consider adding a small sub-section about automated age detection from text, because you often bring up the problem and other researchers' approaches to solving it in the Background section.}
 
@@ -242,7 +262,7 @@ We extend this investigation in several key ways: (1) we leverage state-of-the-a
 More recent studies, like that of \cite{nguyen-etal-2011-author}, \cite{zheng2019personalized}, and \cite{abdallah2020age}, frame age prediction from text as traditional machine learning problems, like linear regression, support vector machines, or neural architectures. These modeling approaches tend to reveal that strong indicators of age lie at the syntactic or structural level of language use, as opposed to the more content-based lexical level. Furthermore, this could explain why automatic detection from text of more content-based traits, like topic or sentiment, tend to be easier problems to solve than age prediction from text. To emphasize one such complicating factor, \cite{nguyen2014gender} argue that differences in language use are often relation to the speaker's social identity, which could differ from their biological identity. 
 
 
-\subsection{Controllable language generation}
+\subsection{Controllable Language Generation}
 Previous approaches to controlled language generation require fine-tuning large Transformer-based language models or training conditional generative LMs from scratch. Most notably CTRL \citep{keskarCTRL2019}, which achieves controllable generation by training a generative Transformer for a number of control codes. CTG models that require fine-tuning for control, like CTRL, can produce high quality fluent text because they are specifically trained to maximize the likelihood of generated sequences, given an attribute (denoted $p(\textbf{x} | a)$), but require training massive language models with computational costs.
 
 Other recent examples of controllable language generation models that are not Transformer-based also exist. \cite{li-etal-2020-optimus} introduce OPTIMUS, a large pre-trained Variational Autoencoder (VAE) \citep{Kingma2014} that can be fine-tuned for specific natural language tasks, like guided sentence generation. They demonstrate OPTIMUS' ability to perform controlled text generation from latent style-embeddings, with fluency at par with GPT-2. They also show how OPTIMUS generalizes better for low-resource languages than BERT \citep{devlin-etal-2019-bert}. Nevertheless, much like the previously mentioned CTG models, OPTIMUS still incurs a significant computational cost for fine-tuning per NLP task.
@@ -260,7 +280,7 @@ The original architecture proposed by \citeauthor{dathathri2019plug} uses GPT-2 
 
 
 
-\subsection{Text style transfer}
+\subsection{Text Style Transfer}
 Text style transfer is the task of changing a text's stylistic properties, while retaining its style-independent properties, like content and fluency \citep{dai2019style}. Text style transfer is a closely related problem to controllable language generation. Its similarity lies in trying to modify the output distribution of a language generation model, such that stylistic characteristics of the produced text are controllable, keeping content and fluency preserved. It involves rewriting an input text with a specific style. More formally, given a text $\textbf{x}$, its corresponding style-representing vector $\textbf{s}^{(i)}$, the number of different styles $K$ over which there exists a distribution, and a desired style $\hat{\textbf{s}} \in \{\textbf{s}^{(i)}\}_{i = 1}^{K}$, the goal of text style transfer is to produce output text $\hat{\textbf{x}}$ with style $\hat{\textbf{s}}$, and the style-independent properties of $\textbf{x}$. 
 % Text style transfer can also be seen as a special case of (abstractive) summarization, for which Transformers have also demonstrated applicability \citep{baan-etal-2019-abstractive}.
 

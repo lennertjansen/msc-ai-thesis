@@ -1,5 +1,5 @@
 \newpage
-\section{Controlled text generation performance}
+\section{Controlled Text Generation Performance}
 \label{sec:exp2_results}
 
 Table~\ref{tab:ctg_results_ws} reports the automated evaluation results of our controllable text generation models. It can be seen that uncontrolled GPT-2 baseline has a slight bias towards generating "young-sounding" language (57.5\% accuracy). Furthermore, it appears that perturbing GPT-2's output distribution with the 100 most common words across all ages results in a slight de-biasing of the generated text (54.1\% accuracy). Achieving detectable control seems possible, because all GPT-2-based models surpass both baselines in terms of accuracy, with the exception of both BoW-setups using the 100 most informative unigrams.
@@ -59,10 +59,93 @@ Overall, the results show that, for most models, a plug-and-play approach to con
     D*$_{O, DGPT}$ & 38.16 ($\pm$10.77) & 0.87 ($\pm$0.11) & 0.91 ($\pm$0.06) & 0.87 ($\pm$0.08) & 55.6\%\\
     \bottomrule
     \end{tabular}
-    \caption{Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \caption{\len{Unprompted} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
     \label{tab:ctg_results_ws}
 \end{table*}
 
+Initial observations and interpretations neutrally prompted ctg results (Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model})
+\begin{itemize}
+    \item Style of prompt heavily influences control of response. Also confirmed by Tables \ref{tab:ctg_results_ws_young_prompt_young_model}, \ref{tab:ctg_results_ws_young_prompt_old_model}, \ref{tab:ctg_results_ws_old_prompt_young_model}, and \ref{tab:ctg_results_ws_old_prompt_old_model}. Remind reader of ctg formula $p(\textbf{x} | a, \texttt{prompt})$.
+    \item GPT-2 baseline scores best w.r.t. fluency (lowest perplexity) and diversity of generation (highest Dist-2, second highest Dist-3).
+    \item GPT-2 + BoW$_{100MCW}$ on par with baseline w.r.t. fluency and diversity (second best perplexity, second best Dist-2, best Dist-3). 
+    \item Very similar pattern for old models: baseline second best perplexity and Dist-3, best Dist-1 and Dist-2; 100MCW second best Dist-2, and best Dist-3.
+    \item Basesline is moderately biased towards generating young language. I.e., GPT-2 is inclined to produce responses, given a neutral prompt, that are likely to contain features learned to be young by BERT$_{FT}$.
+    \item BoW-based models seem to result in language that is slightly more likely to contain features of target age (Young bow-models result in 0.06 probability increase wrt baseline, and old-bow-fb model in 0.04 increase wrt baseline). Differences are also possibly due to randomness.
+    \item BoW-based models barely impact the syntactical structure of generated sequences, i.e., changes made at lexical-level. This is shown by the barely altered perplexity (sometimes improved , G-B$_{100MIU,O}$ 0.25 lower average perplexity than baseline), and Dist-scores. 
+    \item BoW-fb slightly superior to BoW-100MIU -> consistently higher accuracy for BERT$_{FT}$.
+    \item For Old-models, BoW still doesn't fully overcome young-bias to result in convincingly old language.
+    \item Discriminator-based old model manages to generate language that is more convincingly similar to target age (0.38 old prob improvement). This comes at the cost of fluency and diversity (much higher perplexity and std wrt baseline), noticeable lower dist-scores and higher std's.
+    \item GPT2-disc young not convincingly more young sounding response. Noticeably worse and less precise fluency and diversity though. Only 0.04 average probability improvement.
+    \item DialoGPT has very strong young-bias, given a neutral prompt (0.76 average probability to contain detectable young features). --> Most likely due to DialoGPT being GPT-2, fine-tuned on Reddit Thread data \citep{zhang2019dialogpt} and include reddit age dist reference.
+    \item DialoGPT baseline produces less fluent and less diverse text than GPT-2 according to GPT-1 perplexity.
+    \item BoW-based models (including 100MCW) seem to reinforce young-bias for DialoGPT, regardless of age (young prob goes up for both BoW, and old prob goes down for both BoW-models).
+    \item Discriminator based models, again, outperform significantly w.r.t. target probability (0.10 prob difference wrt baseline for young, and 0.34 prob difference wrt baseline for old). Again, at the cost of on average worse and more volatile perplexity.
+    \item Janie's suggestion: it could be that there are some detectable young-sounding tokens that make BoW-based young control easier, and that old-sounding features are more salient at the structural/syntactical level and harder to control for.
+    \item Overall, it seems to be possible to control dialogue responses for a certain age group. The used base language models are biased towards generating young-sounding language. In the current PPLM-setup, there seems to be a tradeoff between increased control and decreasing fluency and diversity. BoW-based models achieve less detectable levels of control, but preserve the fluency and diversity of generated text. Discriminator based models make more invasive changes to the unperturbed sentences, which can result in less fluent and more repetitive text. However, they do produce more detectably age-appropriate passages.
+    \item \len{TODO - Examine the nonsensical generated sequences that are correctly labeled as old or young. What patterns do you see? It could be that BERT$_{FT}$ is picking up non-language patterns that give away age.}
+\end{itemize}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l | c c c c | c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & $\boldsymbol{\bar{P}(Young)}$ & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    \midrule
+    G-baseline & \textbf{27.50} ($\pm$6.58) & 0.87 ($\pm$0.09) & \textbf{0.94} ($\pm$0.04) & \textcolor{blue}{0.90} ($\pm$0.06) & 0.62 ($\pm$0.42) & -\\
+    G-100MCW & \textcolor{blue}{27.56} ($\pm$6.60) & 0.86 ($\pm$0.10) & \textcolor{blue}{0.93} ($\pm$0.04) & \textbf{0.90} ($\pm$0.05) & 0.63 ($\pm$0.42) & -\\
+    \midrule
+    G-BoW$_{FB}$ & 27.91 ($\pm$7.18) & 0.87 ($\pm$0.10) & 0.93 ($\pm$0.05) & \textcolor{blue}{0.90} ($\pm$0.06) & 0.69 ($\pm$0.41) & 70.4\%\\
+    G-BoW$_{100MIU}$ & 28.37 ($\pm$7.31) & 0.87 ($\pm$0.09) & \textcolor{blue}{0.93} ($\pm$0.04) & \textcolor{blue}{0.90} ($\pm$0.06) & 0.67 ($\pm$0.41) & 67.4\%\\
+    \midrule
+    G-Discrim & 32.09 ($\pm$18.98) & 0.77 ($\pm$0.20) & 0.86 ($\pm$0.13) & 0.84 ($\pm$0.15) & 0.66 ($\pm$0.43) & 67.8\%\\
+    \midrule
+    \midrule
+    D-baseline & 37.52 ($\pm$12.06) & 0.86 ($\pm$0.13) & 0.90 ($\pm$0.08) & 0.85 ($\pm$0.10) & 0.76 ($\pm$0.37) & -\\
+    D-100MCW & 37.80 ($\pm$10.89) & 0.85 ($\pm$0.14) & 0.89 ($\pm$0.10) & 0.85 ($\pm$0.10) & 0.82 ($\pm$0.33) & -\\
+    \midrule
+    D-BoW$_{FB}$ & 38.53 ($\pm$12.64) & 0.87 ($\pm$0.12) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.10) & 0.82 ($\pm$0.33) & 83.0\%\\
+    D-BoW$_{100MIU}$ & 38.67 ($\pm$11.70) & \textcolor{blue}{0.88} ($\pm$0.11) & 0.91 ($\pm$0.07) & 0.86 ($\pm$0.10) & \textbf{0.87} ($\pm$0.28) & \textcolor{blue}{88.5\%}\\
+    \midrule
+    D-Discrim & 42.01 ($\pm$16.94) & \textbf{0.90} ($\pm$0.12) & 0.86 ($\pm$0.14) & 0.77 ($\pm$0.22) & \textcolor{blue}{0.86} ($\pm$0.29) & \textbf{85.9\%}\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Neutral prompt - Young model} Results of age-controlled language generation. ppl. is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. $\bar{P}(Young)$ is the sample's average probability to contain features learned to be young by BERT$_{FT}$. Acc. is BERT$_{FT}$'s accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_neutral_prompt_young_models}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l | c c c c | c c }
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & $\boldsymbol{\bar{P}_O}$ & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    \midrule
+    G-baseline & \textcolor{blue}{27.50} ($\pm$6.58) & \textbf{0.87} ($\pm$0.09) & \textbf{0.94} ($\pm$0.04) & \textcolor{blue}{0.90} ($\pm$0.06) & 0.38 ($\pm$0.42) & -\\
+    G-100MCW & 27.56 ($\pm$6.60) & 0.86 ($\pm$0.10) & \textcolor{blue}{0.93} ($\pm$0.04) & \textbf{0.90} ($\pm$0.05) & 0.37 ($\pm$0.42) & -\\
+    \midrule
+    G-BoW$_{FB}$ & 27.58 ($\pm$7.07) & 0.86 ($\pm$0.10) & \textcolor{blue}{0.93} ($\pm$0.04) & \textcolor{blue}{0.90} ($\pm$0.06) & 0.42 ($\pm$0.42) & 43.0\%\\
+    G-BoW$_{100MIU}$ & \textbf{27.25} ($\pm$6.15) & \textbf{0.87} ($\pm$0.09) & \textcolor{blue}{0.93} ($\pm$0.04) & \textcolor{blue}{0.90} ($\pm$0.06) & 0.38 ($\pm$0.42) & 37.4\%\\
+    \midrule
+    G-Discrim & 47.15 ($\pm$47.56) & 0.73 ($\pm$0.24) & 0.75 ($\pm$0.28) & 0.75 ($\pm$0.27) & \textbf{0.76} ($\pm$0.36) & \textbf{74.3\%}\\
+    \midrule
+    \midrule
+    D-baseline & 37.52 ($\pm$12.06) & 0.86 ($\pm$0.13) & 0.90 ($\pm$0.08) & 0.85 ($\pm$0.10) & 0.24 ($\pm$0.37) & -\\
+    D-100MCW & 37.80 ($\pm$10.89) & 0.85 ($\pm$0.14) & 0.89 ($\pm$0.10) & 0.85 ($\pm$0.10) & 0.18 ($\pm$0.33) & -\\
+    \midrule
+    D-BoW$_{FB}$ & 37.85 ($\pm$11.17) & 0.87 ($\pm$0.12) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.09) & 0.22 ($\pm$0.35) & 21.5\%\\
+    D-BoW$_{100MIU}$ & 37.91 ($\pm$12.27) & \textcolor{blue}{0.87} ($\pm$0.11) & 0.90 ($\pm$0.07) & 0.85 ($\pm$0.10) & 0.22 ($\pm$0.34) & 21.9\%\\
+    \midrule
+    D-Discrim & 41.17 ($\pm$20.72) & 0.87 ($\pm$0.12) & 0.89 ($\pm$0.13) & 0.83 ($\pm$0.16) & \textcolor{blue}{0.57} ($\pm$0.41) & \textcolor{blue}{56.7\%}\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Neutral prompt - Old model} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. $\boldsymbol{\bar{P}_Y}$ and $\boldsymbol{\bar{P}_O}$ are the respective average young and old probabilities assigned by the best BERT$_{FT}$. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_neutral_prompt_old_model}
+\end{table*}
 
 
 % TABLE 5.6 WITH YOUNG AND OLD PROB. JUST IN CASE %
@@ -167,18 +250,18 @@ Overall, the results show that, for most models, a plug-and-play approach to con
 % \end{itemize}
 
 
-\section{Controlled text generation analyses}
+\section{Controlled Text Generation Analyses}
 \label{sec:exp2_analyses}
 
 \textit{By means of quantitative and qualitative analyses, we seek to study which relationships drive the grammatical quality and attribute relevance of generated output. We study the relationship between fluency and control, the effects of sequence length, and visualize attention mechanisms. Finally, we provide qualitative inspections of various cases, i.e., high versus low perplexity or assigned BERT$_{FT}$ probability, and a human evaluation of linguistic quality.}
 
 % \len{Introduce the ctg analyses, like we do for the classification results. Talk about which models we're comparing, and why (probably the best performing ones from each class, i.e., best-bow, best-discrim, and best DGPT?... \textit{By means of quantitative and qualitative analyses, we seek to study which relationships drive the quality and control of generated output...  We start by studying the relationship between fluency and control (quant.), ... the effects of sequence length (quant.), ..., visualize attention mechanisms (quant.}. Then we ... summary stats. and qualitative inspection of various cases, i.e., high/low ppl., high/low prob. (qual)., ...and human eval (qual). }
 
-\subsection{Quantitative analyses}
+\subsection{Quantitative Analyses}
 
 \len{TODO - Add examples of generated sequences along with their model's configurations, age-group, etc. Similar to dialogue snippets earlier.}
 
-\subsubsection{Quantitative 0: the relationship between fluency and control}
+\subsubsection{Quantitative 0: The Relationship between Fluency and Control}
 
 Figure~\ref{fig:ctg_lineplot_fluency_vs_control} attempts to depict the relationship between fluency and control, as measured by perplexity and BERT's classification accuracy, respectively. On the y-axis, ``mean accuracy'' refers to the average fraction of generated sequences, controlled for young or old language, that are correctly labeled as such by Experiment 1's best BERT classifier. The bars around the averages in Figure~\ref{fig:ctg_lineplot_fluency_vs_control} are 90\% confidence intervals.
 % It can be seen as a proxy for control, because it indicates how resemblant of an age group's vernacular a generated text is deemed to be. 
@@ -187,13 +270,87 @@ Figure~\ref{fig:ctg_lineplot_fluency_vs_control} attempts to depict the relation
 It appears that increasing perplexity is slightly negatively correlated with accuracy. It is also clear from Figure~\ref{fig:ctg_lineplot_fluency_vs_control} that uncertainty about prediction strongly increases for greater perplexity. These two observations indicate that sentences deemed less coherent by GPT-1 tend to be harder to classify by BERT$_{FT}$ with certainty. BERT$_{FT}$ is pre-trained and fine-tuned to pick up syntactic features from dialogue that can indicate a speaker's age. It is therefore plausible that structural deviations from proper syntax (i.e., high perplexity) can obfuscate the age-related linguistic signal BERT$_{FT}$ leverages. Finally, it seems that, on average, the discriminator-based models are more capable of producing correctly classifiable high-perplexity sentences. \len{Why would that be?} However, none of the differences between the average accuracies are statistically significant at the 10\% level, so this conclusion should be taken tentatively.
 
 \begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{figures/exp2/lineplot_ppl_acc_best_gpt2_disc_bow_ci_90_errstyle_bars.png}
-    \caption{Fluency (perplexity, x-axis) versus control (BERT accuracy, y-axis). Bins chosen to be roughly same order of magnitude. The bars represent 90\% confidence intervals. This plot is best viewed in color.}
-    \label{fig:ctg_lineplot_fluency_vs_control}
+     \centering
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/fluency_control/barplot_ppl_target_prob_gpt2_disc_np_y.png}
+        \caption{}
+        \label{subfig:barplot_ppl_target_prob_np_gpt2_disc_young}
+     \end{subfigure}
+    %  \hfill
+     \quad
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/fluency_control/barplot_ppl_target_prob_gpt2_disc_np_o.png}
+        \caption{}
+        \label{subfig:barplot_ppl_target_prob_np_gpt2_disc_old}
+     \end{subfigure}
+    \medskip
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/fluency_control/barplot_ppl_target_prob_gpt2_bow_fb_np_y.png}
+        \caption{}
+        \label{subfig:barplot_ppl_target_prob_np_gpt2_bow_young}
+     \end{subfigure}
+    %  \hfill
+    \quad
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/fluency_control/barplot_ppl_target_prob_gpt2_bow_fb_np_o.png}
+        \caption{}
+        \label{subfig:barplot_ppl_target_prob_np_gpt2_bow_old}
+     \end{subfigure}
+    \caption{Mean target probability ($x$-axes) assigned to GPT-2-based models' samples by BERT$_{FT}$ for increasing ranges of GPT-1 perplexity ($y$-axes). Error bars are 95\% confidence intervals.}
+    \label{fig:barplot_ppl_target_prob_np_gpt2}
 \end{figure}
 
-\subsubsection{Quantitative 1: the effects of generated sequence length}
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/fluency_control/barplot_ppl_target_prob_dgpt_disc_np_y.png}
+        \caption{}
+        \label{subfig:barplot_ppl_target_prob_np_dgpt_disc_young}
+     \end{subfigure}
+    %  \hfill
+     \quad
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/fluency_control/barplot_ppl_target_prob_dgpt_disc_np_o.png}
+        \caption{}
+        \label{subfig:barplot_ppl_target_prob_np_dgpt_disc_old}
+     \end{subfigure}
+    \medskip
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/fluency_control/barplot_ppl_target_prob_dgpt_bow_miu_np_y.png}
+        \caption{}
+        \label{subfig:barplot_ppl_target_prob_np_dgpt_bow_young}
+     \end{subfigure}
+    %  \hfill
+    \quad
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/fluency_control/barplot_ppl_target_prob_dgpt_bow_miu_np_o.png}
+        \caption{}
+        \label{subfig:barplot_ppl_target_prob_np_dgpt_bow_old}
+     \end{subfigure}
+    \caption{Mean target probability ($y$-axes) assigned to DialoGPT-based models' samples by BERT$_{FT}$ for increasing ranges of GPT-1 perplexity ($x$-axes). Error bars are 95\% confidence intervals.}
+    \label{fig:barplot_ppl_target_prob_np_dgpt}
+\end{figure}
+
+\len{\textbf{Observed patterns in perplexity target-prob plots}}:
+
+\begin{itemize}
+    \item For GPT2-based Old models (both discrim (Figure~\ref{subfig:barplot_ppl_target_prob_np_gpt2_disc_old}) and bow (Figure~\ref{subfig:barplot_ppl_target_prob_np_gpt2_bow_old})), there is a very clear pattern of increasing perplexity coinciding with higher assigned target probabilities. Responses with relatively high perplexities (50+) are significantly more likely to contain features learned to be old by BERT$_{FT}$. This suggests there could be a tradeoff between increased levels of attribute relevance (i.e., control) and fluency (i.e., lower perplexity). High-perplexity responses are of the GPT2-old models are also assigned probabilities with more precision (i.e., smaller confidence region).
+    \item For the GPT-2 Young models' responses we observe a pattern of slight increase of average assigned target probability between low (0-25) and medium (25-50) perplexity, followed by a extreme decrease of assigned target probability and associated precision for high-perplexity responses.
+    \item DialoGPT's young-bias is noticeable in Figures~\ref{subfig:barplot_ppl_target_prob_np_dgpt_disc_young} and \ref{subfig:barplot_ppl_target_prob_np_dgpt_bow_young}: all high average target probabilities with relatively high certainty.
+    \item No clear pattern of tradeoff between perplexity and target probability in DialoGPT-based models.
+    \item BERT$_{FT}$ seems to have least certainty (i.e., low precision aka high variance) about low-perplexity responses in every case, except DialoGPT-BoW Young (Figure~\ref{subfig:barplot_ppl_target_prob_np_dgpt_bow_young}).
+\end{itemize}
+
+
+\subsubsection{Quantitative 1: The Effects of Generated Response Length}
 
 \begin{itemize}
     \item \textit{Main question: how is generated sequence length related to fluency and control?}
@@ -204,6 +361,115 @@ It appears that increasing perplexity is slightly negatively correlated with acc
     
     \item \textit{Which patterns do you observe?} 
 \end{itemize}
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+\includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_acc_best_gpt2_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{subfig:lineplot_length_acc_np_gpt2}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_acc_best_dgpt_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{subfig:lineplot_length_acc_np_dgpt}
+     \end{subfigure}
+        \caption{Mean BERT$_{FT}$ accuracy. GPT-2-based models (left), DialoGPT-based models (right).}
+        \label{fig:lineplots_length_acc_np_gpt2_dgpt}
+\end{figure}
+
+\len{\textbf{Patterns in Figure~\ref{fig:lineplots_length_acc_np_gpt2_dgpt}}}:
+\begin{itemize}
+    \item No clear trends.
+    \item BoW-based Old (GPT-2 and DialoGPT) has significantly lower accuracy at almost every length bracket.
+    \item Shortest responses generated by GPT-2-based models appear to be most challenging to classify for BERT$_{FT}$.
+\end{itemize}
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+\includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_ppl_best_gpt2_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_ppl_best_dgpt_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{}
+     \end{subfigure}
+        \caption{Perplexity. GPT-2-based models (left), DialoGPT-based models (right).}
+        \label{fig:lineplots_length_ppl_np_gpt2_dgpt}
+\end{figure}
+
+\len{\textbf{Patterns in Figure~\ref{fig:lineplots_length_ppl_np_gpt2_dgpt}}:}
+\begin{itemize}
+    \item Perplexity decreases for increasing response length. Longer responses are deemed more plausible by GPT-1.
+    \item GPT2-Discrim Old significantly worse perplexity at 5\% level for medium length responses. (is also best model setup w.r.t. target-prob improvement over baseline if i'm not mistaken).
+    
+\end{itemize}
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+\includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist1_best_gpt2_disc_bow__neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist1_best_dgpt_disc_bow__neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{}
+     \end{subfigure}
+        \caption{Dist-1. GPT-2-based models (left), DialoGPT-based models (right).}
+        \label{}
+\end{figure}
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+\includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist2_best_gpt2_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist2_best_dgpt_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{}
+     \end{subfigure}
+        \caption{Dist-2. GPT-2-based models (left), DialoGPT-based models (right).}
+        \label{}
+\end{figure}
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+\includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist3_best_gpt2_disc_bow__neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{}
+     \end{subfigure}
+     \hfill
+     \begin{subfigure}[b]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist3_best_dgpt_disc_bow__neutral_prompt_ci_95_errstyle_band.png}
+        \caption{}
+        \label{}
+     \end{subfigure}
+        \caption{Dist-3. GPT-2-based models (left), DialoGPT-based models (right).}
+        \label{}
+\end{figure}
 
 \textbf{Patterns:}
 \begin{itemize}
@@ -232,50 +498,6 @@ Repetitiveness w.r.t. bigrams and trigrams seems to increase as generated sequen
 
 Overall, the differences between young and old perplexity are smaller for BoW-based models than for Discriminator-based. Same pattern holds for repetitiveness.
 
-
-\begin{figure}[H]
-     \centering
-     \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=1\columnwidth]{figures/exp2/lineplot_len_ppl_best_gpt2_disc_bow_ci_90_errstyle_bars.png}
-        \caption{}
-        \label{fig:ctg_lineplot_len_vs_ppl}
-     \end{subfigure}
-    %  \hfill
-    \quad
-     \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=1\columnwidth]{figures/exp2/lineplot_len_acc_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
-        \caption{}
-        \label{fig:ctg_lineplot_len_vs_acc}
-     \end{subfigure}
-     \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/exp2/lineplot_len_dist1_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
-        \caption{}
-        \label{fig:ctg_lineplot_len_vs_dist1}
-     \end{subfigure}
-     
-     \medskip
-     
-     \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/exp2/lineplot_len_dist2_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
-        \caption{}
-        \label{fig:ctg_lineplot_len_vs_dist2}
-     \end{subfigure}
-     \quad
-     \begin{subfigure}[b]{0.32\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{figures/exp2/lineplot_len_dist3_best_gpt2_disc_bow_ci_90_errstyle_bars_nolegend.png}
-        \caption{}
-        \label{fig:ctg_lineplot_len_vs_dist3}
-     \end{subfigure}
-     
-     % Main figure caption and label
-        \caption{Various averaged automated evaluation metrics of generated sentences, plotted against increasing sequence length (x-axis), with 90\% confidence intervals. The plots are best viewed in color.}
-        \label{fig:ctg_lineplots_len_vs_metrics}
-\end{figure}
 
 % \begin{figure}[H]
 %      \centering
@@ -320,8 +542,152 @@ Overall, the differences between young and old perplexity are smaller for BoW-ba
 % \label{fig:seq_len_vs_auto_metrics}
 % \end{figure}
 
+\subsubsection{Quantitative 2: The Effects of Prompt Class}
 
-\subsubsection{Quantitative 2: the effects of PPLM-parameters on fluency and control}
+Initial observations and interpretations of Tables \ref{tab:ctg_results_ws_young_prompt_young_model}, \ref{tab:ctg_results_ws_young_prompt_old_model}, \ref{tab:ctg_results_ws_old_prompt_young_model}, \ref{tab:ctg_results_ws_old_prompt_old_model}.
+
+\begin{itemize}
+    \item Using strongly young-prompt results in heavily reinforced young-bias for GPT2 and DialoGPT.
+    \item Similarly, old-prompt results in slightly neutralized young-bias for both language models.
+    \item Neutrally prompted patterns persist...
+    \begin{itemize}
+        \item Trade-off between control and fluency + diversity.
+        \item BoW achieves smaller increases in control, but leaves fluency and dist intact.
+        \item Discrim higher levels of control increase wrt baseline, worse quality of text wrt fluency and diversity.
+    \end{itemize}
+    \item Overall, stylistic aspects of prompts heavily influence controllability of response.
+\end{itemize}
+
+\paragraph{Young Prompts}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l | c c c c | c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & $\boldsymbol{\bar{P}_Y}$ & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    \midrule
+    G-baseline & \textcolor{blue}{28.05} ($\pm$6.12) & 0.85 ($\pm$0.13) & 0.91 ($\pm$0.08) & 0.88 ($\pm$0.08) & 0.80 ($\pm$0.33) & -\\
+    G-100MCW & \textbf{27.71} ($\pm$6.20) & 0.85 ($\pm$0.12) & 0.91 ($\pm$0.09) & 0.88 ($\pm$0.09) & 0.75 ($\pm$0.37) & -\\
+    \midrule
+    G-B$_{FB, Y}$ & 28.81 ($\pm$7.09) & 0.86 ($\pm$0.12) & \textbf{0.92} ($\pm$0.08) & \textbf{0.89} ($\pm$0.08) & 0.82 ($\pm$0.32) & 83.3\%\\
+    G-B$_{100MIU, Y}$ & 28.49 ($\pm$6.49) & 0.86 ($\pm$0.12) & 0.91 ($\pm$0.08) & 0.88 ($\pm$0.08) & 0.83 ($\pm$0.32) & 83.0\%\\
+    \midrule
+    G-D$_{Y}$ & 39.32 ($\pm$37.49) & 0.84 ($\pm$0.21) & 0.61 ($\pm$0.40) & 0.57 ($\pm$0.40) & 0.70 ($\pm$0.40) & 70.7\%\\
+    \midrule
+    \midrule
+    D-baseline & 36.69 ($\pm$9.11) & 0.87 ($\pm$0.10) & \textcolor{blue}{0.91} ($\pm$0.06) & 0.87 ($\pm$0.08) & \textcolor{blue}{0.90} ($\pm$0.24) & -\\
+    D-100MCW & 36.93 ($\pm$9.18) & 0.86 ($\pm$0.11) & \textcolor{blue}{0.91} ($\pm$0.06) & \textcolor{blue}{0.88} ($\pm$0.07) & 0.90 ($\pm$0.25) & -\\
+    \midrule
+    D-B$_{FB, Y}$ & 37.35 ($\pm$8.60) & \textcolor{blue}{0.88} ($\pm$0.10) & \textcolor{blue}{0.91} ($\pm$0.06) & 0.87 ($\pm$0.08) & 0.90 ($\pm$0.26) & \textcolor{blue}{90.0\%}\\
+    D-B$_{100MIU, Y}$ & 37.87 ($\pm$8.32) & \textcolor{blue}{0.88} ($\pm$0.10) & 0.91 ($\pm$0.07) & 0.87 ($\pm$0.09) & \textbf{0.91} ($\pm$0.24) & \textbf{92.6\%}\\
+    \midrule
+    D-D$_{Y}$ & 39.22 ($\pm$14.96) & \textbf{0.89} ($\pm$0.12) & 0.86 ($\pm$0.19) & 0.79 ($\pm$0.23) & 0.89 ($\pm$0.25) & 91.1\%\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Young prompt - Young models} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_young_prompt_young_model}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l | c c c c | c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & $\boldsymbol{\bar{P}_O}$ & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    \midrule
+    G-baseline & \textcolor{blue}{28.05} ($\pm$6.12) & 0.85 ($\pm$0.13) & 0.91 ($\pm$0.08) & 0.88 ($\pm$0.08) & 0.20 ($\pm$0.33) & -\\
+    G-100MCW & \textbf{27.71} ($\pm$6.20) & 0.85 ($\pm$0.12) & 0.91 ($\pm$0.09) & 0.88 ($\pm$0.09) & 0.25 ($\pm$0.37) & -\\
+    \midrule
+    G-B$_{FB, O}$ & 28.54 ($\pm$6.45) & 0.86 ($\pm$0.12) & \textbf{0.92} ($\pm$0.08) & \textbf{0.89} ($\pm$0.08) & 0.23 ($\pm$0.36) & 22.6\%\\
+    G-B$_{100MIU, O}$ & 28.18 ($\pm$5.70) & 0.87 ($\pm$0.11) & \textbf{0.92} ($\pm$0.08) & \textcolor{blue}{0.89} ($\pm$0.09) & 0.21 ($\pm$0.34) & 21.5\%\\
+    \midrule
+    G-D$_{O}$ & 85.40 ($\pm$150.28) & 0.67 ($\pm$0.30) & 0.62 ($\pm$0.31) & 0.62 ($\pm$0.32) & \textbf{0.71} ($\pm$0.40) & \textbf{70.5\%}\\
+    \midrule
+    \midrule
+    D-baseline & 36.69 ($\pm$9.11) & \textcolor{blue}{0.87} ($\pm$0.10) & 0.91 ($\pm$0.06) & 0.87 ($\pm$0.08) & 0.10 ($\pm$0.24) & -\\
+    D-100MCW & 36.93 ($\pm$9.18) & 0.86 ($\pm$0.11) & 0.91 ($\pm$0.06) & 0.88 ($\pm$0.07) & 0.10 ($\pm$0.25) & -\\
+    \midrule
+    D-B$_{FB, O}$ & 37.25 ($\pm$9.45) & 0.87 ($\pm$0.11) & 0.91 ($\pm$0.06) & 0.87 ($\pm$0.08) & 0.12 ($\pm$0.29) & 11.1\%\\
+    D-B$_{100MIU, O}$ & 37.04 ($\pm$8.78) & \textbf{0.88} ($\pm$0.10) & \textcolor{blue}{0.91} ($\pm$0.05) & 0.88 ($\pm$0.07) & 0.15 ($\pm$0.32) & 15.2\%\\
+    \midrule
+    D-D$_{O}$ & 38.46 ($\pm$14.91) & 0.82 ($\pm$0.15) & 0.87 ($\pm$0.15) & 0.83 ($\pm$0.17) & \textcolor{blue}{0.48} ($\pm$0.44) & \textcolor{blue}{47.4\%}\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Young prompt - Old models} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_young_prompt_old_model}
+\end{table*}
+
+\paragraph{Old Prompts}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l | c c c c | c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & $\boldsymbol{\bar{P}_Y}$ & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    \midrule
+    G-baseline & \textcolor{blue}{29.34} ($\pm$10.30) & 0.86 ($\pm$0.09) & \textbf{0.94} ($\pm$0.04) & \textcolor{blue}{0.90} ($\pm$0.06) & 0.60 ($\pm$0.43) & -\\
+    G-100MCW & \textbf{29.14} ($\pm$10.11) & 0.86 ($\pm$0.10) & \textcolor{blue}{0.93} ($\pm$0.04) & \textcolor{blue}{0.90} ($\pm$0.06) & 0.60 ($\pm$0.44) & -\\
+    \midrule
+    G-B$_{Y, FB}$ & 29.61 ($\pm$10.28) & 0.86 ($\pm$0.10) & 0.93 ($\pm$0.04) & \textbf{0.91} ($\pm$0.06) & 0.62 ($\pm$0.43) & 61.1\%\\
+    G-B$_{Y, 100MIU}$ & 29.51 ($\pm$0.09) & \textcolor{blue}{0.87} ($\pm$0.09) & 0.93 ($\pm$0.05) & \textcolor{blue}{0.90} ($\pm$0.06) & 0.68 ($\pm$0.42) & 68.5\%\\
+    \midrule
+    G-D$_{Y}$ & 32.34 ($\pm$19.88) & 0.77 ($\pm$0.20) & 0.84 ($\pm$0.19) & 0.80 ($\pm$0.23) & 0.65 ($\pm$0.43) & 65.4\%\\
+    \midrule
+    \midrule
+    D-baseline & 38.18 ($\pm$12.03) & 0.86 ($\pm$0.12) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.09) & 0.72 ($\pm$0.38) & -\\
+    D-100MCW & 37.73 ($\pm$11.88) & 0.85 ($\pm$0.13) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.09) & 0.73 ($\pm$0.39) & -\\
+    \midrule
+    D-B$_{Y, FB}$ & 38.24 ($\pm$11.53) & 0.86 ($\pm$0.12) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.10) & 0.81 ($\pm$0.34) & \textcolor{blue}{82.6\%}\\
+    D-B$_{Y, 100MIU}$ & 38.66 ($\pm$11.57) & 0.85 ($\pm$0.12) & 0.90 ($\pm$0.07) & 0.86 ($\pm$0.09) & \textcolor{blue}{0.81} ($\pm$0.33) & 80.7\%\\
+    \midrule
+    D-D$_{Y}$ & 42.93 ($\pm$20.18) & \textbf{0.90} ($\pm$0.14) & 0.79 ($\pm$0.22) & 0.68 ($\pm$0.28) & \textbf{0.84} ($\pm$0.30) & \textbf{85.2\%}\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Old prompt - Young model} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_old_prompt_young_model}
+\end{table*}
+
+\begin{table*}[h]
+    \centering
+    \begin{tabular}{l | c c c c | c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & $\boldsymbol{\bar{P}_O}$ & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    \midrule
+    G-baseline & 29.34 ($\pm$10.30) & \textcolor{blue}{0.86} ($\pm$0.09) & \textbf{0.94} ($\pm$0.04) & \textbf{0.90} ($\pm$0.06) & 0.40 ($\pm$0.43) & -\\
+    G-100MCW & 29.14 ($\pm$10.11) & 0.86 ($\pm$0.10) & \textcolor{blue}{0.93} ($\pm$0.04) & \textbf{0.90} ($\pm$0.06) & 0.40 ($\pm$0.44) & -\\
+    \midrule
+    G-B$_{O, FB}$ & \textbf{28.81} ($\pm$10.10) & 0.86 ($\pm$0.10) & 0.93 ($\pm$0.05) & \textbf{0.90} ($\pm$0.06) & 0.41 ($\pm$0.43) & 41.1\%\\
+    G-B$_{O, 100MIU}$ & 29.05 ($\pm$9.80) & \textcolor{blue}{0.86} ($\pm$0.09) & \textcolor{blue}{0.93} ($\pm$0.04) & \textbf{0.90} ($\pm$0.06) & 0.40 ($\pm$0.43) & 39.6\%\\
+    \midrule
+    G-D$_{O}$ & 95.21 ($\pm$174.42) & 0.65 ($\pm$0.27) & 0.78 ($\pm$0.18) & 0.78 ($\pm$0.18) & \textbf{0.90} ($\pm$0.25) & \textbf{90.3\%}\\
+    \midrule
+    \midrule
+    D-baseline & 38.18 ($\pm$12.03) & 0.86 ($\pm$0.12) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.09) & 0.28 ($\pm$0.38) & -\\
+    D-100MCW & 37.73 ($\pm$11.88) & 0.85 ($\pm$0.13) & 0.90 ($\pm$0.08) & 0.86 ($\pm$0.09) & 0.27 ($\pm$0.39) & -\\
+    \midrule
+    D-B$_{O, FB}$ & 37.80 ($\pm$11.74) & 0.86 ($\pm$0.12) & 0.90 ($\pm$0.07) & \textcolor{blue}{0.87} ($\pm$0.08) & 0.28 ($\pm$0.39) & 29.3\%\\
+    D-B$_{O, 100MIU}$ & 36.93 ($\pm$11.68) & \textbf{0.87} ($\pm$0.12) & 0.90 ($\pm$0.09) & 0.86 ($\pm$0.09) & 0.31 ($\pm$0.41) & 29.6\%\\
+    \midrule
+    D-D$_{O}$ & 40.08 ($\pm$16.77) & 0.85 ($\pm$0.14) & 0.88 ($\pm$0.10) & 0.83 ($\pm$0.14) & \textcolor{blue}{0.61} ($\pm$0.42) & \textcolor{blue}{61.1\%}\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Old prompt - Old models} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws_old_prompt_old_model}
+\end{table*}
+
+
+\subsubsection{Quantitative 3: The Effects of PPLM-Parameters on Fluency and Control}
 
 \begin{itemize}
     \item \textit{Plot and examine the relationship between fluency and control, and various PPLM-parameters (step-size, number of iterations, temperature, top $k$, gamma, KL-scale).}
@@ -329,24 +695,26 @@ Overall, the differences between young and old perplexity are smaller for BoW-ba
     \item \len{How much sense does it make to study this, though? Is that the purpose of my thesis? Hasn't this been studied enough in the PPLM-paper? Which parameters do I choose?}
 \end{itemize}
 
-\subsubsection{Quantitative 3: BERT-classifier visualizations. Or (Dialo)GPT visualizations.}
+\subsubsection{Quantitative 4*: BERT-Classifier Visualizations. Or (Dialo)GPT Visualizations.}
 
 \begin{itemize}
     \item \textit{\textbf{NB:} This is more relevant to the classification experiments, than to the controlled generation experiments.}
     
-    \item \textit{Use BertViz to visualize what parts of sequences BERT's transformer heads and neurons are focusing on.}
+    \item \textit{Use BertViz \citep{vig-2019-multiscale} to visualize what parts of sequences BERT's transformer heads and neurons are focusing on.}
     
     \item \url{https://github.com/jessevig/bertviz}
     
     \item \url{https://towardsdatascience.com/openai-gpt-2-understanding-language-generation-through-visualization-8252f683b2f8}
+    
+    \item Discussion about interpretability of attention. See Attention is not explanation, Attention is not not explanation, and The Elephant in the Interpretability Room.
 \end{itemize}
 
 
 
 
-\subsection{Qualitative analyses}
+\subsection{Qualitative Analyses}
 
-\subsubsection{Qualitative 1: summary statistics and qualitative inspection of various cases}
+\subsubsection{Qualitative 1: Summary Statistics and Qualitative Inspection of Various Cases}
 
 \begin{itemize}
     \item \textit{Similar to (error)case analyses of Experiment 1.}
@@ -361,13 +729,13 @@ Overall, the differences between young and old perplexity are smaller for BoW-ba
 \end{itemize}
 
 
-\subsubsection{Qualitative 2: Human evaluation of fluency, grammaticality, and relevancy}
+% \subsubsection{Qualitative 2: Human evaluation of fluency, grammaticality, and relevancy}
 
-\begin{itemize}
-    \item \textit{Generate and sample text passages for a variety of model-configurations and age-groups.}
-    \item \textit{Have a group of human participants rate these sequences on a scale from 1 to 5 for their (1) fluency, (2) grammaticality, (3) relevance to the prompt (if there is one)}
-    \item \textit{Average the ratings, and compare the human evaluation metrics to the automated evaluation metrics reported in Table \ref{tab:ctg_results_ws}}
-\end{itemize}
+% \begin{itemize}
+%     \item \textit{Generate and sample text passages for a variety of model-configurations and age-groups.}
+%     \item \textit{Have a group of human participants rate these sequences on a scale from 1 to 5 for their (1) fluency, (2) grammaticality, (3) relevance to the prompt (if there is one)}
+%     \item \textit{Average the ratings, and compare the human evaluation metrics to the automated evaluation metrics reported in Table \ref{tab:ctg_results_ws}}
+% \end{itemize}
 
 
 

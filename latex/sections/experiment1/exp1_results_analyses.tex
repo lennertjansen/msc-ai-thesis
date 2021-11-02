@@ -6,7 +6,7 @@ We first report results on \emph{discourse}
 to check whether we replicate
 previous findings. Then, we focus on \emph{dialogue} to answer our research questions. We report accuracy and $F_1$ for each age group.
 
-\subsection{Classification performance on discourse}
+\subsection{Classification Performance on Discourse}
 Table~\ref{tab:blog_classification} reports the results.
 % obtained by all tested models.
 % on the \emph{discourse} dataset.
@@ -35,7 +35,7 @@ a different majority baseline (see Table~\ref{tab:blog_classification}). Second,
 hand-crafted features that are specific to the dataset, (as mentioned in the Introduction), 
 which could constitute an advantage.
 
-\subsection{Classification performance on dialogue}
+\subsection{Classification Performance on Dialogue}
 Table~\ref{tab:bnc_classification_ws} reports the results. As can be seen, BERT fine-tuned on the task is again the best-performing model in terms of accuracy (0.729), which confirms the effectiveness of this model in detecting age-related linguistic differences. At the same time, it can be noted that the model based on trigrams is basically on par with it in terms of accuracy (0.722) and well above both LSTM and BiLSTM (0.693 and 0.691, respectively). A similar pattern is shown for $F_1$ scores, where BERT fine-tuned and the trigram model achieve comparable performance, with LSTMs being overall behind. 
 
 Overall, our results indicate that predicting the age group to which a speaker belongs, using text-based models, is possible also for \emph{dialogue} data, though the task appears to be somehow more challenging compared to when performed on discourse 
@@ -216,7 +216,7 @@ where both models are correct/wrong or only BERT$_{FT}$/trigram is correct.}\lab
         \label{fig:bnc_blog_age_topic_dist_incl_unk}
 \end{figure}
 
-\section{Age detection analyses}
+\section{Age Detection Analyses}
 \label{sec:exp1_analyses}
 \textit{We focus our analysis on dialogue. In particular, we compare the two best-performing models, namely BERT$_{FT}$
 and the one using trigrams, and aim to shed light on  what cues they use to solve the task.

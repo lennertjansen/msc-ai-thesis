@@ -1,4 +1,4 @@
-\section{Methodology and experimental setup}
+\section{Methodology and Experimental Setup}
 \label{sec:exp1_methods_exp_setup}
 
 \textit{The current section contains the methodology and experimental details of our automated age-detection experiments. We frame the problem as a $N$-class classification problem: given a fragment of text $X$, we seek to predict
@@ -35,7 +35,7 @@ pre-trained frozen embeddings (BERT$_{frozen}$) and by fine-tuning the embedding
 % Its frozen pre-trained embeddings, as well as a fine-tuned setup are compared for the task of speaker/author-age prediction.
 The BERT embeddings are followed by a dropout layer with dropout probability 0.1, and a linear layer with input size 768.
 
-\paragraph{Experimental details} % \textit{We report common things across models: objective function, number of epochs (?), early stopping criterion, etc. Plus, e.g., we train the models N times with random initializations}
+\paragraph{Experimental Details} % \textit{We report common things across models: objective function, number of epochs (?), early stopping criterion, etc. Plus, e.g., we train the models N times with random initializations}
 
 Both datasets are randomly split into a training (75\%), validation (15\%), and test (10\%) set.
 %s accounting for 75\%, 15\%, and 10\% of the full corpus size, respectively.
