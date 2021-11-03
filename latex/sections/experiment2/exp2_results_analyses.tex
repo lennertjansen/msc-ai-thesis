@@ -377,7 +377,7 @@ It appears that increasing perplexity is slightly negatively correlated with acc
         \caption{}
         \label{subfig:lineplot_length_acc_np_dgpt}
      \end{subfigure}
-        \caption{Mean BERT$_{FT}$ accuracy. GPT-2-based models (left), DialoGPT-based models (right).}
+        \caption{Mean BERT$_{FT}$ accuracy. GPT-2-based models (left), DialoGPT-based models (right). Translucent error bands represent 95\% confidence intervals. Plots best viewed in color.}
         \label{fig:lineplots_length_acc_np_gpt2_dgpt}
 \end{figure}
 
@@ -394,16 +394,16 @@ It appears that increasing perplexity is slightly negatively correlated with acc
         \centering
 \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_ppl_best_gpt2_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
         \caption{}
-        \label{}
+        \label{subfig:lineplot_length_ppl_np_gpt2}
      \end{subfigure}
      \hfill
      \begin{subfigure}[b]{0.49\textwidth}
         \centering
         \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_ppl_best_dgpt_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
         \caption{}
-        \label{}
+        \label{subfig:lineplot_length_ppl_np_dgpt}
      \end{subfigure}
-        \caption{Perplexity. GPT-2-based models (left), DialoGPT-based models (right).}
+        \caption{Perplexity. GPT-2-based models (left), DialoGPT-based models (right). Translucent error bands represent 95\% confidence intervals. Plots best viewed in color.}
         \label{fig:lineplots_length_ppl_np_gpt2_dgpt}
 \end{figure}
 
@@ -420,17 +420,17 @@ It appears that increasing perplexity is slightly negatively correlated with acc
         \centering
 \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist1_best_gpt2_disc_bow__neutral_prompt_ci_95_errstyle_band.png}
         \caption{}
-        \label{}
+        \label{subfig:lineplot_length_dist1_np_gpt2}
      \end{subfigure}
      \hfill
      \begin{subfigure}[b]{0.49\textwidth}
         \centering
         \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist1_best_dgpt_disc_bow__neutral_prompt_ci_95_errstyle_band.png}
         \caption{}
-        \label{}
+        \label{subfig:lineplot_length_dist1_np_dgpt}
      \end{subfigure}
-        \caption{Dist-1. GPT-2-based models (left), DialoGPT-based models (right).}
-        \label{}
+        \caption{Dist-1. GPT-2-based models (left), DialoGPT-based models (right). Translucent error bands represent 95\% confidence intervals. Plots best viewed in color.}
+        \label{fig:lineplots_length_dist1_np_gpt2_dgpt}
 \end{figure}
 
 \begin{figure}[H]
@@ -439,17 +439,17 @@ It appears that increasing perplexity is slightly negatively correlated with acc
         \centering
 \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist2_best_gpt2_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
         \caption{}
-        \label{}
+        \label{subfig:lineplot_length_dist2_np_gpt2}
      \end{subfigure}
      \hfill
      \begin{subfigure}[b]{0.49\textwidth}
         \centering
         \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist2_best_dgpt_disc_bow_neutral_prompt_ci_95_errstyle_band.png}
         \caption{}
-        \label{}
+        \label{subfig:lineplot_length_dist2_np_dgpt}
      \end{subfigure}
-        \caption{Dist-2. GPT-2-based models (left), DialoGPT-based models (right).}
-        \label{}
+        \caption{Dist-2. GPT-2-based models (left), DialoGPT-based models (right). Translucent error bands represent 95\% confidence intervals. Plots best viewed in color.}
+        \label{fig:lineplots_length_dist2_np_gpt2_dgpt}
 \end{figure}
 
 \begin{figure}[H]
@@ -458,20 +458,30 @@ It appears that increasing perplexity is slightly negatively correlated with acc
         \centering
 \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist3_best_gpt2_disc_bow__neutral_prompt_ci_95_errstyle_band.png}
         \caption{}
-        \label{}
+        \label{subfig:lineplot_length_dist3_np_gpt2}
      \end{subfigure}
      \hfill
      \begin{subfigure}[b]{0.49\textwidth}
         \centering
         \includegraphics[width=1\columnwidth]{figures/exp2/sequence_length/lineplot_len_dist3_best_dgpt_disc_bow__neutral_prompt_ci_95_errstyle_band.png}
         \caption{}
-        \label{}
+        \label{subfig:lineplot_length_dist3_np_dgpt}
      \end{subfigure}
-        \caption{Dist-3. GPT-2-based models (left), DialoGPT-based models (right).}
-        \label{}
+        \caption{Dist-3. GPT-2-based models (left), DialoGPT-based models (right). Translucent error bands represent 95\% confidence intervals. Plots best viewed in color.}
+        \label{fig:lineplots_length_dist3_np_gpt2_dgpt}
 \end{figure}
 
-\textbf{Patterns:}
+\len{\textbf{Patterns in Figures~\ref{fig:lineplots_length_dist1_np_gpt2_dgpt}, \ref{fig:lineplots_length_dist2_np_gpt2_dgpt}, and \ref{fig:lineplots_length_dist3_np_gpt2_dgpt}}:}
+
+\begin{itemize}
+    \item Figure~\ref{fig:lineplots_length_dist1_np_gpt2_dgpt} shows that diversity w.r.t. unigrams increases for longer responses. This is most likely just due to the fact that longer sentences have an \textit{a priori} higher probability of repeating words. E.g., stopwords like "the" and "of" are likely to appear multiple times in longer sentences. \len{Is this a valid suggestion?}
+    \item The same figure shows an interesting difference: GPT-2-BoW models generate significantly more diverse responses w.r.t. unigrams for almost every bracket of response length. This could be attributable to BoW-based control altering base-GPT2's generated sentences at the token-level, thus being more likely to preserve the unigram diversity of the unperturbed baseline (G-Baseline's Dist-1 is always in the upper register when looking at the columns in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model}.
+    \item Figure~\ref{fig:lineplots_length_dist2_np_gpt2_dgpt} and shows that variety w.r.t. bigrams makes an initial upward jump between response length of 1-10 and 10-20. Dist-2 then follows a mild downward trend for both GPT2- and DialoGPT-based models. The GPT2-based models' trend is more pronounced and less volatile than DialoGPT's.
+    \item Figure \ref{subfig:lineplot_length_dist2_np_gpt2} shows the BoW-based GPT-2 models also produce significantly more diverse language w.r.t. bigrams for most response lengths.
+    \item Figure~\ref{fig:lineplots_length_dist3_np_gpt2_dgpt} shows similar patterns: initial upward jump in trigram diversity between shortest and second-to-shortest length brackets. GPT-2 models then show a slight downward trend from the 20-30 lengths onward. However, DialoGPT actually show a decreasing increase in trigram diversity for all models.
+\end{itemize}
+
+\textbf{Patterns in (obsolete) unprompted results \len{DELETE OR MOVE TO APPENDIX}:}
 \begin{itemize}
     \item \len{NB: These are all patterns observed in the unprompted results. Once prompted results are in, we can interpret them as if length of dialogue response.}
     \item Increasing sequence length is correlated with decreasing perplexity. Longer sentences are deemed more coherent by GPT-2
@@ -543,6 +553,84 @@ Overall, the differences between young and old perplexity are smaller for BoW-ba
 % \end{figure}
 
 \subsubsection{Quantitative 2: The Effects of Prompt Class}
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/prompt_class/catplot_prompt_class_target_prob_gpt2_young_models.png}
+        \caption{}
+        \label{subfig:catplot_prompt_class_target_prob_gpt2_young}
+     \end{subfigure}
+    %  \hfill
+     \quad
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/prompt_class/catplot_prompt_class_target_prob_gpt2_old_models.png}
+        \caption{}
+        \label{subfig:catplot_prompt_class_target_prob_gpt2_old}
+     \end{subfigure}
+    \medskip
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/prompt_class/catplot_prompt_class_target_prob_dgpt_young_models.png}
+        \caption{}
+        \label{subfig:catplot_prompt_class_target_prob_dgpt_young}
+     \end{subfigure}
+    %  \hfill
+    \quad
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/prompt_class/catplot_prompt_class_target_prob_dgpt_old_models.png}
+        \caption{}
+        \label{subfig:catplot_prompt_class_target_prob_dgpt_old}
+     \end{subfigure}
+    \caption{Target probability \len{TODO: Change Target probability labels to Young or Old probability. The term target probability doesn't hold for baseline models.}}
+    \label{fig:catplot_prompt_class_target_prob}
+\end{figure}
+
+\len{\textbf{Patterns in Figure \ref{fig:catplot_prompt_class_target_prob}}:}
+\begin{itemize}
+    \item The style of the prompt clearly nudges the assigned probability in the direction of the prompt's class.
+    \item The discrim. old models (GPT-2 and DialoGPT) always yield the highest relative improvements over the baselines.
+\end{itemize}
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/prompt_class/catplot_prompt_class_ppl_gpt2_young_models.png}
+        \caption{}
+        \label{subfig:catplot_prompt_class_ppl_gpt2_young}
+     \end{subfigure}
+    %  \hfill
+     \quad
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/prompt_class/catplot_prompt_class_ppl_gpt2_old_models.png}
+        \caption{}
+        \label{subfig:catplot_prompt_class_ppl_gpt2_old}
+     \end{subfigure}
+    \medskip
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/prompt_class/catplot_prompt_class_ppl_dgpt_young_models.png}
+        \caption{}
+        \label{subfig:catplot_prompt_class_ppl_dgpt_young}
+     \end{subfigure}
+    %  \hfill
+    \quad
+     \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/prompt_class/catplot_prompt_class_ppl_dgpt_old_models.png}
+        \caption{}
+        \label{subfig:catplot_prompt_class_ppl_dgpt_old}
+     \end{subfigure}
+    \caption{Perplexity. Mind the differences in scale between the $y$-axes.}
+    \label{fig:catplot_prompt_class_ppl}
+\end{figure}
+
+
 
 Initial observations and interpretations of Tables \ref{tab:ctg_results_ws_young_prompt_young_model}, \ref{tab:ctg_results_ws_young_prompt_old_model}, \ref{tab:ctg_results_ws_old_prompt_young_model}, \ref{tab:ctg_results_ws_old_prompt_old_model}.
 
