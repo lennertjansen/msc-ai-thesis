@@ -171,9 +171,9 @@ def classify_prompts(prompt, age_cat, multiple, std, device='cpu'):
     print(f"Device: {device}")
 
     if std:
-        bert_model_paths = ['models/prompt_classifiers/bert_bnc_rb_ws_ca_seed_4_24_Sep_2021_BEST.pt',
-                            'models/prompt_classifiers/bert_bnc_rb_ws_ca_seed_7_24_Sep_2021_15_32_32.pt',
-                            "models/prompt_classifiers/bert_bnc_rb_ws_ca_seed_6_24_Sep_2021_14_48_58.pt"]
+        bert_model_paths = ['models/prompt_classifiers/bert_bnc_rb_ws_ca_seed_4_24_Sep_2021_BEST.pt']#,
+                            # 'models/prompt_classifiers/bert_bnc_rb_ws_ca_seed_7_24_Sep_2021_15_32_32.pt',
+                            # "models/prompt_classifiers/bert_bnc_rb_ws_ca_seed_6_24_Sep_2021_14_48_58.pt"]
                             # 'models/prompt_classifiers/bert_bnc_rb_ws_seed_7_24_Sep_2021_02_12_37.pt']
 
         young_probs = []
@@ -185,14 +185,16 @@ def classify_prompts(prompt, age_cat, multiple, std, device='cpu'):
                                                   age_cat=age_cat)
             young_probs.append(young_prob[0])
             old_probs.append(old_prob[0])
-
+        print(81 * "_")
+        print(f"Text: {prompt}")
+        print(81 * "_")
         print(f"Young probs: {young_probs}")
         print(f"Old probs: {old_probs}")
-        print(81 * "=")
-        print(f"|| Young mean: {np.mean(young_probs)} || Young std.: {np.std(young_probs)} ||")
-        print(81 * "-")
-        print(f"|| Old mean: {np.mean(old_probs)} || Old std.: {np.std(old_probs)} ||")
-        print(81 * "=")
+        # print(81 * "=")
+        # print(f"|| Young mean: {np.mean(young_probs)} || Young std.: {np.std(young_probs)} ||")
+        # print(81 * "-")
+        # print(f"|| Old mean: {np.mean(old_probs)} || Old std.: {np.std(old_probs)} ||")
+        # print(81 * "=")
 
 
 
