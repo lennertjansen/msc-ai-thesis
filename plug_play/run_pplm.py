@@ -1154,6 +1154,8 @@ def run_pplm_example(
                                                                                                     [pert_gen_text[len(tokenizer.bos_token) + len(cond_text):].replace("\n","")]
 
 
+
+    sys.exit(0) #TODO: Remove this when you're done generating scripted dialogues
     # LJ: add column for text length
     gen_text_df['text_length'] = gen_text_df['text'].apply(lambda x: len(x.split()))
 
