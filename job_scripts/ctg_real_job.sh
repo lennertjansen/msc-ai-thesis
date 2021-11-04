@@ -4,11 +4,11 @@
 #SBATCH -p gpu_titanrtx_shared ## Select the partition. This one is almost always free, and has TitanRTXes (much RAM)
 #SBATCH --nodes=1
 ##SBATCH --gpus-per-node=1
-#SBATCH --job-name=scripted_dialogue_generation_food_turnwise_young
+#SBATCH --job-name=scripted_dialogue_generation_food_turnwise_young_CORRECTION
 #SBATCH --time=5-00:00:00 ## Max time your script runs for (max is 5-00:00:00 | 5 days)
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=lennertjansen95@gmail.com
-#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/scripted_dialogue_generation_food_turnwise_young.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
+#SBATCH -o /home/lennertj/code/msc-ai-thesis/SLURM/output/scripted_dialogue_generation_food_turnwise_young_CORRECTION.%A.out ## this is where the terminal output is printed to. %j is root job number, %a array number. try %j_%a ipv %A (job id)
 
 # Loading all necessary modules.
 echo "Loading modules..."
@@ -40,7 +40,7 @@ declare -a arr=("Hello, how are you?<|endoftext|>")
 declare -a young_prompts=("Tell me about your favourite food. I love sushi and Japanese food in general. What about you?" "Anything salmon. I am not so much of a spicy food lover, however. I love food too." "Me too! Meat and fish all the way." "I agree! A lot of great fish and meat. And it is also nice and lean." "Tell me about your favourite food. Too many to choose. I think one of my favorites for sure is a traditional stuffed pigeon from home. We eat pigeon a lot over there and it's usually stuffed with the most amazing herb rice! I usually eat it for special ocassions though, as it is quite hard to prepare and takes quite some time." "Hmm.. Probably a traditional egyptian one too. It's called konafa." "Tell me about yours?" "That's always a good idea! Me too. THe more local/fresh, the better. Tell me about your best dining experience!" "Tell me about your favourite food. My favorite food is fried chicken with French fries." "We share something in common." "I would describe myself as a fun-loving person. What about you?" "What is your favorite drink?" "I love apple juice.")
 
 # for discrim-based
-for prompt in "${arr[@]}"
+for prompt in "${young_prompts[@]}"
 do
   echo "NEW PROMPT ALERT WOOOWOOOOWOOOOOOWOOOOOOO"
   for seed in 2021
