@@ -276,7 +276,7 @@ Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabe
         \begin{itemize}
             \item  The representations for young and old style used in this research are specific to the BNC, and should not be interpreted as generally representative of speaking style of 19-29 and 50-plus.
             \item Even within the context of the BNC, the representations used for classification and generation are indicative of textual features learned to coincide with utterances from certain age groups.
-            \item "young" and "old" speaking/writing styles are not semantically opposite styles, like positive vs negative sentiment resemble. So we shouldn't expect certain patterns in, e.g., ppl plots to be exactly opposite.
+            \item despite formulation of binary classification requiring young-prob and old-prob to be complementary values, "young" and "old" speaking/writing styles are not semantically opposite styles, like positive vs negative sentiment tend to resemble more \len{Maybe think of a better example of semantic polar opposites. Also, maybe also mention that it still needs to be verified whether they are semantically opposite or not, but that you hypothesize that they are not. Idea for future research.}. So we shouldn't expect certain patterns in, e.g., ppl plots to be exactly opposite.
         \end{itemize}
     \item Future research idea: adapting the PPLM-setup to work with $n$-gram lists for arbitrary $n$.
         \begin{itemize}
@@ -284,6 +284,7 @@ Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabe
         \end{itemize}
     \item Future research idea: real-time interactivity of age-adaptive conversational systems. I.e., a pipeline that (1) "starts off neutral", (2) classifies user's age based on minimal amount of utterances, (2*) uses bayesian modelling or reinforcement learning to constantly update belief, (3) adapts use of language to perceived user age.
     \item Future research idea: how to probe PPLM models, because BertViz doesn't work, as the attention weights are unchanged by PPLM.
+    \item Emphasize the importance of PPLM-methods w.r.t. carbon footprint and the ecological cost of (re)training massive language models like GPT-x (Maybe this is better for the introduction?)
 \end{itemize}
 
 \chapter{Conclusion}

@@ -179,15 +179,14 @@ shit, cool, fucking, definitely, guess, friends, everyone, literally, dad, sound
     \citet{schler2006effects} & 0.762 & 0.860 & 0.748 & 0.504 \\
     \midrule
     unigram & 0.601 (0.001) & 0.764 (0.001) & 0.704 (0.001) & 0.498 (0.003)\\
-    bigram & 0.625 (0.001) & 0.790 (0.001) & 0.712 (0.001) & \textcolor{blue}{0.518} (0.001)\\
+    bigram & 0.625 (0.001) & \textcolor{blue}{0.790} (0.001) & \textcolor{blue}{0.712} (0.001) & \textcolor{blue}{0.518} (0.001)\\
     trigram & 0.623 (0.001) & \textcolor{blue}{0.790} (0.001) & 0.712 (0.002) & 0.498 (0.002)\\
     \midrule
-    LSTM & 0.663 (0.005) & 0.748 (0.003) & 0.664 (0.010) & 0.502 (0.004) \\
+    LSTM & \textcolor{blue}{0.663} (0.005) & 0.748 (0.003) & 0.664 (0.010) & 0.502 (0.004) \\
     BiLSTM & 0.618 (0.008) & 0.732 (0.003) & 0.579 (0.016) & 0.509 (0.004)\\
     \midrule
-    % BERT$_{frozen}$
-    % -base-uncased (frozen)
-    % & 0.604 (0.001) & 0.627 (0.011) & 0.666 (0.005) & 0.198 (0.018)\\
+    BERT$_{frozen}$
+    & 0.623 (0.002) & 0.658 (0.006) & 0.678 (0.007) & 0.256 (0.041)\\
     BERT$_{FT}$
     % -base-uncased (fine-tuned)
     & \textbf{0.742} (0.010) & \textbf{0.813} (0.007) & \textbf{0.749} (0.013) & \textbf{0.592} (0.009)\\
@@ -652,3 +651,66 @@ shit, cool, fucking, definitely, guess, friends, everyone, literally, dad, sound
         \caption{\len{Unprompted} Various averaged automated evaluation metrics of generated sentences, plotted against increasing sequence length (x-axis), with 90\% confidence intervals. The plots are best viewed in color.}
         \label{fig:ctg_lineplots_len_vs_metrics}
 \end{figure}
+
+\section{CTG Results for Unprompted Setup \len{Redundant?}}
+
+Table~\ref{tab:ctg_results_ws} reports the automated evaluation results of our controllable text generation models. It can be seen that uncontrolled GPT-2 baseline has a slight bias towards generating "young-sounding" language (57.5\% accuracy). Furthermore, it appears that perturbing GPT-2's output distribution with the 100 most common words across all ages results in a slight de-biasing of the generated text (54.1\% accuracy). Achieving detectable control seems possible, because all GPT-2-based models surpass both baselines in terms of accuracy, with the exception of both BoW-setups using the 100 most informative unigrams.
+
+Frequency-based BoW-models outperform those using the most informative unigrams, as illustrated by their higher average accuracy (66.75\% versus. 53.1\%), and lower average perplexity (27.48 versus 27.90). 
+% \len{Offer an explanation.} 
+Discriminator-based models achieve noticeably better accuracies, with an average improvement of 8.45\% over the best performing BoW-based models. However, discriminator-based models do show more signs of disfluency and repetitiveness compared to the BoW-models, as depicted by the worse perplexities and Dist-$n |_{n = 1,2,3}$ scores.
+
+The accuracies of our uncontrolled DialoGPT baseline (78.1\%) and the 100MCW baseline (80.7\%), suggest that DialoGPT is heavily biased towards producing young-sounding language. This can be attributable to DialoGPT having been fine-tuned on Reddit threads, as the majority of Reddit users are between the ages 20 and 29~\footnote{\url{https://www.statista.com/statistics/1125159/reddit-us-app-users-age/}}
+% \len{Find a reference for this statement} 
+\citep{zhang2019dialogpt}. DialoGPT's strong propensity for generating younger sounding language makes it a less desirable choice for our human evaluation experiments, because it requires non-standard parameter settings to produce detectably older sounding text.
+
+Overall, the results show that, for most models, a plug-and-play approach to controlling generated dialogue responses to possess detectable age-specific linguistic features is achievable. The most promising models being either discriminator-based, or frequency-based bag-of-words models. Discriminator-based models achieve more detectable levels of control than their BoW-based counterparts, at the cost of perplexity and repetitiveness. This could be attributable to the more complex activation-space updates that are used by discriminator-models. Furthermore, GPT-2's preference to generate young-sounding language is severely less pronounced than that of DialoGPT, making it easier to control, given equal parameter settings.
+
+% \textbf{Observations:}
+% GPT-2
+% \begin{itemize}
+%     \item All GPT2-based models beat the GPT-2 baseline, except for the BoW-100MIU.
+%     \item GPT-2 has a slight bias towards being classified as young. Has a preference to sound young.
+%     \item BoW-based control with the 100 most common words appears to de-bias uncontrolled GPT-2
+%     \item The frequency-based BoW models are the best ones. They achieve on average better control than 100MIU w.r.t. the baseline, and have on average a lower perplexity than 100MIU. \len{Compute and explicitly mention these differences}.
+%     \item Discriminator-based models achieve (1) much higher accuracy, (2) noticeably worse perplexity, and (3) on average more repetitive unigrams, bigrams, and trigrams.
+%     \item Controlling for old language seems harder than for young, as its accuracy is consistently lower.
+% \end{itemize}
+
+% \textbf{DialoGPT:}
+% \begin{itemize}
+%     \item DialoGPT is heavily biased towards younger language. This is most likely due to it being finetuned on Reddit threads. Vast majority of U.S. Reddit users are between the ages of 18 and 19 \url{https://www.statista.com/statistics/261766/share-of-us-internet-users-who-use-reddit-by-age-group/}
+%     \item 100 most common words across all ages seems to result in more pronounced young-bias. Could also be due to prompt.
+% \end{itemize}
+
+\begin{table*}[h!]
+    \centering
+    \begin{tabular}{l c c c c c}
+    \toprule
+    \textbf{Model} & \textbf{ppl.} & \textbf{Dist-1} & \textbf{Dist-2} & \textbf{Dist-3} & \textbf{Acc.}\\
+    % -plus)}$\\
+     & $\downarrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better & $\uparrow$ better\\
+    \midrule
+    \midrule
+    GPT-2 baseline & 29.60 ($\pm$17.57) & \textbf{0.89} ($\pm$0.09) & \textbf{0.93} ($\pm$0.05) & 0.88 ($\pm$0.10) & 57.5\%\\
+    GPT-2 100MCW baseline & 27.80 ($\pm$16.44) & 0.83 ($\pm$0.12) & 0.91 ($\pm$0.06) & \textcolor{blue}{0.88} ($\pm$0.09) & 54.1\%\\
+    \midrule
+    % B$_{Y, FB, 80}$ & 29.13 ($\pm$15.17) & 0.86 ($\pm$0.10) & 0.92 ($\pm$0.06) & 0.88 ($\pm$0.11) & 70\%\\
+    % B$_{O, FB, 80}$ & \textbf{26.42} ($\pm$8.87) & 0.86 ($\pm$0.10) & \textcolor{blue}{0.92} ($\pm$0.05) & \textbf{0.89} ($\pm$0.10) & 62.2\%\\
+    B$_{Y, FB}$ & 28.16 ($\pm$14.52) & 0.87 ($\pm$0.10) & 0.92 ($\pm$0.06) & 0.88 ($\pm$0.10) & 69.3\%\\
+    B$_{O, FB}$ & 26.79 ($\pm$8.89) & \textcolor{blue}{0.88} ($\pm$0.09) & \textcolor{blue}{0.92} ($\pm$0.05) & 0.88 ($\pm$0.10) & 64.2\%\\
+    B$_{Y, 100MIU}$ & 29.16 ($\pm$14.91) & \textbf{0.89} ($\pm$0.09) & 0.92 ($\pm$0.06) & 0.88 ($\pm$0.11) & 52.5\%\\
+    B$_{O, 100MIU}$ & \textcolor{blue}{26.63} ($\pm$8.36) & 0.87 ($\pm$0.10) & 0.92 ($\pm$0.07) & 0.88 ($\pm$0.10) & 53.7\%\\
+    \midrule
+    D$_{Y, GPT2}$ & 31.95 ($\pm$14.29) & 0.82 ($\pm$0.17) & 0.87 ($\pm$0.14) & 0.83 ($\pm$0.16) & \textbf{77.7\%}\\
+    D$_{O, GPT2}$ & 33.63 ($\pm$24.40) & 0.80 ($\pm$0.18) & 0.87 ($\pm$0.11) & 0.81 ($\pm$0.21) & \textcolor{blue}{72.7}\%\\
+    \midrule
+    DGPT baseline & 35.20 ($\pm$10.01) & 0.87 ($\pm$0.11) & 0.90 ($\pm$0.07) & 0.87 ($\pm$0.08) & 78.1\%\\
+    DGPT-100MCW & 35.64 ($\pm$9.72) & 0.86 ($\pm$0.10) & 0.90 ($\pm$0.06) & 0.87 ($\pm$0.08) & 80.7\%\\
+    D*$_{Y, DGPT}$ & 41.54 ($\pm$10.87) & 0.91 ($\pm$0.11) & 0.91 ($\pm$0.06) & 0.86 ($\pm$0.09) & \textbf{84.1}\%\\
+    D*$_{O, DGPT}$ & 38.16 ($\pm$10.77) & 0.87 ($\pm$0.11) & 0.91 ($\pm$0.06) & 0.87 ($\pm$0.08) & 55.6\%\\
+    \bottomrule
+    \end{tabular}
+    \caption{\len{Unprompted} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
+    \label{tab:ctg_results_ws}
+\end{table*}

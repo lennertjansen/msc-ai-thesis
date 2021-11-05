@@ -176,6 +176,7 @@ Contrary to fine-tuning often massive LMs, PPLM does not incur a significant tra
 The workflow of my controlled text generation experiments can be divided into three phases, attribute model development, generation, and evaluation. The following paragraphs describe and motivate the steps and choices per phase. All experiments are conducted on an NVIDIA TitanRTX GPU.
 
 \subsection{Attribute Model Development}
+\label{subsec:att_model_dev}
 During attribute model development, either a discriminator is trained on the dialogue data, or a bag-of-words is statistically constructed from the same corpus.
 
 When training the discriminators, the dialogue dataset is randomly split into a training (90\%) and test (10\%) set. The frozen embeddings of either GPT-2-medium \citep{radford2019language} or DialoGPT-medium \citep{zhang2019dialogpt} are fed into trainable linear classifiers, seeking to distinguish between transcribed dialogue utterances from young (ages 19 to 29) and old (ages 50 and over) speakers. The discriminators are trained using Adam \citep{DBLP:journals/corr/KingmaB14} with a learning rate of $1\cdot10^{-4}$ and default values for all other parameters, with a maximum sequence length of 512 tokens, for 20 epochs, and a batch size of 64. The discriminator parameters are used of the epoch with the highest test accuracy.
