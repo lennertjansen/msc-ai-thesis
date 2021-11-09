@@ -1,7 +1,7 @@
 \newpage
 \section{Controlled Text Generation Performance}
 \label{sec:exp2_results}
-
+\len{NB - If you choose to use confidence intervals instead of std's, be sure to revise this section so it still makes sense.}
 % \len{Old text for the unprompted results. FROM HERE....}
 
 % Table~\ref{tab:ctg_results_ws} reports the automated evaluation results of our controllable text generation models. It can be seen that uncontrolled GPT-2 baseline has a slight bias towards generating "young-sounding" language (57.5\% accuracy). Furthermore, it appears that perturbing GPT-2's output distribution with the 100 most common words across all ages results in a slight de-biasing of the generated text (54.1\% accuracy). Achieving detectable control seems possible, because all GPT-2-based models surpass both baselines in terms of accuracy, with the exception of both BoW-setups using the 100 most informative unigrams.
@@ -18,10 +18,9 @@
 
 % \len{...TO HERE}
 
-The quantitative results of generating younger (19 to 29) and older (50 and over) sounding responses to neutral prompts are reported in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model}, respectively. In these tables, the underlying language model being used in a setup (i.e., a row in a table) is indicated by the prefixes G- for GPT-2 and D- for DialoGPT. Furthermore, both tables report the results of the unperturbed GPT-2 and DialoGPT baselines (labeled G-baseline and D-baseline, respectively), and those of the 100 most common age-independent bag-of-words setups for both GPT-2 and DialoGPT (labeled G-100MCW and D-100MCW, respectively). The accuracies for these two setups (i.e., baseline and 100 most common words) are omitted because they do not aim to generate responses that resemble any target age group. Moreover, two bag-of-words (BoW) setups are reported per underlying language model (GPT-2 or DialoGPT): the frequency-based BoW setup (indicated by the suffix, -BoW$_{FB}$), and the 100 most informative unigram setup (indicated by the suffix, -BoW$_{100MIU}$). Detailed descriptions of how and why these aforementioned wordlists are constructed are provided in Section \ref{subsec:att_model_dev}. Finally, the discriminator-based setups are indicated by the suffix, -Discrim. The aforementioned reporting conventions also hold for the tables containing the results of response generation to younger and older sounding prompts (i.e., Tables \ref{tab:ctg_results_ws_young_prompt_young_model}, \ref{tab:ctg_results_ws_young_prompt_old_model}, \ref{tab:ctg_results_ws_old_prompt_young_model}, and \ref{tab:ctg_results_ws_old_prompt_old_model}). The results of those experiments are discussed in Section \ref{subsec:ctg_anal_prompt_class}.
+The quantitative results of generating younger (19 to 29) and older (50 and over) sounding responses to neutral prompts are reported in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model}, respectively. In these tables, the underlying language model being used in a setup (i.e., a row in a table) is indicated by the prefixes G- for GPT-2 and D- for DialoGPT. Additionally, both tables report the results of the unperturbed GPT-2 and DialoGPT baselines (labeled G-baseline and D-baseline, respectively), and those of the 100 most common age-independent bag-of-words setups for both GPT-2 and DialoGPT (labeled G-100MCW and D-100MCW, respectively). The accuracies for these two setups (i.e., baseline and 100 most common words) are omitted because they do not aim to generate responses that resemble any target age group. Moreover, two bag-of-words (BoW) setups are reported per underlying language model (GPT-2 or DialoGPT): the frequency-based BoW setup (indicated by the suffix, -BoW$_{FB}$), and the 100 most informative unigram setup (indicated by the suffix, -BoW$_{100MIU}$). Detailed descriptions of how and why these aforementioned wordlists are constructed are provided in Section \ref{subsec:att_model_dev}. Finally, the discriminator-based setups are indicated by the suffix, -Discrim. The aforementioned reporting conventions also hold for the tables containing the results of response generation to younger and older sounding prompts (i.e., Tables \ref{tab:ctg_results_ws_young_prompt_young_model}, \ref{tab:ctg_results_ws_young_prompt_old_model}, \ref{tab:ctg_results_ws_old_prompt_young_model}, and \ref{tab:ctg_results_ws_old_prompt_old_model}). The results of those experiments are discussed in Section \ref{subsec:ctg_anal_prompt_class}.
 
-As one would expect, Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model} show that the GPT-2 baseline consistently scores among the best on perplexity (best perplexity compared to young generation models, and second best compared to old-generation models) and diversity of generation. Similarly, the unperturbed DialoGPT baseline also scores best in terms of perplexity, when compared to other DialoGPT-based setups. This means that the responses generated by GPT-2 and DialoGPT are found to be among the least perplexing to GPT-1. This is unsurprising, as GPT-2, and thereby also DialoGPT, is pre-trained in similar fashion to GPT-1 \citep{radford2018improving, radford2019language, zhang2019dialogpt}. Additionally, the target probabilities ($\bar{P}_Y = 0.62$ in Table~\ref{tab:ctg_results_ws_neutral_prompt_young_models}, and $\bar{P}_O = 0.38$ in Table~\ref{tab:ctg_results_ws_neutral_prompt_old_model}) indicate that the GPT-2 baseline is biased towards generating young language. I.e., GPT-2 is inclined to produce responses, given a neutral prompt, that are likely to contain features learned to be young by BERT$_{FT}$. Moreover, DialoGPT has very strong bias towards generating younger sounding responses, given a neutral prompt (0.76 average probability to contain detectable young features). This is most likely due to DialoGPT having been fine-tuned on Reddit threads, as the majority of Reddit users are between the ages 20 and 29~\footnote{\url{https://www.statista.com/statistics/1125159/reddit-us-app-users-age/}}
-\citep{zhang2019dialogpt}.
+As one would expect, Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model} show that the GPT-2 baseline consistently scores among the best on perplexity (best perplexity compared to young generation models, and second best compared to old-generation models) and diversity of generation (the Dist-$n |_{n = 1,2,3}$ scores are almost consistently in the upper registers). Similarly, the unperturbed DialoGPT baseline also scores best in terms of perplexity, when compared to other DialoGPT-based setups. This means that the responses generated by GPT-2 and DialoGPT are found to be among the least perplexing to GPT-1. This is unsurprising, as GPT-2, and thereby also DialoGPT, are pre-trained in similar fashion to GPT-1 \citep{radford2018improving, radford2019language, zhang2019dialogpt}. Additionally, the target probabilities ($\bar{P}_Y = 0.62$ in Table~\ref{tab:ctg_results_ws_neutral_prompt_young_models}, and $\bar{P}_O = 0.38$ in Table~\ref{tab:ctg_results_ws_neutral_prompt_old_model}) indicate that the GPT-2 baseline is biased towards generating young language. That is, given a neutral prompt, GPT-2 is inclined to produce responses that are likely to contain features learned to be young by BERT$_{FT}$. Moreover, DialoGPT has very strong bias towards generating younger sounding responses, given a neutral prompt (0.76 average probability to contain detectable young features). This is most likely due to DialoGPT having been fine-tuned on Reddit threads \citep{zhang2019dialogpt}, as the majority of Reddit users are between the ages 20 and 29~\footnote{\url{https://www.statista.com/statistics/1125159/reddit-us-app-users-age/}}.
 
 The G-BoW$_{100MCW}$ setup performs on par with baseline w.r.t. perplexity and diversity (second best perplexity, second best Dist-2, best Dist-3), when compared to the young generation models. A similar pattern can be seen for old models, where G-100MCW has the second best Dist-2, and best Dist-3 scores. Additionally, the target probabilities seem virtually unaffected by the 100MCW setups, suggesting that perturbing GPT-2's output with an age-agnostic bag-of-words of the most frequently used words in the dialogue dataset does not noticeably shift the writing style towards that of the younger or older age group. This is to be expected, as such a wordlist should be an unbiased representation of the dataset's language style, given similar sample sizes per class.
 
@@ -29,7 +28,7 @@ BoW-based models seem to generate responses that are slightly more likely to con
 
 The GPT-2 discriminator-based old-style model manages to generate responses that more convincingly resemble the style of the target group (0.38 $\bar{P}_O$ improvement over the GPT-2 baseline). However, this comes at the cost of perplexity ($+19.65$ compared to baseline) and diversity (much lower dist-scores and higher corresponding standard deviations). By contrast, the GPT-2 discriminator-based young setup does not generate convincingly more young-sounding responses (only 0.04 average target probability improvement over baseline), despite having noticeably worse and less precise perplexity ($4.59$ increase over baseline) and diversity.
 
-The unperturbed DialoGPT baseline produces more perplexing and less diverse text than GPT-2 according to GPT-1 perplexity and the Dist-$n |_{n = 1,2,3}$ scores. The higher perplexity is to be expected, as DialoGPT pre-training and fine-tuning method deviates more from GPT-1's than GPT-2, making it likely to produce more unexpected sentences \cite{zhang2019dialogpt}. When using DialoGPT as an underlying language model, the BoW-based models (including 100MCW) seem to reinforce young-bias for DialoGPT, regardless of age (i.e., for all young-targeted BoW-based models $\bar{P}_Y$ goes up, and $\bar{P}_O$ goes down for all old-targeted BoW-based models). And the discriminator-based DialoGPT models, are superior w.r.t. target probability (+0.10 $\bar{P}_Y$ difference compared to DialoGPT baseline for young-models, and +0.34 $\bar{P}_O$ compared to baseline for old-models). However, this again comes at the cost of much higher and more volatile perplexity.
+The unperturbed DialoGPT baseline produces more perplexing and less diverse text than GPT-2 according to GPT-1 perplexity and the Dist-$n |_{n = 1,2,3}$ scores. The higher perplexity is to be expected, as DialoGPT pre-training and fine-tuning method deviates more from GPT-1's than GPT-2, making it likely to produce more unexpected sentences \citep{zhang2019dialogpt}. When using DialoGPT as an underlying language model, the BoW-based models (including 100MCW) seem to reinforce young-bias for DialoGPT, regardless of age (i.e., for all young-targeted BoW-based models $\bar{P}_Y$ goes up, and $\bar{P}_O$ goes down for all old-targeted BoW-based models). And the discriminator-based DialoGPT models, are superior w.r.t. target probability (+0.10 $\bar{P}_Y$ difference compared to DialoGPT baseline for young-models, and +0.34 $\bar{P}_O$ compared to baseline for old-models). However, this again comes at the cost of much higher and more volatile perplexity.
 
 Overall, according to these results it seems to be possible to control dialogue responses for a certain age group. The used underlying language models are biased (in varying degrees) towards generating younger-sounding language. In these tested PPLM-setups, there seems to be a tradeoff between increased control and decreasing perplexity and diversity of generated language. Furthermore, the BoW-based models achieve less detectable levels of control, but preserve the fluency and diversity of generated text. In other words, the discriminator-based models make more invasive changes to the unperturbed sentences, which can result in less fluent and more repetitive text. However, they do produce more detectably age-appropriate passages.
 
@@ -51,7 +50,7 @@ Overall, according to these results it seems to be possible to control dialogue 
     % \item BoW-based models (including 100MCW) seem to reinforce young-bias for DialoGPT, regardless of age (young prob goes up for both BoW, and old prob goes down for both BoW-models).
     % \item Discriminator based models, again, outperform significantly w.r.t. target probability (0.10 prob difference wrt baseline for young, and 0.34 prob difference wrt baseline for old). Again, at the cost of on average worse and more volatile perplexity.
     \item Janie's suggestion: it could be that there are some detectable young-sounding tokens that make BoW-based young control easier, and that old-sounding features are more salient at the structural/syntactical level and harder to control for.
-    \item Overall, it seems to be possible to control dialogue responses for a certain age group. The used base language models are biased towards generating young-sounding language. In the current PPLM-setup, there seems to be a tradeoff between increased control and decreasing fluency and diversity. BoW-based models achieve less detectable levels of control, but preserve the fluency and diversity of generated text. Discriminator based models make more invasive changes to the unperturbed sentences, which can result in less fluent and more repetitive text. However, they do produce more detectably age-appropriate passages.
+    % \item Overall, it seems to be possible to control dialogue responses for a certain age group. The used base language models are biased towards generating young-sounding language. In the current PPLM-setup, there seems to be a tradeoff between increased control and decreasing fluency and diversity. BoW-based models achieve less detectable levels of control, but preserve the fluency and diversity of generated text. Discriminator based models make more invasive changes to the unperturbed sentences, which can result in less fluent and more repetitive text. However, they do produce more detectably age-appropriate passages.
     \item \len{TODO - Examine the nonsensical generated sequences that are correctly labeled as old or young. What patterns do you see? It could be that BERT$_{FT}$ is picking up non-language patterns that give away age.}
 \end{itemize}
 
@@ -220,24 +219,50 @@ Overall, according to these results it seems to be possible to control dialogue 
 % \end{itemize}
 
 
-\section{Controlled Text Generation Analyses}
-\label{sec:exp2_analyses}
 
-\textit{By means of quantitative and qualitative analyses, we seek to study which relationships drive the grammatical quality and attribute relevance of generated output. We study the relationship between fluency and control, the effects of sequence length, and visualize attention mechanisms. Finally, we provide qualitative inspections of various cases, i.e., high versus low perplexity or assigned BERT$_{FT}$ probability, and a human evaluation of linguistic quality.}
 
-% \len{Introduce the ctg analyses, like we do for the classification results. Talk about which models we're comparing, and why (probably the best performing ones from each class, i.e., best-bow, best-discrim, and best DGPT?... \textit{By means of quantitative and qualitative analyses, we seek to study which relationships drive the quality and control of generated output...  We start by studying the relationship between fluency and control (quant.), ... the effects of sequence length (quant.), ..., visualize attention mechanisms (quant.}. Then we ... summary stats. and qualitative inspection of various cases, i.e., high/low ppl., high/low prob. (qual)., ...and human eval (qual). }
+
 
 \section{Controlled Dialogue Generation Analyses}
+\label{sec:exp2_analyses}
+
+By means of quantitative and qualitative analyses, we seek to study which relationships affect the grammatical quality and attribute relevance of the generated responses. The discriminator-based setups, and the BoW-models with the highest average target probabilities (i.e., BoW$_{FB}$ for GPT-2, and BoW$_{100MIU}$ for DialoGPT) are considered for the analyses. In the following sections, we presents a series of analyses about the relationship between perplexity and target probability (Section \ref{subsec:ctg_anal_ppl_target_prob}), the effects of response length on generation quality (Section \ref{subsec:ctg_anal_response_length}), the impact of the prompt's style on generation style and quality (Section \ref{subsec:ctg_anal_prompt_class}), and qualitatively observable patterns in generated samples \ref{subsec:ctg_anal_qualitative}.
+
+
 
 \len{TODO - Add examples of generated sequences along with their model's configurations, age-group, etc. Similar to dialogue snippets earlier.}
 
 \subsection{The Relationship between Perplexity and Target Probability \len{Think of better title}}
+\label{subsec:ctg_anal_ppl_target_prob}
 
-Figure~\ref{fig:ctg_lineplot_fluency_vs_control} attempts to depict the relationship between fluency and control, as measured by perplexity and BERT's classification accuracy, respectively. On the y-axis, ``mean accuracy'' refers to the average fraction of generated sequences, controlled for young or old language, that are correctly labeled as such by Experiment 1's best BERT classifier. The bars around the averages in Figure~\ref{fig:ctg_lineplot_fluency_vs_control} are 90\% confidence intervals.
-% It can be seen as a proxy for control, because it indicates how resemblant of an age group's vernacular a generated text is deemed to be. 
-% Perplexity, measured by a different language model (GPT-1 \citep{radford2018improving}), is a measure of a language model's uncertainty when posed with the task of predicting a succession of words. Assuming a language model to be a reliable representation of relationships within an actual language, low perplexity can serve as a rough proxy for fluency of a text. However, a major caveat of perplexity is that it only measures uncertainty w.r.t. one language model, making it less generalizable. To slightly reduce this effect, we choose to evaluate perplexity with respect to a different language model than the one used for generation.
-% \len{Disclose the confidence interval level}
-It appears that increasing perplexity is slightly negatively correlated with accuracy. It is also clear from Figure~\ref{fig:ctg_lineplot_fluency_vs_control} that uncertainty about prediction strongly increases for greater perplexity. These two observations indicate that sentences deemed less coherent by GPT-1 tend to be harder to classify by BERT$_{FT}$ with certainty. BERT$_{FT}$ is pre-trained and fine-tuned to pick up syntactic features from dialogue that can indicate a speaker's age. It is therefore plausible that structural deviations from proper syntax (i.e., high perplexity) can obfuscate the age-related linguistic signal BERT$_{FT}$ leverages. Finally, it seems that, on average, the discriminator-based models are more capable of producing correctly classifiable high-perplexity sentences. \len{Why would that be?} However, none of the differences between the average accuracies are statistically significant at the 10\% level, so this conclusion should be taken tentatively.
+
+% \len{NB - THE FOLLOWING PARAGRAPH IS ABOUT THE (DEPRECATED) UNPROMPTED SETUP RESULT. FROM HERE...}
+% Figure~\ref{fig:ctg_lineplot_fluency_vs_control} attempts to depict the relationship between fluency and control, as measured by perplexity and BERT's classification accuracy, respectively. On the y-axis, ``mean accuracy'' refers to the average fraction of generated sequences, controlled for young or old language, that are correctly labeled as such by Experiment 1's best BERT classifier. The bars around the averages in Figure~\ref{fig:ctg_lineplot_fluency_vs_control} are 90\% confidence intervals.
+% % It can be seen as a proxy for control, because it indicates how resemblant of an age group's vernacular a generated text is deemed to be. 
+% % Perplexity, measured by a different language model (GPT-1 \citep{radford2018improving}), is a measure of a language model's uncertainty when posed with the task of predicting a succession of words. Assuming a language model to be a reliable representation of relationships within an actual language, low perplexity can serve as a rough proxy for fluency of a text. However, a major caveat of perplexity is that it only measures uncertainty w.r.t. one language model, making it less generalizable. To slightly reduce this effect, we choose to evaluate perplexity with respect to a different language model than the one used for generation.
+% % \len{Disclose the confidence interval level}
+% It appears that increasing perplexity is slightly negatively correlated with accuracy. It is also clear from Figure~\ref{fig:ctg_lineplot_fluency_vs_control} that uncertainty about prediction strongly increases for greater perplexity. These two observations indicate that sentences deemed less coherent by GPT-1 tend to be harder to classify by BERT$_{FT}$ with certainty. BERT$_{FT}$ is pre-trained and fine-tuned to pick up syntactic features from dialogue that can indicate a speaker's age. It is therefore plausible that structural deviations from proper syntax (i.e., high perplexity) can obfuscate the age-related linguistic signal BERT$_{FT}$ leverages. Finally, it seems that, on average, the discriminator-based models are more capable of producing correctly classifiable high-perplexity sentences. \len{Why would that be?} However, none of the differences between the average accuracies are statistically significant at the 10\% level, so this conclusion should be taken tentatively.
+% \len{...TO HERE.}
+
+\len{\textbf{TODO!!!: Re-write this paragraph s.t. it fits with the new plots.}}
+\begin{itemize}
+    \item Low, medium, and high perplexity are found using the terciles (i.e., the two points that divide the distribution of perplexities into 3 parts, each containing a third of the population.
+    \item low perplexity: $\text{ppl}\leq27.52$
+    \item medium perplexity: $27.52 < \text{ppl} \leq 35.63$
+    \item high perplexity: $>35.63$
+\end{itemize}
+
+\len{TODO - Refine the following text. Especially the last part:}
+Figures~\ref{fig:barplot_ppl_target_prob_np_gpt2} and \ref{fig:barplot_ppl_target_prob_np_dgpt} show bar charts depicting the relationship between the average target probability ($y$-axes) and perplexity ($x$-axes) assigned to the samples generated by various PPLM-model setups. The error bars around the average target probabilities are 95\% confidence intervals. Based on the distributions of perplexity among generated samples and the necessity to have sufficiently large sub-sample sizes, perplexity is binned into three consecutive intervals, corresponding to low (0-25), medium (25-50), and high (50+) perplexity. 
+
+The GPT2-based old models (Figures~\ref{subfig:barplot_ppl_target_prob_np_gpt2_disc_old} and \ref{subfig:barplot_ppl_target_prob_np_gpt2_bow_old}) show a clear pattern of increasing perplexity coinciding with higher and more precise assigned target probabilities. Responses with relatively high perplexities (50+) are (at a 5\% level) significantly more likely to contain features learned to be old by BERT$_{FT}$. High-perplexity responses of the GPT2-old models are also assigned probabilities with more precision, as indicated by the narrower confidence regions. For the GPT-2 Young models' responses (Figures~\ref{subfig:barplot_ppl_target_prob_np_gpt2_disc_young} and \ref{subfig:barplot_ppl_target_prob_np_gpt2_bow_young}) we observe a similar pattern of slight increase of average assigned target probability between low (0-25) and medium (25-50) perplexity. However, in both cases this is followed by a large drop in both average assigned target probability and precision for high-perplexity responses. It must be noted that there are no significant differences at the 5\% level between the average $\bar{P}_Y$, so conclusions about the relationship between perplexity and target probability should be taken tentatively.
+
+
+DialoGPT's strong proclivity to generate younger sounding responses is noticeable in Figures~\ref{subfig:barplot_ppl_target_prob_np_dgpt_disc_young} and \ref{subfig:barplot_ppl_target_prob_np_dgpt_bow_young}, as depicted by the high average target probabilities and relatively narrow confidence intervals. That being said, there seem to be no clear patterns between perplexity and target probability in DialoGPT-based models. It could be that DialoGPT's strong bias makes it less reliable to draw conclusions about the effects of PPLM-control for age-related style, given default parameter settings.
+
+BERT$_{FT}$ seems to have least certainty (i.e., low precision aka high variance) about low-perplexity responses in every case, except DialoGPT-BoW Young (Figure~\ref{subfig:barplot_ppl_target_prob_np_dgpt_bow_young}).
+
+Both sets of graphs show that patterns in the relationship between target probability and perplexity seem to persist between different types of control (i.e., discriminator-based or BoW-based), when holding the age and underlying language model constant.
 
 \begin{figure}[H]
      \centering
@@ -312,26 +337,31 @@ It appears that increasing perplexity is slightly negatively correlated with acc
 \len{\textbf{Observed patterns in perplexity target-prob plots}}:
 
 \begin{itemize}
-    \item For GPT2-based Old models (both discrim (Figure~\ref{subfig:barplot_ppl_target_prob_np_gpt2_disc_old}) and bow (Figure~\ref{subfig:barplot_ppl_target_prob_np_gpt2_bow_old})), there is a very clear pattern of increasing perplexity coinciding with higher assigned target probabilities. Responses with relatively high perplexities (50+) are significantly more likely to contain features learned to be old by BERT$_{FT}$. This suggests there could be a tradeoff between increased levels of attribute relevance (i.e., control) and fluency (i.e., lower perplexity). High-perplexity responses are of the GPT2-old models are also assigned probabilities with more precision (i.e., smaller confidence region).
-    \item For the GPT-2 Young models' responses we observe a pattern of slight increase of average assigned target probability between low (0-25) and medium (25-50) perplexity, followed by a extreme decrease of assigned target probability and associated precision for high-perplexity responses.
-    \item DialoGPT's young-bias is noticeable in Figures~\ref{subfig:barplot_ppl_target_prob_np_dgpt_disc_young} and \ref{subfig:barplot_ppl_target_prob_np_dgpt_bow_young}: all high average target probabilities with relatively high certainty.
-    \item No clear pattern of tradeoff between perplexity and target probability in DialoGPT-based models.
-    \item BERT$_{FT}$ seems to have least certainty (i.e., low precision aka high variance) about low-perplexity responses in every case, except DialoGPT-BoW Young (Figure~\ref{subfig:barplot_ppl_target_prob_np_dgpt_bow_young}).
+    % \item For GPT2-based Old models (both discrim (Figure~\ref{subfig:barplot_ppl_target_prob_np_gpt2_disc_old}) and bow (Figure~\ref{subfig:barplot_ppl_target_prob_np_gpt2_bow_old})), there is a very clear pattern of increasing perplexity coinciding with higher assigned target probabilities. Responses with relatively high perplexities (50+) are significantly more likely to contain features learned to be old by BERT$_{FT}$. This suggests there could be a tradeoff between increased levels of attribute relevance (i.e., control) and fluency (i.e., lower perplexity). High-perplexity responses are of the GPT2-old models are also assigned probabilities with more precision (i.e., smaller confidence region).
+    % \item For the GPT-2 Young models' responses we observe a pattern of slight increase of average assigned target probability between low (0-25) and medium (25-50) perplexity, followed by a extreme decrease of assigned target probability and associated precision for high-perplexity responses.
+    % \item DialoGPT's young-bias is noticeable in Figures~\ref{subfig:barplot_ppl_target_prob_np_dgpt_disc_young} and \ref{subfig:barplot_ppl_target_prob_np_dgpt_bow_young}: all high average target probabilities with relatively high certainty.
+    % \item No clear pattern of tradeoff between perplexity and target probability in DialoGPT-based models.
+    % \item BERT$_{FT}$ seems to have least certainty (i.e., low precision aka high variance) about low-perplexity responses in every case, except DialoGPT-BoW Young (Figure~\ref{subfig:barplot_ppl_target_prob_np_dgpt_bow_young}).
     \item \len{Using the term fluency as a generalization of perplexity can be misleading. Think of another word, just use perplexity, or provide a disclaimer.}
 \end{itemize}
 
 
 \subsection{The Effects of Generated Response Length \len{Think of better title}}
+\label{subsec:ctg_anal_response_length}
 
-\begin{itemize}
-    \item \textit{Main question: how is generated sequence length related to fluency and control?}
+The number of tokens in a generated response coincides with noticeable differences in our automated evaluation metrics. It is therefore important to get a clearer picture of how the various measures for fluency and control change for different sequence lengths. Moreover, properly understanding these relationship can inform developers of adaptive dialogue systems about preserving output quality and adaptation of responses of arbitrary lengths.
+
+Response length (on the $x$-axes) is plotted against various evaluation metrics in Figures~\ref{fig:lineplots_length_acc_np_gpt2_dgpt} (average BERT$_{FT}$ accuracy), \ref{fig:lineplots_length_ppl_np_gpt2_dgpt} (GPT-1 perplexity), \ref{fig:lineplots_length_dist1_np_gpt2_dgpt} (normalized number of distinct unigrams), \ref{fig:lineplots_length_dist2_np_gpt2_dgpt} (normalized number of distinct bigrams), and \ref{fig:lineplots_length_dist3_np_gpt2_dgpt} (normalized number of distinct trigrams).
+
+% \begin{itemize}
+%     \item \textit{Main question: how is generated sequence length related to fluency and control?}
     
-    \item \textit{Study the relationship between generated sequence length (measured in number of tokens) and automated evaluation metrics (i.e., perplexity, dist-n, and accuracy).}
+%     \item \textit{Study the relationship between generated sequence length (measured in number of tokens) and automated evaluation metrics (i.e., perplexity, dist-n, and accuracy).}
     
-    \item \textit{For every metric and for (all?) models, plot sequence length on the x-axis, and the average metric with confidence intervals on the y-axis.}
+%     \item \textit{For every metric and for (all?) models, plot sequence length on the x-axis, and the average metric with confidence intervals on the y-axis.}
     
-    \item \textit{Which patterns do you observe?} 
-\end{itemize}
+%     \item \textit{Which patterns do you observe?} 
+% \end{itemize}
 
 \begin{figure}[H]
      \centering
@@ -352,12 +382,15 @@ It appears that increasing perplexity is slightly negatively correlated with acc
         \label{fig:lineplots_length_acc_np_gpt2_dgpt}
 \end{figure}
 
-\len{\textbf{Patterns in Figure~\ref{fig:lineplots_length_acc_np_gpt2_dgpt}}}:
-\begin{itemize}
-    \item No clear trends.
-    \item BoW-based Old (GPT-2 and DialoGPT) has significantly lower accuracy at almost every length bracket.
-    \item Shortest responses generated by GPT-2-based models appear to be most challenging to classify for BERT$_{FT}$.
-\end{itemize}
+% \len{\textbf{Patterns in Figure~\ref{fig:lineplots_length_acc_np_gpt2_dgpt}}}:
+% \begin{itemize}
+%     % \item No clear trends.
+%     % \item BoW-based Old (GPT-2 and DialoGPT) has significantly lower accuracy at almost every length bracket.
+%     % \item Shortest responses generated by GPT-2-based models appear to be most challenging to classify for BERT$_{FT}$.
+% \end{itemize}
+
+Figure~\ref{subfig:lineplot_length_acc_np_gpt2} shows a slight upward trend in average accuracy with greater uncertainty for increasing response length for all GPT-2-based models, except for the BoW-based old generation model. That is, longer sequences are, on average, slightly easier to classify, though with less precision. This is probably due to the fact that longer sentences contains more information to base predictions on. 
+By contrast, the DialoGPT-based models in Figure~\ref{fig:lineplots_length_acc_np_gpt2_dgpt} do not seem to show a clear general trend that mean accuracy follows for increasing response length. However, it does seem that DialoGPT's strong bias towards generating younger sounding responses causes output from DialoGPT-based young generation models to be much easier to classify than that from the old generation models. Overall, it can be seen that the BoW-based old models (GPT-2 and DialoGPT) are significantly more challenging to classify at almost every length bracket.
 
 \begin{figure}[H]
      \centering
@@ -378,12 +411,15 @@ It appears that increasing perplexity is slightly negatively correlated with acc
         \label{fig:lineplots_length_ppl_np_gpt2_dgpt}
 \end{figure}
 
-\len{\textbf{Patterns in Figure~\ref{fig:lineplots_length_ppl_np_gpt2_dgpt}}:}
-\begin{itemize}
-    \item Perplexity decreases for increasing response length. Longer responses are deemed more plausible by GPT-1.
-    \item GPT2-Discrim Old significantly worse perplexity at 5\% level for medium length responses. (is also best model setup w.r.t. target-prob improvement over baseline if i'm not mistaken).
-    
-\end{itemize}
+% \len{\textbf{Patterns in Figure~\ref{fig:lineplots_length_ppl_np_gpt2_dgpt}}:}
+% \begin{itemize}
+%     % \item Perplexity decreases for increasing response length. Longer responses are deemed more plausible by GPT-1.
+%     % \item GPT2-Discrim Old significantly worse perplexity at 5\% level for medium length responses. (is also best model setup w.r.t. target-prob improvement over baseline if i'm not mistaken).
+% \end{itemize}
+
+Figure~\ref{fig:lineplots_length_ppl_np_gpt2_dgpt} shows a clear downward trend for both sets of PPLM-setups. Irrespective of the underlying language model being used, longer responses are deemed less perplexing, with more certainty, by GPT-1 than shorter ones. It is worth emphasizing that the model with the highest target probability improvement over its relevant baseline, G-Discrim$_{Old}$, is found to produce significantly more perplexing responses than its GPT-2-based counterparts at most length brackets (See Figure~\ref{subfig:lineplot_length_ppl_np_gpt2}). This finding resonates with Figure~\ref{subfig:barplot_ppl_target_prob_np_gpt2_disc_old} and the idea, that especially for old-generation models, increased levels of attribute relevance coincide with worse perplexity.
+
+However, it must be noted that the downward slope of perplexity for increasing response length could be attributable to the nature of calculating perplexity, rather than generation properties of the models. Namely, perplexity essentially averages the sum of the negative exponentiated probabilities $p(\texttt{word} | \texttt{context})$, for every word in a sentence. Because the context increases with every successive word, and larger contexts typically result in less uncertainty, shorter sequences are often given unfairly high perplexities.
 
 \begin{figure}[H]
      \centering
@@ -442,42 +478,52 @@ It appears that increasing perplexity is slightly negatively correlated with acc
         \label{fig:lineplots_length_dist3_np_gpt2_dgpt}
 \end{figure}
 
-\len{\textbf{Patterns in Figures~\ref{fig:lineplots_length_dist1_np_gpt2_dgpt}, \ref{fig:lineplots_length_dist2_np_gpt2_dgpt}, and \ref{fig:lineplots_length_dist3_np_gpt2_dgpt}}:}
+% \len{\textbf{Patterns in Figures~\ref{fig:lineplots_length_dist1_np_gpt2_dgpt}, \ref{fig:lineplots_length_dist2_np_gpt2_dgpt}, and \ref{fig:lineplots_length_dist3_np_gpt2_dgpt}}:}
 
-\begin{itemize}
-    \item Figure~\ref{fig:lineplots_length_dist1_np_gpt2_dgpt} shows that diversity w.r.t. unigrams increases for longer responses. This is most likely just due to the fact that longer sentences have an \textit{a priori} higher probability of repeating words. E.g., stopwords like "the" and "of" are likely to appear multiple times in longer sentences. \len{Is this a valid suggestion?}
-    \item The same figure shows an interesting difference: GPT-2-BoW models generate significantly more diverse responses w.r.t. unigrams for almost every bracket of response length. This could be attributable to BoW-based control altering base-GPT2's generated sentences at the token-level, thus being more likely to preserve the unigram diversity of the unperturbed baseline (G-Baseline's Dist-1 is always in the upper register when looking at the columns in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model}.
-    \item Figure~\ref{fig:lineplots_length_dist2_np_gpt2_dgpt} and shows that variety w.r.t. bigrams makes an initial upward jump between response length of 1-10 and 10-20. Dist-2 then follows a mild downward trend for both GPT2- and DialoGPT-based models. The GPT2-based models' trend is more pronounced and less volatile than DialoGPT's.
-    \item Figure \ref{subfig:lineplot_length_dist2_np_gpt2} shows the BoW-based GPT-2 models also produce significantly more diverse language w.r.t. bigrams for most response lengths.
-    \item Figure~\ref{fig:lineplots_length_dist3_np_gpt2_dgpt} shows similar patterns: initial upward jump in trigram diversity between shortest and second-to-shortest length brackets. GPT-2 models then show a slight downward trend from the 20-30 lengths onward. However, DialoGPT actually show a decreasing increase in trigram diversity for all models.
-\end{itemize}
+% \begin{itemize}
+    % \item Figure~\ref{fig:lineplots_length_dist1_np_gpt2_dgpt} shows that diversity w.r.t. unigrams increases for longer responses. This is most likely just due to the fact that longer sentences have an \textit{a priori} higher probability of repeating words. E.g., stopwords like "the" and "of" are likely to appear multiple times in longer sentences. \len{Is this a valid suggestion?}
+    % \item The same figure shows an interesting difference: GPT-2-BoW models generate significantly more diverse responses w.r.t. unigrams for almost every bracket of response length. This could be attributable to BoW-based control altering base-GPT2's generated sentences at the token-level, thus being more likely to preserve the unigram diversity of the unperturbed baseline (G-Baseline's Dist-1 is always in the upper register when looking at the columns in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model}.
+    % \item Figure~\ref{fig:lineplots_length_dist2_np_gpt2_dgpt} and shows that variety w.r.t. bigrams makes an initial upward jump between response length of 1-10 and 10-20. Dist-2 then follows a mild downward trend for both GPT2- and DialoGPT-based models. The GPT2-based models' trend is more pronounced and less volatile than DialoGPT's.
+    % \item Figure \ref{subfig:lineplot_length_dist2_np_gpt2} shows the BoW-based GPT-2 models also produce significantly more diverse language w.r.t. bigrams for most response lengths.
+    % \item Figure~\ref{fig:lineplots_length_dist3_np_gpt2_dgpt} shows similar patterns: initial upward jump in trigram diversity between shortest and second-to-shortest length brackets. GPT-2 models then show a slight downward trend from the 20-30 lengths onward. However, DialoGPT actually show a decreasing increase in trigram diversity for all models.
+% \end{itemize}
 
-\textbf{Patterns in (obsolete) unprompted results \len{DELETE OR MOVE TO APPENDIX}:}
-\begin{itemize}
-    \item \len{NB: These are all patterns observed in the unprompted results. Once prompted results are in, we can interpret them as if length of dialogue response.}
-    \item Increasing sequence length is correlated with decreasing perplexity. Longer sentences are deemed more coherent by GPT-2
-    \item Increasing length seems very slighty positively correlated with average accuracy (and more uncertainty). I.e., longer sequences are, on average, easier to classify, though less precision.
-    \item BoW-based models significantly more distinct  w.r.t. unigrams than dirscrim-based.
-    \item Overall, repetitiveness seems to increase as generated sequences become longer.
-    \item The differences between young and old perplexity are smaller for BoW-based models than for Discrim-based. Same pattern holds for repetitiveness.
-\end{itemize}
+Figure~\ref{fig:lineplots_length_dist1_np_gpt2_dgpt} shows that diversity w.r.t. unigrams decreases for longer responses. This is most likely due to the fact that longer sentences have an \textit{a priori} higher probability of containing repeated words. E.g., stopwords like "the" and "of" are likely to appear multiple times in longer sentences. The same figure shows that GPT-2-BoW models generate significantly more diverse responses w.r.t. unigrams for almost every bracket of response length. This could be attributable to BoW-based control altering base-GPT2's generated sentences at the token-level, thus being more likely to preserve the unigram diversity of the unperturbed baseline (the GPT-2 baseline's Dist-1 is always in the upper register in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model}).
 
-\len{NB: These are all patterns observed in the unprompted results. Once prompted results are in, we can interpret them as if length of dialogue response.}
+Figure~\ref{fig:lineplots_length_dist2_np_gpt2_dgpt} and shows that variety w.r.t. bigrams makes an initial upward jump between response length of 1-10 and 10-20. Dist-2 then follows a mild downward trend for both GPT2- and DialoGPT-based models However, detailed inspection of Figure~\ref{subfig:lineplot_length_dist1_np_gpt2} shows that only the discriminator-based setups have a negative slope, whereas the BoW-based setups follow a very slight upward trend. Thus, the BoW-based GPT-2 models produce significantly more diverse language w.r.t. bigrams for most response lengths, attributable to the same reason mentioned above.
 
-The number of tokens being generated in an utterance seems to coincide with noticeable differences in our automated evaluation metrics. It is therefore important to get a clearer picture of how the various measures for fluency and control change for varying sequence lengths. Properly understanding this relationship can inform developers of adaptive dialogue systems about preserving output quality for responses of arbitrary lengths.
+Figure~\ref{fig:lineplots_length_dist3_np_gpt2_dgpt} shows similar patterns: an initial upward jump in trigram diversity between shortest and second-to-shortest length brackets. GPT-2 models then show a slight downward trend for the discriminator-based setups from the 20-30 lengths onward, while the BoW-based models become slightly more diverse w.r.t. trigrams.
 
-Figure~\ref{fig:ctg_lineplots_len_vs_metrics} presents plots of the relationships between generated sequence length (on the x-axes) and average perplexity (Figure~\ref{fig:ctg_lineplot_len_vs_ppl}), average BERT$_{FT}$ accuracy (Figure~\ref{fig:ctg_lineplot_len_vs_acc}), and average normalized number of distinct unigrams (Figure~\ref{fig:ctg_lineplot_len_vs_dist1}), bigrams (Figure~\ref{fig:ctg_lineplot_len_vs_dist2}), and trigrams (Figure~\ref{fig:ctg_lineplot_len_vs_dist3}).
+Overall, it can again be seen that BoW-based models generate detectably more diverse responses (with greater precision), and remain to do so as response length increases. The decreasing diversity of discriminator-based generated responses further confirms that more invasive control during generated impedes textual variety.
+
+% \textbf{Patterns in (obsolete) unprompted results \len{DELETE OR MOVE TO APPENDIX. FROM HERE....}:}
+% \begin{itemize}
+%     \item \len{NB: These are all patterns observed in the unprompted results. Once prompted results are in, we can interpret them as if length of dialogue response.}
+%     \item Increasing sequence length is correlated with decreasing perplexity. Longer sentences are deemed more coherent by GPT-2
+%     \item Increasing length seems very slighty positively correlated with average accuracy (and more uncertainty). I.e., longer sequences are, on average, easier to classify, though less precision.
+%     \item BoW-based models significantly more distinct  w.r.t. unigrams than dirscrim-based.
+%     \item Overall, repetitiveness seems to increase as generated sequences become longer.
+%     \item The differences between young and old perplexity are smaller for BoW-based models than for Discrim-based. Same pattern holds for repetitiveness.
+% \end{itemize}
+
+% \len{NB: These are all patterns observed in the unprompted results. Once prompted results are in, we can interpret them as if length of dialogue response.}
+
+% The number of tokens being generated in an utterance seems to coincide with noticeable differences in our automated evaluation metrics. It is therefore important to get a clearer picture of how the various measures for fluency and control change for varying sequence lengths. Properly understanding this relationship can inform developers of adaptive dialogue systems about preserving output quality for responses of arbitrary lengths.
+
+% Figure~\ref{fig:ctg_lineplots_len_vs_metrics} presents plots of the relationships between generated sequence length (on the x-axes) and average perplexity (Figure~\ref{fig:ctg_lineplot_len_vs_ppl}), average BERT$_{FT}$ accuracy (Figure~\ref{fig:ctg_lineplot_len_vs_acc}), and average normalized number of distinct unigrams (Figure~\ref{fig:ctg_lineplot_len_vs_dist1}), bigrams (Figure~\ref{fig:ctg_lineplot_len_vs_dist2}), and trigrams (Figure~\ref{fig:ctg_lineplot_len_vs_dist3}).
 
 
-Starting with Figure~\ref{fig:ctg_lineplot_len_vs_ppl}, it appears that, for all models, increases in generated utterance length coincide with decreases in perplexity. This is most likely attributable to the nature of calculating perplexity than generation properties of the models. Namely, perplexity essentially averages the sum of the negative exponentiated probabilities $p(\texttt{word} | \texttt{context})$, for every word in a sentence. Because the context increases with every successive word, and larger contexts typically result in less uncertainty, shorter sequences are often given unfairly high perplexities.
+% Starting with Figure~\ref{fig:ctg_lineplot_len_vs_ppl}, it appears that, for all models, increases in generated utterance length coincide with decreases in perplexity. This is most likely attributable to the nature of calculating perplexity than generation properties of the models. Namely, perplexity essentially averages the sum of the negative exponentiated probabilities $p(\texttt{word} | \texttt{context})$, for every word in a sentence. Because the context increases with every successive word, and larger contexts typically result in less uncertainty, shorter sequences are often given unfairly high perplexities.
 
-In Figure~\ref{fig:ctg_lineplot_len_vs_acc}, we can see that increasing length seems very slightly positively correlated with average accuracy (and more uncertainty). That is, longer sequences are, on average, slightly easier to classify, though with less precision. This is probably due to the fact that longer sentences contains more information to base predictions on.
+% In Figure~\ref{fig:ctg_lineplot_len_vs_acc}, we can see that increasing length seems very slightly positively correlated with average accuracy (and more uncertainty). That is, longer sequences are, on average, slightly easier to classify, though with less precision. This is probably due to the fact that longer sentences contains more information to base predictions on.
 
-Focusing on repetitive use of unigrams, it appears that BoW-based models generate significantly more diverse utterances than discriminator-based models. 
+% Focusing on repetitive use of unigrams, it appears that BoW-based models generate significantly more diverse utterances than discriminator-based models. 
 
-Repetitiveness w.r.t. bigrams and trigrams seems to increase as generated sequences become longer.
+% Repetitiveness w.r.t. bigrams and trigrams seems to increase as generated sequences become longer.
 
-Overall, the differences between young and old perplexity are smaller for BoW-based models than for Discriminator-based. Same pattern holds for repetitiveness.
+% Overall, the differences between young and old perplexity are smaller for BoW-based models than for Discriminator-based. Same pattern holds for repetitiveness.
+
+% \len{...TO HERE}
 
 
 % \begin{figure}[H]
@@ -526,6 +572,24 @@ Overall, the differences between young and old perplexity are smaller for BoW-ba
 \subsection{The Effects of Prompt Class \len{Think of better title}}
 \label{subsec:ctg_anal_prompt_class}
 
+Recall that given a conditioning prompt $\texttt{prompt}$, a predefined style attribute $a$, and some controlled dialogue generation model parameterized by $\theta$, generating a stye-controlled piece of text $\textbf{x}$ entails modeling $p_{\theta}(\textbf{x} | a, \texttt{prompt})$. It is therefore reasonable to expect the output distribution of controlled generation model $p_{\theta}$ to depend (to some extent) on the content and style of the conditioning text, $\texttt{prompt}$. Indeed, the content and style of prompts are found to strongly influence the output of neural text generation models \citep{fan-etal-2018-hierarchical, lester2021power}. Thus, studying the effects of a prompt's age-style (i.e., whether a prompt is considered young, old, or neutral by BERT$_{FT}$) on the style and grammatical quality of PPLM-setups is of great importance, as it could inform developers of adaptive dialogue systems about mitigation of prompt-induced biases.
+
+It is worth mentioning that the effects of prompt-style on PPLM-generation are not considered by \cite{dathathri2019plug} or \cite{madotto-etal-2020-plug}. Studying these effects is an important extension of their methods, as not quantitatively taking into account the effects prompt-style obfuscates the degree to which one can conclude whether attribute-relevance is the result of controlled generation or prompt-induced bias.
+% This is actually a non-negligible fault in their research, because you can bias the style of generation by giving it a biased prompt. 
+
+Figures~\ref{fig:catplot_prompt_class_target_prob} and \ref{fig:catplot_prompt_class_ppl} depict the average target probability and perplexity over responses generated by the baseline, best BoW-based model, and discriminator-based model, when prompted with a prompt of either young, neutral, or old style. More specifically, each bar represents a metric (target probability or perplexity) averaged over $N=270$ samples generated by a single model, when presented with five prompts of the same age-style. E.g., the blue bar in Figure~\ref{subfig:catplot_prompt_class_target_prob_gpt2_young} represents the average probability of samples generated by GPT-2 + frequency-based BoW to contain features learned to be young by BERT$_{FT}$, when the model was presented young-sounding prompts. The explicit numerical values of Figures~\ref{fig:catplot_prompt_class_target_prob} and \ref{fig:catplot_prompt_class_ppl} are found in Tables \ref{tab:ctg_results_ws_young_prompt_young_model}, \ref{tab:ctg_results_ws_young_prompt_old_model}, \ref{tab:ctg_results_ws_old_prompt_young_model}, and \ref{tab:ctg_results_ws_old_prompt_old_model}.
+
+Ideally, the neutrally prompted baseline's assigned probability of generating age-specific responses should be around 0.50. Furthermore, a prompt should shift the target probability in the direction of the prompt class, e.g., a young prompt should shift a young-model's target prob upwards, and an old-model's target prob downwards. We know from previous results in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model} that the language model baselines are (in varying degrees) biased towards generating younger sounding responses to neutral prompts. Nevertheless, we should expect the impact of prompt-style to persist, albeit to differing degrees based on the (dis)similarity in style between the prompt and response, and the type of attribute model being used (BoW or discriminator).
+
+
+Figures~\ref{fig:catplot_prompt_class_target_prob} and \ref{fig:catplot_prompt_class_ppl}, show that the models' target probabilities indeed move accordingly with the prompts' styles. E.g., young-prompted young-model achieves highest young target prob, then neutral prompted, and then old prompted (Figures \ref{subfig:catplot_prompt_class_target_prob_gpt2_young} and \ref{subfig:catplot_prompt_class_target_prob_dgpt_young}). The same pattern holds the other way around: an old-prompted old-model has the highest (old) target probability, then neutrally prompted, and then the young- prompted ones (Figures \ref{subfig:catplot_prompt_class_target_prob_gpt2_old} and \ref{subfig:catplot_prompt_class_target_prob_dgpt_old}). In these last two sub-figures, we also clearly see that the discriminator-based old generation models achieve substantial target probability improvements over the baseline (and BoW-based models), for every style of prompt. By contrast, the young-generation models (Figures \ref{subfig:catplot_prompt_class_target_prob_gpt2_young} and \ref{subfig:catplot_prompt_class_target_prob_dgpt_young}) do not show the same pattern: discriminator-based models achieve similarly subtle improvements in target probability over their baselines as the BoW-based models do. Figure~\ref{subfig:catplot_prompt_class_target_prob_gpt2_young} even shows the discriminator-based models to perform worse than the baseline and BoW-based models.
+
+So the class of the prompt strongly influences the style of the generated response.
+
+Overall, Figures~\ref{fig:catplot_prompt_class_target_prob} and \ref{fig:catplot_prompt_class_ppl} and Tables \ref{tab:ctg_results_ws_young_prompt_young_model}, \ref{tab:ctg_results_ws_young_prompt_old_model}, \ref{tab:ctg_results_ws_old_prompt_young_model}, and \ref{tab:ctg_results_ws_old_prompt_old_model} show that the style of the prompt clearly nudges the assigned probability of containing age-related features in the direction of the prompt's style. Moreover, using strongly young-prompt results in heavily reinforced young-bias for GPT2 and DialoGPT. Similarly, using an older sounding prompt results in a slightly neutralized young-bias for both language models. Additionally, the discriminator-based old models (GPT-2 and DialoGPT) always yield the highest relative improvements over the baselines. However, they fail to do so when attempting to generate younger sounding responses, which could suggest that the stylistic features learned to be young and old by BERT$_{FT}$ lie at different syntactical levels, and are not equally challenging to control for. Finally, the aforementioned tables show that the effects of prompt-style are largely limited to the target probabilities. For perplexity and distinctiveness, the young- and old-prompted results show similar patterns to the neutral-prompt setting: BoW-based models achieve smaller increases in control, but maintain relatively desirable perplexity and diversity. Whereas, the discriminator-based models achieve higher levels of control, at the cost of worse perplexity and Dist-scores.
+
+\len{\textbf{TODO - Add table with used prompts and their assigned target probabilities.}}
+
 \begin{figure}[H]
      \centering
      \begin{subfigure}[b]{0.48\textwidth}
@@ -557,19 +621,19 @@ Overall, the differences between young and old perplexity are smaller for BoW-ba
         \caption{}
         \label{subfig:catplot_prompt_class_target_prob_dgpt_old}
      \end{subfigure}
-    \caption{Target probability. The plots are best viewed in color. \len{TODO: (1) Change Target probability labels to Young or Old probability. The term target probability doesn't hold for baseline models. (2) Make very clear what the bars represent, i.e., averages over how many samples? how many models? See Slack thread with Sandro.}}
+    \caption{Target probability. The plots are best viewed in color. \len{TODO: (1) Change Target probability labels to Young or Old probability. The term target probability doesn't hold for baseline models.}}
     \label{fig:catplot_prompt_class_target_prob}
 \end{figure}
 
-\len{\textbf{Patterns in Figure \ref{fig:catplot_prompt_class_target_prob}}:}
-\begin{itemize}
-    \item The style of the prompt clearly nudges the assigned probability in the direction of the prompt's class.
-    \item The discrim. old models (GPT-2 and DialoGPT) always yield the highest relative improvements over the baselines.
-    \item Ideally, you would want (1) the neutrally prompted baseline to be around 0.50. (2) A young or old prompt should shift the target probability in the direction of the prompt class; i.e., a young prompt should shift a young-model's target prob upwards, and an old-model's target prob downwards. (3) ...
-    \item The models target probabilities (baseline, bow, and discrim) move accordingly with the prompt's class: young prompted young-model has highest young target prob, then neutral prompted, and then old prompted. Same pattern goes the other way around: an old prompted old-model has the highest (old) target prob, then neutral prompted, and then young prompted.
-    \item So the class of the prompt strongly influences the style of the generated response.
-    \item \len{Make sure to emphasize that this is also something that hasn't been studied by \cite{dathathri2019plug} or \cite{madotto-etal-2020-plug}; i.e., they never study the effect of their prompt style or sentiment on the style/attribute relevance of generation. This is actually a non-negligible fault in their research, because you can bias the style of generation by giving it a biased prompt. Furthermore, not quantitatively taking into account the prompt style or effect obfuscates the degree to which one can conclude whether attribute relevance is the result of controlled generation or prompt-bias.}
-\end{itemize}
+% \len{\textbf{Patterns in Figure \ref{fig:catplot_prompt_class_target_prob}}:}
+% \begin{itemize}
+%     % \item The style of the prompt clearly nudges the assigned probability in the direction of the prompt's class.
+%     % \item The discrim. old models (GPT-2 and DialoGPT) always yield the highest relative improvements over the baselines.
+%     % \item Ideally, you would want (1) the neutrally prompted baseline to be around 0.50. (2) A young or old prompt should shift the target probability in the direction of the prompt class; i.e., a young prompt should shift a young-model's target prob upwards, and an old-model's target prob downwards. (3) ...
+%     % \item The models target probabilities (baseline, bow, and discrim) move accordingly with the prompt's class: young prompted young-model has highest young target prob, then neutral prompted, and then old prompted. Same pattern goes the other way around: an old prompted old-model has the highest (old) target prob, then neutral prompted, and then young prompted.
+%     % \item So the class of the prompt strongly influences the style of the generated response.
+%     % \item \len{Make sure to emphasize that this is also something that hasn't been studied by \cite{dathathri2019plug} or \cite{madotto-etal-2020-plug}; i.e., they never study the effect of their prompt style or sentiment on the style/attribute relevance of generation. This is actually a non-negligible fault in their research, because you can bias the style of generation by giving it a biased prompt. Furthermore, not quantitatively taking into account the prompt style or effect obfuscates the degree to which one can conclude whether attribute relevance is the result of controlled generation or prompt-bias.}
+% \end{itemize}
 
 \begin{figure}[H]
      \centering
@@ -602,27 +666,25 @@ Overall, the differences between young and old perplexity are smaller for BoW-ba
         \caption{}
         \label{subfig:catplot_prompt_class_ppl_dgpt_old}
      \end{subfigure}
-    \caption{Perplexity. Mind the differences in scale between the $y$-axes. The plots are best viewed in color.}
+    \caption{Perplexity. Mind the differences in scale between the $y$-axes. The plots are best viewed in color. \len{TODO - Move to Appendix}}
     \label{fig:catplot_prompt_class_ppl}
 \end{figure}
 
 
 
-Initial observations and interpretations of Tables \ref{tab:ctg_results_ws_young_prompt_young_model}, \ref{tab:ctg_results_ws_young_prompt_old_model}, \ref{tab:ctg_results_ws_old_prompt_young_model}, \ref{tab:ctg_results_ws_old_prompt_old_model}.
+% Initial observations and interpretations of Tables \ref{tab:ctg_results_ws_young_prompt_young_model}, \ref{tab:ctg_results_ws_young_prompt_old_model}, \ref{tab:ctg_results_ws_old_prompt_young_model}, \ref{tab:ctg_results_ws_old_prompt_old_model}.
 
-\begin{itemize}
-    \item Using strongly young-prompt results in heavily reinforced young-bias for GPT2 and DialoGPT.
-    \item Similarly, old-prompt results in slightly neutralized young-bias for both language models.
-    \item Neutrally prompted patterns persist...
-    \begin{itemize}
-        \item Trade-off between control and fluency + diversity.
-        \item BoW achieves smaller increases in control, but leaves fluency and dist intact.
-        \item Discrim higher levels of control increase wrt baseline, worse quality of text wrt fluency and diversity.
-    \end{itemize}
-    \item Overall, stylistic aspects of prompts heavily influence controllability of response.
-\end{itemize}
-
-\paragraph{Young Prompts}
+% \begin{itemize}
+%     % \item Using strongly young-prompt results in heavily reinforced young-bias for GPT2 and DialoGPT.
+%     % \item Similarly, old-prompt results in slightly neutralized young-bias for both language models.
+%     \item Neutrally prompted patterns persist...
+%     \begin{itemize}
+%         \item Trade-off between control and fluency + diversity.
+%         \item BoW achieves smaller increases in control, but leaves fluency and dist intact.
+%         \item Discrim higher levels of control increase wrt baseline, worse quality of text wrt fluency and diversity.
+%     \end{itemize}
+%     \item Overall, stylistic aspects of prompts heavily influence controllability of response.
+% \end{itemize}
 
 \begin{table*}[h]
     \centering
@@ -685,8 +747,6 @@ Initial observations and interpretations of Tables \ref{tab:ctg_results_ws_young
     \caption{\len{Young prompt - Old models} Results of age-controlled language generation. Perplexity is perplexity w.r.t. GPT-1. Dist-n is number of distinct n-grams normalized by text length, as a measure of diversity. Acc. is the best BERT model's accuracy when classifying the row's samples.}
     \label{tab:ctg_results_ws_young_prompt_old_model}
 \end{table*}
-
-\paragraph{Old Prompts}
 
 \begin{table*}[h]
     \centering
@@ -775,8 +835,8 @@ Initial observations and interpretations of Tables \ref{tab:ctg_results_ws_young
 
 
 
-
 \subsection{Qualitative Analyses}
+\label{subsec:ctg_anal_qualitative}
 
 \subsubsection{Qualitative 1: Summary Statistics and Qualitative Inspection of Various Cases}
 
@@ -792,6 +852,27 @@ Initial observations and interpretations of Tables \ref{tab:ctg_results_ws_young
     \item \textit{Provide table of examples per case and age-group. Similar to table \ref{tab:qualexamples}}
 \end{itemize}
 
+\len{\textbf{Structure as follows:}}
+
+\begin{itemize}
+    \item Split the generated responses by their (1) perplexity and (2) target probability/classification case.
+    \item Provide summary statistics 
+\end{itemize}
+
+The responses generated conditioned on neutral prompts are split by (1) whether or not BERT$_{FT}$ correctly classified a response as its target class, and (2) by the level of perplexity: low ($\text{ppl.} \leq 27.52$), medium ($27.52 < \text{ppl.} \leq 35.63$), or high ($\text{ppl.} > 35.63$). See Section \ref{subsec:ctg_anal_ppl_target_prob} for an explanation of the rationale behind these intervals. Table \ref{tab:ctg_model_case_pcts} shows how the generated responses are distributed among these cases for the best performing BoW-based models, and discriminator-based models for both underlying language models and target age groups. As can be seen the majority of the mass of GPT-2 BoW-based models is in the low perplexity range, whereas the discriminator-based GPT-2 models also have percentage peaks in the higher perplexity registers (e.g., 37.2\% high-perplexity correctly classified for G-Discrim$_{Old}$). By contrast, the DialoGPT-based models all show the majority of their distributions lying in the medium-to-high perplexity range.
+
+To narrow down the comparison, the qualitative inspection of samples is limited to responses generated by the discriminator-based models of both language models and age groups (i.e., G-Discrim$_{Young}$, G-Discrim$_{Old}$, D-Discrim$_{Young}$, and D-Discrim$_{Old}$). Moreover, these models are all among those with the highest target probability improvements over their respective baselines in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model}, so the differences in language style should be most pronounced between these setups. Furthermore, to emphasize the differences between perplexity, we only consider low versus high perplexity samples. Finally, the samples used for qualitative inspection are also split by whether or not they were correctly classified by BERT$_{FT}$. To summarize, qualitative inspection are performed on a total of 16 splits: by model (G-Discrim$_{Young}$, G-Discrim$_{Old}$, D-Discrim$_{Young}$, or D-Discrim$_{Old}$), perplexity (low or high), and classification outcome (correct or incorrect).
+
+\len{\textbf{TODO} - Make a Table with interesting examples}
+
+Table \len{MAKE TABLE} shows examples of generated responses containing the patterns and observations discussed in the remainder of this section.
+
+Manual inspection of the sub-samples show that correctly classified low-perplexity samples from models targeted towards the older age group use more formal words than their young-targeted counterparts, e.g., \textit{quite}, \textit{significant}, \textit{powerful}, or \textit{institutions}. Samples generated by these models also show recurring topics that are typically associated with older age, e.g., children (\textit{my son} or \textit{your daughter}), history, or politics. There is also more talk about healthcare related subjects among these models, as indicated by the use of words like \textit{surgery}. When viewing high-perplexity samples from the same set of models (i.e., those target towards the older age group and correctly classified), we see a substantial increase in the amount of gibberish and nonsensical sequences (space-less sequences of words, repetitions of the same words, or sequences of punctuation marks). When we inspect the incorrectly classified samples from models targeted towards the older class, we also see a considerable increase in the amount of nonsensical strings. Remarkably, we also observe more linguistic patterns associated with younger age in this sub-sample, e.g., words of excitement like \textit{favourite} or \textit{best}, informal vocabulary (\textit{pretty much}).
+
+The low-perplexity correctly classified samples generated by models targeted towards the younger age group also contain clear indications of their target age. We observe noticeably more usage of slang words, swear words, and informal language, like \textit{yeah}, \textit{dude}, \textit{cool}, \textit{kinda}, and \textit{lol}. Futhermore, these sub-samples are also characterized by increased use of words of excitement and exclamation: e.g., \textit{awesome}, \textit{really}, \textit{love}, \textit{fun}, or \textit{amazing}. Especially in the correctly classified low-perplexity responses generated by G-Discrim${_Young}$, we see a strong presence of topics such as dating (indicated by words such as \textit{girlfriend} or \textit{boyfriend)}, having parents (\textit{my dad}), parties, and student life (\textit{roommate}. And interesting pattern observed in this sub-sample is one often associated with millennial vernacular or social networking language \len{ADD REFERENCE}: the tendency to end a serious-sounding statement with \textit{lol} or \textit{haha} as a means of softening the perceived severity of the statement. For example, \textit{We have to stop talking about this all going so stupid lol lol}. When inspecting the high-perplexity and/or incorrectly classified samples generated by the younger-targeted models, we observe similar patterns. Namely, a substantial increase in non-alphabetical strings, and gibberish.
+
+When comparing the samples from GPT-2 and DialoGPT-based models, we see that the responses generated by DialoGPT are more dialogic, whereas GPT-2 sometimes generates sequences that look more like sentence completions. This is to be expected from the differences in pre-training methods between the two language models \citep{zhang2019dialogpt}. Furthermore, we see a lot more nonsensical low-perplexity responses generated by DialoGPT-based models. Perplexity remains a rough proxy for fluency, and observations like these confirm this problem. That is, low perplexity often does not imply lack of gibberish or nonsense. DialoGPT's strong bias towards generating younger-sounding language is also noticeable in its generated samples. For example, DialoGPT-based models targeted towards the older group still produce lots of word of excitement. However, this older-targeted DialoGPT-based model does succeed in producing significantly fewer usages of slang or swear words, when compared to its younger-target counterpart.
+
 
 % \subsubsection{Qualitative 2: Human evaluation of fluency, grammaticality, and relevancy}
 
@@ -803,3 +884,170 @@ Initial observations and interpretations of Tables \ref{tab:ctg_results_ws_young
 
 
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}l  c  c  c  c  c  c @{}}
+    \toprule
+    \textbf{model} & \textbf{low ppl. | \cmark} & \textbf{low ppl. | \xmark} & \textbf{med ppl. | \cmark} & \textbf{med ppl. | \xmark} & \textbf{high ppl. | \cmark} & \textbf{high ppl. | \xmark}\\
+    \midrule
+    G-BoW$_{Young}$ & 48.0\% & 15.6\% & 15.6\% & 10.4\% & 6.7\% & 3.7\%\\
+    G-BoW$_{Old}$ & 25.6\% & 37.7\% & 11.9\% & 14.8\% & 5.6\% & 4.4\%\\
+    G-Discrim$_{Young}$ & 33.3\% & 15.9\% & 17.4\% & 8.5\% & 17.0\% & 7.9\%\\
+    G-Discrim$_{Old}$ & 23.8\% & 18.2\% & 13.4\% & 3.3\% & 37.2\% & 4.1\%\\
+    D-BoW$_{Young}$ & 5.2\% & 0.4\% & 40.0\% & 5.2\% & 43.3\% & 5.9\%\\
+    D-BoW$_{Old}$ & 3.0\% & 5.9\% & 10.4\% & 35.2\% & 8.5\% & 37.0\%\\
+    D-Discrim$_{Young}$ & 5.9\% & 2.7\% & 23.0\% & 5.6\% & 56.9\% & 5.9\%\\
+    D-Discrim$_{Old}$ & 7.0\% & 4.1\% & 19.3\% & 11.5\% & 30.3\% & 27.8\%\\\bottomrule
+    \end{tabular}
+    \caption{\len{TODO - Turn this table into grouped barcharts.}}
+    % \caption{Percentages of (non-)overlapping (in)correctly predicted cases between trigram and BERT$_{FT}$ models for BNC. *Pre-processed sequence length is measured in tokens.}
+    \label{tab:ctg_model_case_pcts}
+\end{table}
+
+% \begin{table*}[h]
+% \resizebox{\linewidth}{!}{
+% % \small
+% \begin{tabular}{@{}lllll@{}}
+% \toprule
+% \bf age & \bf both correct                & \bf both wrong                 & \bf BERT$_{FT}$ correct | trigram wrong                              & \bf trigram correct | BERT$_{FT}$ wrong                                                            \\ \midrule
+% 19-29     & oh that's cool              & A retrospective exhibition & what even on the green slope?             & really?                                                                    \\
+% 19-29     & a text and then I'll do it  & chuck them in those pots   & yeah you told me to do you told me to do  & and she like won't eat any carbs and she's like                            \\
+% 19-29     & yeah                        & mm                         & somebody made the f***ing table           & do you not like total greens? \\ \midrule
+% % well er it's not acceptable just to ditch \textless{}unclear\textgreater{} \\ \hline
+% 50+       & I said no I don't have them & yeah                       & really?                                   & my under stairs in the kitchen                                             \\
+% 50+       & that's of course            & no no that's alright       & it's still we we frequently walk that way & in the first place                                                         \\
+% 50+       & oh right                    & what a tragic life         & since this this was new this house?       & thank you very much                                                        \\ \bottomrule
+% \end{tabular}
+% }
+% \caption{Examples
+% % cherry-picked examples per age group 
+% where both models are correct/wrong or only BERT$_{FT}$/trigram is correct.}\label{tab:qualexamples}
+% \end{table*}
+
+% Qualitative inspection focuses on low versus high perplexity (i.e., medium perplexity is omitted, both for feasibility (in total Table \ref{tab:ctg_model_case_pcts} describes 48 sets of responses), and only responses generated by the discriminator-based model with the highest target prob. gaing over baseline (compared to its age-opposite counterpart): so that's GPT-2 Discrim old vs. young. And the same for BoW
+
+\len{\textbf{Observations in a few of the best performing models:}}
+
+\begin{itemize}
+    \item GPT2 | Discrim-O | Low ppl | BERT correct:
+    \begin{itemize}
+        \item Not very dialogic 
+        \item Use of larger words like "significant", "powerful", "institutions"
+        \item Talks about "my son" and children
+        \item Talks about work.
+        \item Talks about hospitals, surgery, health care (which is to be expected if you look at the old-wordlists)
+        \item Older slang words "quite"
+        \item Talks about history and politics.
+    \end{itemize}
+    \item GPT2 | Discrim-O | Low ppl | BERT incorrect:
+    \begin{itemize}
+        \item Despite low GPT-1 perplexity, considerably more gibberish that BERT-correct counterpart, space-less repetitions of words mostly though, not nonsensical sequences of characters. First of all, this makes a case for a different proxy for fluency (find different measures to consider for future research, and/or suggest human evaluation).
+        \item The non-gibberish responses contain more words of excitement and positive sentiment "favourite", "best".
+        \item Gibberish most likely obfuscates BERT, hence worse prediction.
+        \item Talks about football clubs and premier league
+        \item Younger sounding slang "pretty much"
+        \item PPLM-discrim old (BERT incorrect) nonsense pattern is lots of punctuation marks, parentheses, and words without spaces.
+    \end{itemize}
+    \item GPT2 | Discrim-O | High ppl | BERT correct:
+    \begin{itemize}
+        \item Predominantly gibberish. 
+        Many sequences of non-alphabetical characters/punctuation marks (parentheses, apostrophes, etc. )
+        \item When non-gibberish, does talk about "my wife" and "work"
+    \end{itemize}
+    \item GPT2 | Discrim-O | High ppl | BERT incorrect:
+    \begin{itemize}
+        \item Very small subset (see Table \ref{tab:ctg_model_case_pcts}, and earlier plots about this model having a clear tradeoff between perplexity and target prob)
+        \item Mostly difluencies
+        \item Formal words like "precious"
+    \end{itemize}
+    \item GPT2 | Discrim-Y | Low ppl | BERT correct:
+    \begin{itemize}
+        \item Substantially more use of younger sounding slang words: "yeah", "dude", "cool", "awesome", "like", "kinda", "hot", "horny", "gonna", "lol". NB: "yeah" was also picked up by the trigram in Chapter 3 (make proper reference) to be strongly indicative of younger language
+        \item More swear words "fucking", "shit", "dick", "hell"
+        \item More words of excitement "awesome" "really" "love", "fun", "amazing"
+        \item More talk about dating "girlfriend", "boyfriend", "horny", "sex"
+        \item More talk about depression and anxiety
+        \item More tech-talk
+        \item Lots of disfluency and repetition though.
+        \item Talks about dancing and parties
+        \item Interesting pattern of millennial language: uttering something serious, but ending with a neutralizing, tension-breaking humoring expression, e.g., ``We have to stop talking about this all going so stupid lol lol.'' ``Shit just got weird LOL."
+        \item More topics that relate to student-life: roommate, parties, drinking, bars, clubs, tv series on Netflix
+    \end{itemize}
+    \item GPT2 | Discrim-Y | Low ppl | BERT incorrect:
+    \begin{itemize}
+        \item Considerably more nonsense than the BERT-correct counterpart. 
+        \item More non-language sequences of characters, \texttt{<|endoftext|>} tokens.
+        \item Similar word-use and topics: tv series (HBO Game of Thrones), swear words, "mom" and "dad(dy)"/
+        \item PPLM-discrim young (BERT incorrect) nonsense pattern is lots of \texttt{<|endoftext|>} tokens.
+    \end{itemize}
+    \item GPT2 | Discrim-Y | High ppl | BERT correct:
+    \begin{itemize}
+        \item Substantially more nonsense, disfluency, gibberish, non-alphabetical characters.
+        \item Similar patterns to low-perplexity counterpart. Actually same patterns, but with much more nonsense.
+    \end{itemize}
+    \item GPT2 | Discrim-Y | High ppl | BERT incorrect:
+    \begin{itemize}
+        \item Very small subset (look at Table \ref{tab:ctg_model_case_pcts} and perplexity-targetprob plots).
+        \item Same patterns
+        \item Mostly nonsense.
+    \end{itemize}
+    \item DialoGPT | Discrim-O | Low ppl | BERT correct:
+    \begin{itemize}
+        \item Very small subset (See table and graph).
+        \item Talks about surgery, hospital etc.
+        \item Talks about daughters.
+        \item Almost no slang words
+        \item More formal language, and complete sentences.
+        \item Quite some nonsense
+    \end{itemize}
+    \item DialoGPT | Discrim-O | Low ppl | BERT incorrect:
+    \begin{itemize}
+        \item Very small subset (See table and graph).
+        \item A lot of nonsense, repeated eot tokens.
+        \item Pretty much similar patterns to setup above.
+    \end{itemize}
+    \item DialoGPT | Discrim-O | High ppl | BERT correct:
+    \begin{itemize}
+        \item Lots of gibberish
+        \item Noticeably, a lot less typically "older" sounding language than GPT-2 counterpart. Which makes sense when you look at the difference in target probabilities.
+        \item More words of excitement and exclamation than other old discrim model. Likely due to DialoGPT's young-bias.
+        \item Barely any slang or swear words.
+        \item Pretty neat formal sentences when not gibberish.
+    \end{itemize}
+    \item DialoGPT | Discrim-O | High ppl | BERT incorrect:
+    \begin{itemize}
+        \item A lot more nonsensical/non-language sequences of characters.
+        \item Talks about days off from work
+        \item words like ``quite'', ``glad''
+        \item talks about other people's parents and children.
+    \end{itemize}
+    \item DialoGPT | Discrim-Y | Low ppl | BERT correct:
+    \begin{itemize}
+        \item Very small sample size
+        \item More informal language "gonna"
+        \item Talks about gifs and comments
+    \end{itemize}
+    \item DialoGPT | Discrim-Y | Low ppl | BERT incorrect:
+    \begin{itemize}
+        \item Predominantly nonsensical sequences.
+        \item Repetitions of words
+        \item No slang, or words of excitement or other clear giveaways of young language.
+        \item Very small sample size.
+    \end{itemize}
+    \item DialoGPT | Discrim-Y | High ppl | BERT correct:
+    \begin{itemize}
+        \item Lots of words of excitement and exclamation marks
+        \item slang and informal words: "dude", "buddy", "cool", referring to the basketball team, the Cleveland Cavalliers, as the "Cavs", "howdy"
+        \item Talks about going on vacation to the beach with friends.
+        \item Uses the word "like"
+        \item Uses emojis ":P", ":D"
+        \item Fair amount of gibberish.
+    \end{itemize}
+    \item DialoGPT | Discrim-Y | High ppl | BERT incorrect:
+    \begin{itemize}
+        \item Mostly gibberish.
+        \item Similar patterns to BERT-correct counterpart, just way more nonsense.
+    \end{itemize}
+\end{itemize}
+
+Overall, the GPT-2 ones are also often sentence completions, and not as often rebuttals as DialoGPT. This is understandable from the point of view of how the models have been pre-trained.

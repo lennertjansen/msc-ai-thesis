@@ -39,6 +39,11 @@
 
 \newcommand{\len}[1]{\textcolor{purple}{[L: #1]}} %LJ
 
+\usepackage{amssymb}% http://ctan.org/pkg/amssymb
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
 
 
 
@@ -268,6 +273,9 @@ Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabe
 \begin{itemize}
     \item What are the effects of prompts on generation? \len{This should probably be an analysis question.}
     \item What are the limitations of your setup?
+        \begin{itemize}
+            \item Perplexity is a crude proxy for fluency and grammatical correctness.
+        \end{itemize}
     \item Does this make the world better? How can this help people? --> It can help personalize virtual assistants (especially useful for new speakers of a language. E.g., the difference between young/informal/spoken French and French that is taught in school and courses is large. User-age personalization can adapt use of language of virtual assistants to variant of language spoken by user.)
     \item What are the dangers of these methods? --> Read up on paper by Ebru et al
     \item What are interesting future research directions?
