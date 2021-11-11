@@ -819,7 +819,7 @@ Overall, Figures~\ref{fig:catplot_prompt_class_target_prob} and \ref{fig:catplot
 %     \item \len{How much sense does it make to study this, though? Is that the purpose of my thesis? Hasn't this been studied enough in the PPLM-paper? Which parameters do I choose?}
 % \end{itemize}
 
-\subsection{BERT-Classifier Visualizations. Or (Dialo)GPT Visualizations.}
+\subsection{BERT$_{FT}$ Attention Patterns}
 
 \begin{itemize}
     \item \textit{\textbf{NB:} This is more relevant to the classification experiments, than to the controlled generation experiments.}
@@ -833,43 +833,174 @@ Overall, Figures~\ref{fig:catplot_prompt_class_target_prob} and \ref{fig:catplot
     \item Discussion about interpretability of attention. See Attention is not explanation, Attention is not not explanation, and The Elephant in the Interpretability Room.
 \end{itemize}
 
+\len{\textbf{Proposed structure:}}
+
+\begin{itemize}
+    \item We use BertViz \citep{vig-2019-multiscale} to visualize and study the attention mechanism maps of BERT$_{FT}$.
+    \item An attention weight is naturally interpretable as how much a particular token will be weighted when computing the next representation for the current token \citep{clark-etal-2019-bert}.
+    \item However, there is debate in NLP literature about the interpretability of attention mechanisms \len{References to Attention is not explanation, Attention is not \textbf{not} explanation, and The Elephant in the Interpretability Room.}
+    \item We refer to an attention head as Head \texttt{layer}-\texttt{head}, where \texttt{layer} and \texttt{head} range from 0 to 11: e.g., Head 3-1 refers to Layer 3, Head 1.
+    \item There are $12 \times 12 = 144$ attention heads in BERT-base-uncased.
+    \item BERT's pre-processing adds a special token \texttt{[CLS]} to the beginning of an input sequence, and another special token \texttt{[SEP]} to the end. If an input sequence consists of multiple sentences (e.g., a question-answer, or prompt-response input), \texttt{[SEP]} tokens are also used to separate the sentences.
+    \item Heads in the same layer tend to exhibit similar behaviors.
+    \item \len{Clearly explain how to read the plots and what they do and don't imply.}
+    \item \len{Clearly explain that the PPLM-method doesn't change the attention mechanisms of the underlying language models, so visualizing their attention maps would not reveal any age-related attention patterns, whereas BERT$_{FT}$ has been fine-tuned to detect age-related patterns, so visualizing its attention maps makes sense.}
+\end{itemize}
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/yrp1/bert_model_view_ypr1_layer_11_head_1.png}
+        \caption{Broad.}
+        \label{}
+     \end{subfigure}
+    %  \hfill
+     \quad
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/yrp1/bert_model_view_ypr1_layer_2_head_9.png}
+        \caption{Next.}
+        \label{}
+     \end{subfigure}
+    \quad
+    \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/yrp1/bert_model_view_ypr1_layer_4_head_4.png}
+        \caption{Special.}
+        \label{}
+     \end{subfigure}
+    %  \hfill
+    \quad
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/yrp1/bert_model_view_ypr1_layer_9_head_0.png}
+        \caption{Age.}
+        \label{}
+     \end{subfigure}
+    \caption{}
+    \label{}
+\end{figure}
+
 
 
 \subsection{Qualitative Analyses}
 \label{subsec:ctg_anal_qualitative}
 
-\subsubsection{Qualitative 1: Summary Statistics and Qualitative Inspection of Various Cases}
+% \subsubsection{Qualitative 1: Summary Statistics and Qualitative Inspection of Various Cases}
 
-\begin{itemize}
-    \item \textit{Similar to (error)case analyses of Experiment 1.}
+% \begin{itemize}
+%     \item \textit{Similar to (error)case analyses of Experiment 1.}
     
-    \item \textit{Provide summary statistics and (\textbf{qualitative}) inspection of generated sequences per case.}
+%     \item \textit{Provide summary statistics and (\textbf{qualitative}) inspection of generated sequences per case.}
     
-    \item \textit{Cases could be: (1) sequences with low, average, high, or very-high perplexity. (2) (in)correctly classified generated sequences.}
+%     \item \textit{Cases could be: (1) sequences with low, average, high, or very-high perplexity. (2) (in)correctly classified generated sequences.}
     
-    \item \textit{What patterns do you observe among, e.g., misclassified sequences with low perplexity?}
+%     \item \textit{What patterns do you observe among, e.g., misclassified sequences with low perplexity?}
     
-    \item \textit{Provide table of examples per case and age-group. Similar to table \ref{tab:qualexamples}}
-\end{itemize}
+%     \item \textit{Provide table of examples per case and age-group. Similar to table \ref{tab:qualexamples}}
+% \end{itemize}
 
-\len{\textbf{Structure as follows:}}
+% \len{\textbf{Structure as follows:}}
 
-\begin{itemize}
-    \item Split the generated responses by their (1) perplexity and (2) target probability/classification case.
-    \item Provide summary statistics 
-\end{itemize}
+% \begin{itemize}
+%     \item Split the generated responses by their (1) perplexity and (2) target probability/classification case.
+%     \item Provide summary statistics 
+% \end{itemize}
 
-The responses generated conditioned on neutral prompts are split by (1) whether or not BERT$_{FT}$ correctly classified a response as its target class, and (2) by the level of perplexity: low ($\text{ppl.} \leq 27.52$), medium ($27.52 < \text{ppl.} \leq 35.63$), or high ($\text{ppl.} > 35.63$). See Section \ref{subsec:ctg_anal_ppl_target_prob} for an explanation of the rationale behind these intervals. Table \ref{tab:ctg_model_case_pcts} shows how the generated responses are distributed among these cases for the best performing BoW-based models, and discriminator-based models for both underlying language models and target age groups. As can be seen the majority of the mass of GPT-2 BoW-based models is in the low perplexity range, whereas the discriminator-based GPT-2 models also have percentage peaks in the higher perplexity registers (e.g., 37.2\% high-perplexity correctly classified for G-Discrim$_{Old}$). By contrast, the DialoGPT-based models all show the majority of their distributions lying in the medium-to-high perplexity range.
+The generated responses to neutral prompts are split by (1) whether or not BERT$_{FT}$ correctly classified a response as its target class, and (2) the level of perplexity: low ($\text{ppl.} \leq 27.52$), medium ($27.52 < \text{ppl.} \leq 35.63$), or high ($\text{ppl.} > 35.63$). See Section \ref{subsec:ctg_anal_ppl_target_prob} for an explanation of the rationale behind these intervals. Table \ref{tab:ctg_model_case_pcts} shows how the generated responses are distributed among these cases for the best performing BoW-based models, and discriminator-based models for both underlying language models and target age groups. As can be seen, the majority of the responses generated by GPT-2 BoW-based models lie in the low perplexity range, whereas the discriminator-based GPT-2 models also have percentage peaks in the higher perplexity registers (e.g., 37.2\% high-perplexity correctly classified for G-Discrim$_{Old}$). By contrast, the DialoGPT-based models all show the majority of their distributions lying in the medium-to-high perplexity range.
 
-To narrow down the comparison, the qualitative inspection of samples is limited to responses generated by the discriminator-based models of both language models and age groups (i.e., G-Discrim$_{Young}$, G-Discrim$_{Old}$, D-Discrim$_{Young}$, and D-Discrim$_{Old}$). Moreover, these models are all among those with the highest target probability improvements over their respective baselines in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model}, so the differences in language style should be most pronounced between these setups. Furthermore, to emphasize the differences between perplexity, we only consider low versus high perplexity samples. Finally, the samples used for qualitative inspection are also split by whether or not they were correctly classified by BERT$_{FT}$. To summarize, qualitative inspection are performed on a total of 16 splits: by model (G-Discrim$_{Young}$, G-Discrim$_{Old}$, D-Discrim$_{Young}$, or D-Discrim$_{Old}$), perplexity (low or high), and classification outcome (correct or incorrect).
+To narrow down the comparison, the qualitative inspection of samples is limited to responses generated by the discriminator-based models of both language models and age groups (i.e., samples generated by G-Discrim$_{Young}$, G-Discrim$_{Old}$, D-Discrim$_{Young}$, and D-Discrim$_{Old}$). Moreover, these models are all among those with the highest target probability improvements over their respective baselines in Tables \ref{tab:ctg_results_ws_neutral_prompt_young_models} and \ref{tab:ctg_results_ws_neutral_prompt_old_model}, so the differences in language style should be most pronounced between these setups. Furthermore, to emphasize the differences between perplexity, we only consider low versus high perplexity samples. Finally, the samples used for qualitative inspection are also split by whether or not they were correctly classified by BERT$_{FT}$. To summarize, qualitative inspection are performed on a total of 16 splits: by model (G-Discrim$_{Young}$, G-Discrim$_{Old}$, D-Discrim$_{Young}$, or D-Discrim$_{Old}$), perplexity (low or high), and classification outcome (correct or incorrect). Table \ref{tab:ctg_case_examples} shows examples of generated responses containing the patterns and observations discussed in the remainder of this section.
 
-\len{\textbf{TODO} - Make a Table with interesting examples}
+\begin{table}
+    \begin{subtable}{0.5\linewidth}\centering
+    {\begin{tabular}{r l}
+    \hline
+        \ \cellcolor{yellow!25}\textbf{\textit{PROMPT}} & \multicolumn{1}{>{\columncolor{yellow!10}}l}{\tabularCenterstack{l}{Good weather \\ we're having.}}\\
+        \hline 
+        \cellcolor{red!25}\textbf{\textit{GPT-2$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{GPT-2$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{red!25}\textbf{\textit{DialoGPT$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{DialoGPT$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \hline
+        \ \cellcolor{yellow!25}\textbf{\textit{PROMPT}} & \multicolumn{1}{>{\columncolor{yellow!10}}l}{\tabularCenterstack{l}{Hi, how's it going?}}\\
+        \hline 
+        \cellcolor{red!25}\textbf{\textit{GPT-2$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{GPT-2$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{ I've had my first \\ surgery recently.}}\\
+        \ \cellcolor{red!25}\textbf{\textit{DialoGPT$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{DialoGPT$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+    \hline
+    \end{tabular}}
+    \caption{Low perplexity \& correctly classified.}\label{subtab:ctg_case_examples_low_ppl_correct}
+    \end{subtable}%
+    \begin{subtable}{0.5\linewidth}\centering
+    {\begin{tabular}{r l}
+    \hline
+        \ \cellcolor{yellow!25}\textbf{\textit{PROMPT}} & \multicolumn{1}{>{\columncolor{yellow!10}}l}{\tabularCenterstack{l}{Good weather \\ we're having.}}\\
+        \hline 
+        \cellcolor{red!25}\textbf{\textit{GPT-2$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{GPT-2$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{red!25}\textbf{\textit{DialoGPT$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{DialoGPT$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \hline
+        \ \cellcolor{yellow!25}\textbf{\textit{PROMPT}} & \multicolumn{1}{>{\columncolor{yellow!10}}l}{\tabularCenterstack{l}{Tell me about your \\ latest holiday.}}\\
+        \hline 
+        \cellcolor{red!25}\textbf{\textit{GPT-2$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{GPT-2$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{red!25}\textbf{\textit{DialoGPT$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{DialoGPT$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+    \hline
+    \end{tabular}}
+    \caption{Low perplexity \& incorrectly classified.}\label{subtab:ctg_case_examples_low_ppl_incorrect}
+    \end{subtable}%
+    
+    \medskip
+    \begin{subtable}{0.5\linewidth}\centering
+    {\begin{tabular}{r l}
+    \hline
+        \ \cellcolor{yellow!25}\textbf{\textit{PROMPT}} & \multicolumn{1}{>{\columncolor{yellow!10}}l}{\tabularCenterstack{l}{Good weather \\ we're having.}}\\
+        \hline 
+        \cellcolor{red!25}\textbf{\textit{GPT-2$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{GPT-2$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{red!25}\textbf{\textit{DialoGPT$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{DialoGPT$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \hline
+        \ \cellcolor{yellow!25}\textbf{\textit{PROMPT}} & \multicolumn{1}{>{\columncolor{yellow!10}}l}{\tabularCenterstack{l}{Tell me about your \\ latest holiday.}}\\
+        \hline 
+        \cellcolor{red!25}\textbf{\textit{GPT-2$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{GPT-2$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{red!25}\textbf{\textit{DialoGPT$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{DialoGPT$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+    \hline
+    \end{tabular}}
+    \caption{High perplexity \& correctly classified.}\label{subtab:ctg_case_examples_high_ppl_correct}
+    \end{subtable}%
+    \begin{subtable}{0.5\linewidth}\centering
+    {\begin{tabular}{r l}
+    \hline
+        \ \cellcolor{yellow!25}\textbf{\textit{PROMPT}} & \multicolumn{1}{>{\columncolor{yellow!10}}l}{\tabularCenterstack{l}{Good weather \\ we're having.}}\\
+        \hline 
+        \cellcolor{red!25}\textbf{\textit{GPT-2$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{GPT-2$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{red!25}\textbf{\textit{DialoGPT$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{DialoGPT$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \hline
+        \ \cellcolor{yellow!25}\textbf{\textit{PROMPT}} & \multicolumn{1}{>{\columncolor{yellow!10}}l}{\tabularCenterstack{l}{Tell me about your \\ latest holiday.}}\\
+        \hline 
+        \cellcolor{red!25}\textbf{\textit{GPT-2$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{GPT-2$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{red!25}\textbf{\textit{DialoGPT$_{Young}$}} & \multicolumn{1}{>{\columncolor{red!10}}l}{\tabularCenterstack{l}{...}}\\
+        \ \cellcolor{blue!25}\textbf{\textit{DialoGPT$_{Old}$}} & \multicolumn{1}{>{\columncolor{blue!10}}l}{\tabularCenterstack{l}{...}}\\
+    \hline
+    \end{tabular}}
+    \caption{High perplexity \& incorrectly classified.}\label{subtab:ctg_case_examples_high_ppl_incorrect}
+    \end{subtable}%
+\caption{A table \len{\textbf{TODO - FILL TABLE}}}\label{tab:ctg_case_examples}
+\end{table}
 
-Table \len{MAKE TABLE} shows examples of generated responses containing the patterns and observations discussed in the remainder of this section.
+Manual inspection of the sub-samples show that correctly classified low-perplexity samples from models targeted towards the older age group use more formal words than their young-targeted counterparts, e.g., \textit{quite}, \textit{significant}, \textit{powerful}, or \textit{institutions}. Samples generated by these models also show recurring topics that are typically associated with older age, e.g., children (\textit{my son} or \textit{your daughter}), history, or politics. Responses about healthcare related subjects are also more common among the samples generated by these models, as indicated by the use of words like \textit{surgery}. When viewing high-perplexity samples from the same set of models (i.e., those target towards the older age group and correctly classified), we see a substantial increase in the amount of gibberish and nonsensical sequences (space-less sequences of words, repetitions of the same words, or sequences of punctuation marks). When we inspect the incorrectly classified samples from models targeted towards the older class, we also see a considerable increase in the amount of nonsensical strings. Remarkably, we also observe more linguistic patterns associated with younger age in this sub-sample, e.g., words of excitement like \textit{favourite} or \textit{best}, informal vocabulary (\textit{pretty much}).
 
-Manual inspection of the sub-samples show that correctly classified low-perplexity samples from models targeted towards the older age group use more formal words than their young-targeted counterparts, e.g., \textit{quite}, \textit{significant}, \textit{powerful}, or \textit{institutions}. Samples generated by these models also show recurring topics that are typically associated with older age, e.g., children (\textit{my son} or \textit{your daughter}), history, or politics. There is also more talk about healthcare related subjects among these models, as indicated by the use of words like \textit{surgery}. When viewing high-perplexity samples from the same set of models (i.e., those target towards the older age group and correctly classified), we see a substantial increase in the amount of gibberish and nonsensical sequences (space-less sequences of words, repetitions of the same words, or sequences of punctuation marks). When we inspect the incorrectly classified samples from models targeted towards the older class, we also see a considerable increase in the amount of nonsensical strings. Remarkably, we also observe more linguistic patterns associated with younger age in this sub-sample, e.g., words of excitement like \textit{favourite} or \textit{best}, informal vocabulary (\textit{pretty much}).
-
-The low-perplexity correctly classified samples generated by models targeted towards the younger age group also contain clear indications of their target age. We observe noticeably more usage of slang words, swear words, and informal language, like \textit{yeah}, \textit{dude}, \textit{cool}, \textit{kinda}, and \textit{lol}. Futhermore, these sub-samples are also characterized by increased use of words of excitement and exclamation: e.g., \textit{awesome}, \textit{really}, \textit{love}, \textit{fun}, or \textit{amazing}. Especially in the correctly classified low-perplexity responses generated by G-Discrim${_Young}$, we see a strong presence of topics such as dating (indicated by words such as \textit{girlfriend} or \textit{boyfriend)}, having parents (\textit{my dad}), parties, and student life (\textit{roommate}. And interesting pattern observed in this sub-sample is one often associated with millennial vernacular or social networking language \len{ADD REFERENCE}: the tendency to end a serious-sounding statement with \textit{lol} or \textit{haha} as a means of softening the perceived severity of the statement. For example, \textit{We have to stop talking about this all going so stupid lol lol}. When inspecting the high-perplexity and/or incorrectly classified samples generated by the younger-targeted models, we observe similar patterns. Namely, a substantial increase in non-alphabetical strings, and gibberish.
+The low-perplexity correctly classified samples generated by models targeted towards the younger age group also contain clear indications of their target age. We observe more usage of slang words, swear words, and informal language, like \textit{yeah}, \textit{dude}, \textit{cool}, \textit{kinda}, and \textit{lol}. The use of the word \textit{like} as a colloquial adverb, quotative, or filler is also more commonplace among the young-targeted models. \len{Add good examples of use of \textit{like} or remove sentence.} Furthermore, these sub-samples are also characterized by increased use of words of excitement and exclamation: e.g., \textit{awesome}, \textit{really}, \textit{love}, \textit{fun}, or \textit{amazing}. Especially in the correctly classified low-perplexity responses generated by G-Discrim$_{Young}$, we see a strong presence of topics such as dating (indicated by words such as \textit{girlfriend} or \textit{boyfriend)}, having parents (\textit{my dad}), parties, and student life (\textit{roommate}. And interesting pattern observed in this sub-sample is one often associated with millennial or social networking language: the tendency to end a (serious-sounding) statement with \textit{lol} or \textit{haha} as a means of softening the perceived severity of the statement or as a signal of interlocutor involvement \citep{newitz2019you, tagliamonte2008linguistic}. For example, \textit{We have to stop talking about this all going so stupid lol lol}. When inspecting the high-perplexity and/or incorrectly classified samples generated by the younger-targeted models, we observe similar patterns. Namely, a substantial increase in non-alphabetical strings, and gibberish.
 
 When comparing the samples from GPT-2 and DialoGPT-based models, we see that the responses generated by DialoGPT are more dialogic, whereas GPT-2 sometimes generates sequences that look more like sentence completions. This is to be expected from the differences in pre-training methods between the two language models \citep{zhang2019dialogpt}. Furthermore, we see a lot more nonsensical low-perplexity responses generated by DialoGPT-based models. Perplexity remains a rough proxy for fluency, and observations like these confirm this problem. That is, low perplexity often does not imply lack of gibberish or nonsense. DialoGPT's strong bias towards generating younger-sounding language is also noticeable in its generated samples. For example, DialoGPT-based models targeted towards the older group still produce lots of word of excitement. However, this older-targeted DialoGPT-based model does succeed in producing significantly fewer usages of slang or swear words, when compared to its younger-target counterpart.
 
