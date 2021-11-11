@@ -845,44 +845,183 @@ Overall, Figures~\ref{fig:catplot_prompt_class_target_prob} and \ref{fig:catplot
     \item Heads in the same layer tend to exhibit similar behaviors.
     \item \len{Clearly explain how to read the plots and what they do and don't imply.}
     \item \len{Clearly explain that the PPLM-method doesn't change the attention mechanisms of the underlying language models, so visualizing their attention maps would not reveal any age-related attention patterns, whereas BERT$_{FT}$ has been fine-tuned to detect age-related patterns, so visualizing its attention maps makes sense.}
+    \item Recurring patterns are observed.
+    \item Figures shows examples of specific heads showing similar attention patterns.
+    \item E.g., broad attention, virtually equally dispersed among tokens.
+    \item Focus on next token.
+    \item Focus on special BERT-tokens, \texttt{[CLS]} and \texttt{[SEP]}.
+    \item Attention heads in layer 9 seems to exhibit patterns that attend to age-related features.
+    \item Focuses on tokens that are associated with their respective age groups (based on empirical observations of this thesis and relevant literature).
+    \item E.g., focuses on \textit{awesome}, \textit{facebook}, \textit{cool}, \textit{wanna}, \textit{gonna}, and swear word.
+    \item Age-related attention pattern much less pronounced for older age group (could explain why classification performance also worse for that target age), but sensible patterns do seem to be subtly present: focus on \textit{grandfather}, \textit{president}, \textit{workers}, \textit{union}, \textit{fellow}, \textit{greetings}
 \end{itemize}
+
+We use visualizations of attention mechanisms \citep{vig-2019-multiscale} in BERT$_{FT}$'s attention heads to analyze recurring patterns when assigning target probabilities to generate prompt-response pairs. Attention weights can be interpreted as indicating how much a particular token will be weighted when producing the next representation of the current token \citep{DBLP:journals/corr/BahdanauCB14, clark-etal-2019-bert}. Please note that the PPLM-method does not change the attention mechanisms of the underlying language models, so visualizing the attention maps of our generation models would not reveal any age-related attention patterns. By contrast, BERT$_{FT}$ is fine-tuned to detect age-related patterns, so visualizing its attention maps can still inform us about which features are important when assigning a target-age probability to a generated sentence. \len{Maybe add the following sentences to the discussion.} Despite this seemingly natural interpretation, there is much debate about the validity of using attention mechanisms (as opposed to, e.g., saliency methods) as explanations for model output \citep{jain-wallace-2019-attention, wiegreffe-pinter-2019-attention, bastings-filippova-2020-elephant}. However, as \cite{vig-2019-multiscale} and \cite{clark-etal-2019-bert} suggest, attention maps can be used tentatively as complementary analysis tools to add to sets of different analysis methods to inform researchers about, e.g., possible linguistic patterns that may be attended to by attention-based models. \len{...to here.}
+
+To provide a clear reading experience of the analyses presented below, we revise a few important concepts about BERT and how to read attention visualizations. During pre-processing, BERT tokenizes the input text and adds a special token \texttt{[CLS]} to the beginning of the text, and another special token \texttt{[SEP]} appended to the text. If an input sequence consists of multiple sentences (e.g., a question-answer, or prompt-response input), \texttt{[SEP]} tokens are also used to separate the sentences. BERT$_{FT}$ is a fine-tuned version of BERT-base-uncased \citep{devlin-etal-2019-bert}, which consists of 12 layers of 12 attention heads. We refer to a specific attention head as Head \texttt{layer}-\texttt{head}, where \texttt{layer} and \texttt{head} range from 0 to 11: e.g., Head 3-1 refers to Layer 3, Head 1. Furthermore, attention weights are visualized as colored lines between tokens of the input sequence, where a thicker line corresponds to a higher attention weight, and the color represents the layer in which the head is present. The input text is displayed twice in parallel columns, to make visualizations of self-attention possible (visualized as lines between identical tokens in the same positions). Because BERT is designed to be deeply bidirectional, tokens can also attend to tokens in previous positions in the input text.
+
+We show attention visualizations of BERT$_{FT}$ when processing prompt-response pairs cherry-picked from the age-targeted prompted results, presented in Tables \ref{tab:ctg_results_ws_young_prompt_young_model} and \ref{tab:ctg_results_ws_old_prompt_old_model}. The generated sequences are chosen to give more pronounced examples of recurring attention patterns. We show two young-targeted generated responses to younger sounding prompts in Figures \ref{fig:bertviz_model_view_ypr1} and \ref{fig:bertviz_model_view_ypr2}, and two old-targeted generated responses to older sounding prompts in Figures \ref{fig:bertviz_model_view_opr1} and \ref{fig:bertviz_model_view_opr2}. All prompts and responses received high target probabilities from BERT$_{FT}$ of at least 95\%.
+
+Heads in the same layer have the tendency to attend to similar patterns and linguistic phenomena \cite{clark-etal-2019-bert}. Our analyses seem to confirm this behavior, as recurring patterns are observed for heads in the same layers. For instance, we see (in Figures \ref{subfig:bertviz_model_view_ypr1_broad}, \ref{subfig:bertviz_model_view_ypr2_broad}, \ref{subfig:bertviz_model_view_opr1_broad}, and \ref{subfig:bertviz_model_view_opr2_broad}) that heads in the last layer tend to broadly disperse attention among all tokens. Recurring patterns are also observed in earlier layers, such as Head 2-9 attending to the next token in the sequence (Figures \ref{subfig:bertviz_model_view_ypr1_next}, \ref{subfig:bertviz_model_view_ypr2_next}, \ref{subfig:bertviz_model_view_opr1_next}, and \ref{subfig:bertviz_model_view_opr2_next}), and Head 4-4 attending to the special tokens (Figures \ref{subfig:bertviz_model_view_ypr1_special}, \ref{subfig:bertviz_model_view_ypr2_special}, \ref{subfig:bertviz_model_view_opr1_special}, and \ref{subfig:bertviz_model_view_opr2_special}). Certain heads also seem to pay special attention to age-related linguistic features, specifically certain tokens associated with an age group (mentioned in Section \ref{subsec:ctg_anal_qualitative}). This is most noticeable in Head 9-0 (Figures \ref{subfig:bertviz_model_view_ypr1_age}, \ref{subfig:bertviz_model_view_ypr2_age}, \ref{subfig:bertviz_model_view_opr1_age}, and \ref{subfig:bertviz_model_view_opr2_age}), which seems to consistently devote the majority of its attention to tokens that are found to be indicative of age. For instance, Head 9-0 attends strongly to younger sounding tokens like \textit{facebook}, \textit{awesome}, \textit{cool}, and slang and swear words in Figures \ref{subfig:bertviz_model_view_ypr1_age} and \ref{subfig:bertviz_model_view_ypr2_age}. And the same attention head then focuses strongly on tokens associated with older age in Figures \ref{subfig:bertviz_model_view_opr1_age} and \ref{subfig:bertviz_model_view_opr2_age}: e.g., \textit{workers}, \textit{union}, \textit{greetings}, or \textit{fellow}.
+
+
+
 
 \begin{figure}[H]
      \centering
      \begin{subfigure}[b]{0.22\textwidth}
         \centering
-        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/yrp1/bert_model_view_ypr1_layer_11_head_1.png}
-        \caption{Broad.}
-        \label{}
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/ypr1/bert_model_view_ypr1_layer_11_head_1.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends broadly.}
+        \label{subfig:bertviz_model_view_ypr1_broad}
      \end{subfigure}
     %  \hfill
      \quad
      \begin{subfigure}[b]{0.22\textwidth}
         \centering
-        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/yrp1/bert_model_view_ypr1_layer_2_head_9.png}
-        \caption{Next.}
-        \label{}
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/ypr1/bert_model_view_ypr1_layer_2_head_9.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends to next token.}
+        \label{subfig:bertviz_model_view_ypr1_next}
      \end{subfigure}
     \quad
     \begin{subfigure}[b]{0.22\textwidth}
         \centering
-        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/yrp1/bert_model_view_ypr1_layer_4_head_4.png}
-        \caption{Special.}
-        \label{}
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/ypr1/bert_model_view_ypr1_layer_4_head_4.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends to special tokens.}
+        \label{subfig:bertviz_model_view_ypr1_special}
      \end{subfigure}
     %  \hfill
     \quad
      \begin{subfigure}[b]{0.22\textwidth}
         \centering
-        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/yrp1/bert_model_view_ypr1_layer_9_head_0.png}
-        \caption{Age.}
-        \label{}
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/ypr1/bert_model_view_ypr1_layer_9_head_0.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Age-related attention.}
+        \label{subfig:bertviz_model_view_ypr1_age}
      \end{subfigure}
-    \caption{}
-    \label{}
+    \caption{Attention weights visualizations of four of BERT$_{FT}$'s attentions heads and the patterns to which they presumably attend when processing representations for a cherry-picked prompt-response pair generated by \textbf{young}-targeted GPT2-Discrim.}
+    \label{fig:bertviz_model_view_ypr1}
 \end{figure}
 
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/ypr2/bert_model_view_ypr2_layer_11_head_1.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends broadly.}
+        \label{subfig:bertviz_model_view_ypr2_broad}
+     \end{subfigure}
+    %  \hfill
+     \quad
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/ypr2/bert_model_view_ypr2_layer_2_head_9.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends to next token.}
+        \label{subfig:bertviz_model_view_ypr2_next}
+     \end{subfigure}
+    \quad
+    \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/ypr2/bert_model_view_ypr2_layer_4_head_4.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends to special tokens.}
+        \label{subfig:bertviz_model_view_ypr2_special}
+     \end{subfigure}
+    %  \hfill
+    \quad
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/ypr2/bert_model_view_ypr2_layer_9_head_0.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Age-related attention.}
+        \label{subfig:bertviz_model_view_ypr2_age}
+     \end{subfigure}
+    \caption{Attention weights visualizations of four of BERT$_{FT}$'s attentions heads and the patterns to which they presumably attend when processing representations for a cherry-picked prompt-response pair generated by \textbf{young}-targeted GPT2-BoW$_{100MIU}$. \len{\textbf{TODO} - Check if it's ok to have a swear word in this figure.}}
+    \label{fig:bertviz_model_view_ypr2}
+\end{figure}
 
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/opr1/bert_model_view_opr1_layer_11_head_1.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends broadly.}
+        \label{subfig:bertviz_model_view_opr1_broad}
+     \end{subfigure}
+    %  \hfill
+     \quad
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/opr1/bert_model_view_opr1_layer_2_head_9.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends to next token.}
+        \label{subfig:bertviz_model_view_opr1_next}
+     \end{subfigure}
+    \quad
+    \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/opr1/bert_model_view_opr1_layer_4_head_4.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends to special tokens.}
+        \label{subfig:bertviz_model_view_opr1_special}
+     \end{subfigure}
+    %  \hfill
+    \quad
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/opr1/bert_model_view_opr1_layer_9_head_0.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Age-related attention.}
+        \label{subfig:bertviz_model_view_opr1_age}
+     \end{subfigure}
+    \caption{Attention weights visualizations of four of BERT$_{FT}$'s attentions heads and the patterns to which they presumably attend when processing representations for a cherry-picked prompt-response pair generated by \textbf{old}-targeted GPT2-Discrim.}
+    \label{fig:bertviz_model_view_opr1}
+\end{figure}
+
+\begin{figure}[H]
+     \centering
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/opr2/bert_model_view_opr2_layer_11_head_1.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends broadly.}
+        \label{subfig:bertviz_model_view_opr2_broad}
+     \end{subfigure}
+    %  \hfill
+     \quad
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/opr2/bert_model_view_opr2_layer_2_head_9.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends to next token.}
+        \label{subfig:bertviz_model_view_opr2_next}
+     \end{subfigure}
+    \quad
+    \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/opr2/bert_model_view_opr2_layer_4_head_4.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Attends to special tokens.}
+        \label{subfig:bertviz_model_view_opr2_special}
+     \end{subfigure}
+    %  \hfill
+    \quad
+     \begin{subfigure}[b]{0.22\textwidth}
+        \centering
+        \includegraphics[width=1\columnwidth]{figures/exp2/bertviz/opr2/bert_model_view_opr2_layer_9_head_0.png}
+        \captionsetup{font=footnotesize,labelfont=footnotesize}
+        \caption{Age-related attention.}
+        \label{subfig:bertviz_model_view_opr2_age}
+     \end{subfigure}
+    \caption{Attention weights visualizations of four of BERT$_{FT}$'s attentions heads and the patterns to which they presumably attend when processing representations for a cherry-picked prompt-response pair generated by \textbf{old}-targeted DGPT-Discrim.}
+    \label{fig:bertviz_model_view_opr2}
+\end{figure}
 
 \subsection{Qualitative Analyses}
 \label{subsec:ctg_anal_qualitative}

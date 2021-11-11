@@ -587,17 +587,6 @@ url="https://doi.org/10.1007/978-0-387-32833-1_50"
     abstract = "Neural controllable text generation is an important area gaining attention due to its plethora of applications. Although there is a large body of prior work in controllable text generation, there is no unifying theme. In this work, we provide a new schema of the pipeline of the generation process by classifying it into five modules. The control of attributes in the generation process requires modification of these modules. We present an overview of different techniques used to perform the modulation of these modules. We also provide an analysis on the advantages and disadvantages of these techniques. We further pave ways to develop new architectures based on the combination of the modules described in this paper.",
 }
 
-@article{mctear2020conversational,
-  title={Conversational AI: Dialogue Systems, Conversational Agents, and Chatbots},
-  author={McTear, Michael},
-  journal={Synthesis Lectures on Human Language Technologies},
-  volume={13},
-  number={3},
-  pages={1--251},
-  year={2020},
-  publisher={Morgan \& Claypool Publishers}
-}
-
 @inproceedings{vig-2019-multiscale,
     title = "A Multiscale Visualization of Attention in the Transformer Model",
     author = "Vig, Jesse",
@@ -705,25 +694,6 @@ url="https://doi.org/10.1007/978-0-387-32833-1_50"
   url       = {https://doi.org/10.24963/ijcai.2018/595},
 }
 
-@inproceedings{zhang-etal-2018-personalizing,
-    title = "Personalizing Dialogue Agents: {I} have a dog, do you have pets too?",
-    author = "Zhang, Saizheng  and
-      Dinan, Emily  and
-      Urbanek, Jack  and
-      Szlam, Arthur  and
-      Kiela, Douwe  and
-      Weston, Jason",
-    booktitle = "Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
-    month = jul,
-    year = "2018",
-    address = "Melbourne, Australia",
-    publisher = "Association for Computational Linguistics",
-    url = "https://aclanthology.org/P18-1205",
-    doi = "10.18653/v1/P18-1205",
-    pages = "2204--2213",
-    abstract = "Chit-chat models are known to have several problems: they lack specificity, do not display a consistent personality and are often not very captivating. In this work we present the task of making chit-chat more engaging by conditioning on profile information. We collect data and train models to (i)condition on their given profile information; and (ii) information about the person they are talking to, resulting in improved dialogues, as measured by next utterance prediction. Since (ii) is initially unknown our model is trained to engage its partner with personal topics, and we show the resulting dialogue can be used to predict profile information about the interlocutors.",
-}
-
 @misc{lester2021power,
       title={The Power of Scale for Parameter-Efficient Prompt Tuning}, 
       author={Brian Lester and Rami Al-Rfou and Noah Constant},
@@ -786,4 +756,50 @@ url="https://doi.org/10.1007/978-0-387-32833-1_50"
     doi = "10.18653/v1/W19-4828",
     pages = "276--286",
     abstract = "Large pre-trained neural networks such as BERT have had great recent success in NLP, motivating a growing body of research investigating what aspects of language they are able to learn from unlabeled data. Most recent analysis has focused on model outputs (e.g., language model surprisal) or internal vector representations (e.g., probing classifiers). Complementary to these works, we propose methods for analyzing the attention mechanisms of pre-trained models and apply them to BERT. BERT{'}s attention heads exhibit patterns such as attending to delimiter tokens, specific positional offsets, or broadly attending over the whole sentence, with heads in the same layer often exhibiting similar behaviors. We further show that certain attention heads correspond well to linguistic notions of syntax and coreference. For example, we find heads that attend to the direct objects of verbs, determiners of nouns, objects of prepositions, and coreferent mentions with remarkably high accuracy. Lastly, we propose an attention-based probing classifier and use it to further demonstrate that substantial syntactic information is captured in BERT{'}s attention.",
+}
+
+@inproceedings{bastings-filippova-2020-elephant,
+    title = "The elephant in the interpretability room: Why use attention as explanation when we have saliency methods?",
+    author = "Bastings, Jasmijn  and
+      Filippova, Katja",
+    booktitle = "Proceedings of the Third BlackboxNLP Workshop on Analyzing and Interpreting Neural Networks for NLP",
+    month = nov,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2020.blackboxnlp-1.14",
+    doi = "10.18653/v1/2020.blackboxnlp-1.14",
+    pages = "149--155",
+    abstract = "There is a recent surge of interest in using attention as explanation of model predictions, with mixed evidence on whether attention can be used as such. While attention conveniently gives us one weight per input token and is easily extracted, it is often unclear toward what goal it is used as explanation. We find that often that goal, whether explicitly stated or not, is to find out what input tokens are the most relevant to a prediction, and that the implied user for the explanation is a model developer. For this goal and user, we argue that input saliency methods are better suited, and that there are no compelling reasons to use attention, despite the coincidence that it provides a weight for each input. With this position paper, we hope to shift some of the recent focus on attention to saliency methods, and for authors to clearly state the goal and user for their explanations.",
+}
+
+@inproceedings{jain-wallace-2019-attention,
+    title = "{A}ttention is not {E}xplanation",
+    author = "Jain, Sarthak  and
+      Wallace, Byron C.",
+    booktitle = "Proceedings of the 2019 Conference of the North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers)",
+    month = jun,
+    year = "2019",
+    address = "Minneapolis, Minnesota",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/N19-1357",
+    doi = "10.18653/v1/N19-1357",
+    pages = "3543--3556",
+    abstract = "Attention mechanisms have seen wide adoption in neural NLP models. In addition to improving predictive performance, these are often touted as affording transparency: models equipped with attention provide a distribution over attended-to input units, and this is often presented (at least implicitly) as communicating the relative importance of inputs. However, it is unclear what relationship exists between attention weights and model outputs. In this work we perform extensive experiments across a variety of NLP tasks that aim to assess the degree to which attention weights provide meaningful {``}explanations{''} for predictions. We find that they largely do not. For example, learned attention weights are frequently uncorrelated with gradient-based measures of feature importance, and one can identify very different attention distributions that nonetheless yield equivalent predictions. Our findings show that standard attention modules do not provide meaningful explanations and should not be treated as though they do.",
+}
+
+
+@inproceedings{wiegreffe-pinter-2019-attention,
+    title = "Attention is not not Explanation",
+    author = "Wiegreffe, Sarah  and
+      Pinter, Yuval",
+    booktitle = "Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)",
+    month = nov,
+    year = "2019",
+    address = "Hong Kong, China",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/D19-1002",
+    doi = "10.18653/v1/D19-1002",
+    pages = "11--20",
+    abstract = "Attention mechanisms play a central role in NLP systems, especially within recurrent neural network (RNN) models. Recently, there has been increasing interest in whether or not the intermediate representations offered by these modules may be used to explain the reasoning for a model{'}s prediction, and consequently reach insights regarding the model{'}s decision-making process. A recent paper claims that {`}Attention is not Explanation{'} (Jain and Wallace, 2019). We challenge many of the assumptions underlying this work, arguing that such a claim depends on one{'}s definition of explanation, and that testing it needs to take into account all elements of the model. We propose four alternative tests to determine when/whether attention can be used as explanation: a simple uniform-weights baseline; a variance calibration based on multiple random seed runs; a diagnostic framework using frozen weights from pretrained models; and an end-to-end adversarial attention training protocol. Each allows for meaningful interpretation of attention mechanisms in RNN models. We show that even when reliable adversarial distributions can be found, they don{'}t perform well on the simple diagnostic, indicating that prior work does not disprove the usefulness of attention mechanisms for explainability.",
 }

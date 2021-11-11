@@ -1,0 +1,33 @@
+\paragraph{Discussion points about classification}
+\begin{itemize}
+    \item Can any ML architecture pick up signals from 1-6 token sequences? (See workshop paper submission feedback).
+    \item age-related linguistic features that inform classification lie more at the syntactic level than at the lexical level.
+    \item A small discussion point on the effects of stopword omission on classification performance
+    \item \len{Re-read the relevant sections of the workshop paper submission}
+\end{itemize}
+
+\paragraph{Discussion points about generation}
+\begin{itemize}
+    \item What are the effects of prompts on generation? \len{This should probably be an analysis question.}
+    \item What are the limitations of your setup?
+        \begin{itemize}
+            \item Perplexity is a crude proxy for fluency and grammatical correctness.
+        \end{itemize}
+    \item Does this make the world better? How can this help people? --> It can help personalize virtual assistants (especially useful for new speakers of a language. E.g., the difference between young/informal/spoken French and French that is taught in school and courses is large. User-age personalization can adapt use of language of virtual assistants to variant of language spoken by user.)
+    \item What are the dangers of these methods? --> Read up on paper by Ebru et al
+    \item What are interesting future research directions?
+    \item My research is a promising step towards the development of personalized virtual assistants.
+    \item Keep in mind that...
+        \begin{itemize}
+            \item  The representations for young and old style used in this research are specific to the BNC, and should not be interpreted as generally representative of speaking style of 19-29 and 50-plus.
+            \item Even within the context of the BNC, the representations used for classification and generation are indicative of textual features learned to coincide with utterances from certain age groups.
+            \item despite formulation of binary classification requiring young-prob and old-prob to be complementary values, "young" and "old" speaking/writing styles are not semantically opposite styles, like positive vs negative sentiment tend to resemble more \len{Maybe think of a better example of semantic polar opposites. Also, maybe also mention that it still needs to be verified whether they are semantically opposite or not, but that you hypothesize that they are not. Idea for future research.}. So we shouldn't expect certain patterns in, e.g., ppl plots to be exactly opposite.
+        \end{itemize}
+    \item Future research idea: adapting the PPLM-setup to work with $n$-gram lists for arbitrary $n$.
+        \begin{itemize}
+            \item Finding a way to by-pass the need to retrain GPT-2 for arbitrary n-grams
+        \end{itemize}
+    \item Future research idea: real-time interactivity of age-adaptive conversational systems. I.e., a pipeline that (1) "starts off neutral", (2) classifies user's age based on minimal amount of utterances, (2*) uses bayesian modelling or reinforcement learning to constantly update belief, (3) adapts use of language to perceived user age.
+    \item Future research idea: how to probe PPLM models, because BertViz doesn't work, as the attention weights are unchanged by PPLM.
+    \item Emphasize the importance of PPLM-methods w.r.t. carbon footprint and the ecological cost of (re)training massive language models like GPT-x (Maybe this is better for the introduction?)
+\end{itemize}
