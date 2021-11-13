@@ -1,3 +1,121 @@
+\section{Summary of Key Findings and Interpretations}
+
+In this thesis, the problem of age-adaptive controlled dialogue generation is investigated. The preliminary research objective was to study the extent to which purely text-based NLP-models can detect age-related linguistic features in dialogue data, and which features drive their predictions. Subsequently, we studied the primary research objective, i.e., the extent to which controlled dialogue generation is possible using Plug-and-Play language models (PPLM) \citep{dathathri2019plug} to adapt generation to the style of specific age groups.
+
+The results of the age detection experiments indicated that our fine-tuned version of BERT, BERT$_{FT}$, is capable of detecting age-related linguistic features in dialogue utterances with reasonable accuracy. BERT$_{FT}$ was particularly useful for age detection when the dialogue fragment is long enough to contain discriminative signal. At the same time, we found that much simpler models based on $n$-grams achieve comparable performance, which suggests that, in dialogue, ‘local’ features can be indicative of the language of speakers from different age groups. We showed this to be the case, with both lexical and stylistic cues being informative to these models in this task.
+
+
+% \textbf{connecting paragraph:}
+% \begin{itemize}
+%     \item The age detection results informed us about the development of controllable dialogue generation systems using PPLM.
+%     \item The presumed locality of age-indicative features, as suggested by the comparable performance achieved by the $n$-gram models, motivates the use of unigram-based bag-of-words attribute models in PPLM setups for, in comparison to more sophisticated discriminator-based PPLM setups.
+%     \item The analyses of experiment 1 predominantly compare the classification performances and feature importance of $n$-gram and Transformer-based neural models. This comparison is continued in the controlled dialogue generation experiments, in the form of comparing BoWs versus neural discriminators as attribute models.
+%     \item The best performing classifier from the age detection experiments, BERT$_{FT}$, is used in the second phase of experiments to evaluate the prompts and generated responses for their resemblance to the linguistic style of the younger or older age group. 
+% \end{itemize}
+
+Furthermore, the age detection results informed us about the development of controllable dialogue generation systems using PPLM. Namely, the presumed locality of age-indicative features, as suggested by the comparable performance achieved by the $n$-gram models, motivates the use of unigram-based bag-of-words attribute models in PPLM setups for, in comparison to more sophisticated discriminator-based PPLM setups. Additionally, we used as an empirically generated attribute model for a BoW-based PPLM setup, the list of unigrams deemed most informative by the best-performing unigram classifier. Overall, the analyses of experiment 1 predominantly compare the classification performances and feature importance of $n$-gram and Transformer-based neural models. This comparison is continued in the controlled dialogue generation experiments, in the form of comparing BoWs versus neural discriminators as attribute models in PPLM setups. Also, the best performing classifier from the age detection experiments, BERT$_{FT}$, is used in the second phase of experiments to evaluate the prompts and generated responses for their resemblance to the linguistic style of the younger or older age group.
+
+The controlled dialogue generation results indicate that it is possible to use PPLM to generate dialogue responses that have been detectably adapted to the styles of different age groups. We observed that discriminator-based PPLM setups typically achieve higher levels of detectable control (i.e., statistical resemblance to a specific writing style) than BoW-based setups, but generate significantly more perplexing and repetitive responses. This could be attributable to the fact that BoW-based control is more local (i.e., token-level) and less invasive than discriminator-based control, which can operate at the structural level. The results also indicate that the underlying language models used in our PPLM setups, GPT-2 and DialoGPT, are both biased towards generating younger sounding language. This is most likely due to both models having been pre-trained on texts scraped from web pages, which are typically over-represented by millennials \citep{radford2019language, zhang2019dialogpt}. 
+Quantitative analyses of the dialogue generation results revealed that the outputs of some PPLM setups display a correlation between improved control and worsened perplexity and diversity. Also, the style of the prompt (i.e., whether it's classified by BERT$_{FT}$ as young, neutral, or old) steers the style of the generated response in the direction of the prompt's style. This observation indicates the importance of taking prompt-induced biases into account when developing controlled generation models.
+
+We also find that BoW-based models are significantly worse at controlling for older sounding language than they are for younger sounding language. It could be that there are some detectable, very young-sounding, tokens, that make the token-level perturbations made by BoW-based models more likely to contain detectably young-features, whereas old-sounding features are more salient at the structural syntactical level and thereby harder to control for. BERT$_{FT}$'s attention weight visualizations could also be evidence of this phenomena, because the attention weights of linguistic-feature attending heads are much more focused for strongly young-input, than the more dispersed attention weights of old sentences. Finally, qualitative inspection of generated responses reveal that differences in style are noticeable by use of age-indicative words, formality of language, and the prevalence of certain topics.
+
+% \textbf{Paragraph about generation results}
+% \begin{itemize}
+%     \item The controlled dialogue generation results indicate that it is possible to use PPLM to generate dialogue responses that have been detectably adapted to the styles of different age groups.
+%     \item Discriminator-based control typically achieves higher levels of measurable control than BoW-based models, but generates significantly less fluent responses.
+%     \item The underlying language models, GPT-2 and DialoGPT, are both biased towards generating younger sounding language. Due to their training data etc.
+%     \item For responses generated by some setups, there seems to be correlation between improved adaptation and worsened perplexity and diversity.
+%     \item Controlling for the younger age groups seems easier because of (1) bias?, (2) 
+%     \item The style of the prompt (i.e., whether it's classified as young, neutral, or old) steers the style of the generated response in the direction of the prompt's style.
+%     \item BoW-based models are significantly worse at controlling for old-language than they are for young.
+%     \begin{itemize}
+%         \item It could be that there are some detectable, very young-sounding, tokens, that make the token-level perturbations made by BoW-based models more likely to contain detectably young-features, whereas old-sounding features are more salient at the structural syntactical level and thereby harder to control for.
+%         \item BERT$_{FT}$ attention weight visualization could also be evidence of this phenomena as the attention weights of linguistic-feature attending heads are much more focused for strongly young-input, than the more dispersed attention weights of old sentences.
+%         \item However, it could also just be that old features are being detected by different (combinations of) heads. --> Future research.
+%     \end{itemize}
+%     \item Longer responses are deemed less perplexing.
+%     \item Differences in style, brought about by PPLM-control, are noticeable by use of slang words, certain topics, etc. See qualitative analysis.
+% \end{itemize}
+
+\section{Contributions and Implications}
+
+The age detection experiments build on the work of \cite{schler2006effects}, who focus on age detection in written discourse using handcrafted features. We extend their work by: (1) eliminating the need for handcrafted features by learning end-to-end representations using state-of-the-art NLP models; (2) applying this approach to dialogue data, using a dataset of transcribed spontaneous open-domain dialogues; (3) showing that text-based models can indeed detect age-related differences, even in the case of very sparse signals at the level of dialogue utterances; (4) carrying out an in-depth analysis of the models' predictions to gain insight about which elements of language use are most informative. Furthermore, the age detection analyses motivate the use of local features (i.e., BoW-based attribute models) for controlled generation as a viable alternative to neural discriminator-based attribute models. Our work on age detection from dialogue can be considered a preliminary step to the modeling of age-related linguistic adaptation by AI conversational systems. In particular, these results informed our work on controlled dialogue generation using PPLM.
+
+Our work on controlled dialogue generation using PPLM builds on previous work on controlled language generation using PPLM by \cite{dathathri2019plug}, who focus on controlled story writing for concrete styles (e.g., sentiment, or topic). We extend their work in several important ways: (1) we control language generation for more abstract writing styles, i.e., age group specific linguistic style; (2) we use PPLM for dialogue response generation; (3) we propose methods for empirical development of BoW attribute models (as opposed to the manually curated BoWs used by \cite{dathathri2019plug}) and demonstrate their applicability for controlled dialogue generation; (4) we thoroughly study the relationships between dialogue response quality, age group alignment, and response length; (5) we also contribute to a clearer understanding of what age-related features a fine-tuned BERT model seems to focus on when classifying generated responses; and finally (6) we carry out an extensive analysis about the effects of prompt-induced biases on the quality and style-attribute adherence of generated language, which has been overlooked by previous work about Plug-and-Play generation. Despite previous work by \cite{madotto-etal-2020-plug} also focusing on Plug-and-Play conversational models, our work demonstrates the achievability of a Plug-and-Play approach to controlled dialogue generation, without the necessity to generate attribute-specific dialogue datasets, or separately optimize residual adapter modules.
+
+Overall, this research is a promising step towards the development of adaptive conversational systems. In particular, the development of age-adaptive conversational systems can benefit from these results. Since consistent language style differences
+were found between age groups, systems whose language generation capabilities aim to be consistent with a given age group should therefore reproduce these patterns. This could be achieved, for example, by embedding Plug-and-Play modules that control the generation of a system’s output, which could lead to better, more natural interactions between human speakers and a conversational system.
+
+% \begin{itemize}
+%     \item \len{Refine the statements relating to age detection.}
+%     \item The age detection results build on the work of \cite{schler2006effects}, who focus on age detection in written discourse using handcrafted features.
+%     \item We extend this work by (1) eliminating the need for handcrafted features by learning end-to-end representations using state-of-the-art NLP models; (2) applying this approach to dialogue data, using a dataset of transcribed spontaneous open-domain dialogues; (3) showing that text-based models can indeed detect age-related differences, even in the case of very sparse signal at the level of dialogue utterances; (4) we carry out an in-depth analysis of the models' predictions to gain insight about which elements of language use are most informative.
+%     \item The age detection analyses also motivate the use of local features for controlle generation, in combination with neural representations(?).
+%     \item Our work can be considered a first step toward the modeling of age-related linguistic adaptation by AI conversational systems. In particular, our results can inform future work on controlled text generation for dialogue agents.
+%     \item Themore abstract style attribute to control for in a PPLM setup than previous work.
+%     \item This work extends original PPLM work by...
+%     \begin{itemize}
+%         \item using empirically generated BoWs (While previous research has focused on manually curated wordlists as BoWs, these results demonstrate the applicability of various empirical methods for BoW attribute model development..;
+%         \item controlling for a more abstract writing style;
+%         \item studying the relationships between response quality, age-adaptation, and response length.
+%         \item studying the effects of prompt-induced bias, previous work on PPLM doesn't take prompt-bias into account.
+%     \end{itemize}
+%     \item Also contributes to a clearer understandig of what features finetuned BERT seems to focus on when classifying generated responses.
+%     \item Despite previous work by \cite{madotto-etal-2020-plug} also focusing on Plug-and-Play conversational models, our work demonstrates the achievability of a Plug-and-Play approach to controlled dialogue generation, without the necessity to generate attribute-specific dialogue datasets, or separately optimize residual adapter modules.
+%     \item Contributes to using low-cost methods for controlled generation
+%     \item Overall, my research is a promising step towards the development of personalized virtual assistants.
+% \end{itemize}
+
+\section{Limitations}
+
+\begin{itemize}
+    \item Can any ML architecture pick up signals from 1-6 token sequences? (See workshop paper submission feedback).
+    \item The age detection classification problem's age groups are defined with coarse granularity. Imagine that if we aim to leverage the predicted age signal in real systems, fine-grained grouping is more reasonable.
+    \item unfortunately, there are still problems especially as far as the identification of age groups with short utterances. Nevertheless, for future applications, the combination of speech analysis could bring to better results. (the sentences seem to short (6~7 words), it is doubtful if  ML models or even human could recognize the targets.)
+    \item What are the "none", "no info", "unknown" labels in the two datasets? This could be very critical given that the none + no info topics take nearly 50\% in the 50+ age group.
+    \item Perplexity is a very crude proxy for fluency. --> human evaluation or more reliable automated evaluation metric for fluency.
+    \item The confounding effects of topic on age detection and controlled generation.
+    \item We need to find out how much of "control" is attributable to method and how much to prompt-bias.
+    \item Interactivity is beyond the scope of this thesis
+    \item The representations for young and old style used in this research are specific to the BNC, and should not be interpreted as generally representative of speaking style of 19-29 and 50-plus.
+    \item Even within the context of the BNC, the representations used for classification and generation are indicative of textual features learned to coincide with utterances from certain age groups, and are not to be confused with general representations of age groups' speaking styles.
+    \item Acoustic signals are not considered in this work, but they are important characteristics of speaking style, and should also be taken into account when developing audio-based conversational systems.
+    \item despite formulation of binary classification requiring young-prob and old-prob to be complementary values, "young" and "old" speaking/writing styles are not semantically opposite styles, like positive vs negative sentiment tend to resemble more \len{Maybe think of a better example of semantic polar opposites. Also, maybe also mention that it still needs to be verified whether they are semantically opposite or not, but that you hypothesize that they are not. Idea for future research.}. So we shouldn't expect certain patterns in, e.g., ppl plots to be exactly opposite.
+\end{itemize}
+
+\section{Future research directions}
+
+\begin{itemize}
+    \item Classify different age utterances.
+\end{itemize}
+
+\begin{itemize}
+    \item Topic-agnostic age control
+\end{itemize}
+
+\section{Personal considerations (idk where to put this)?}
+
+\begin{itemize}
+    \item Carbon footprint of training large language models and how PPLM helps to alleviate this.
+    \item The dangers of language generation w.r.t. e.g. fake news
+\end{itemize}
+
+\section{Bullet points}
+
+\begin{itemize}
+    \item \len{Re-iterate this list and recap \textit{why} certain decisions were made.}
+    \item The research question was if it was possible to use PPLM for controlled dialogue generation. Before that, we wanted to confirm that age-related features in transcribed dialogue and discourse are prevalent enough to train various classifiers.
+    \item We performed age classification of utterances.
+    \item BERT was best, then trigram. 
+    \item We studied which features were most salient in driving classification, how classification performance related to dialogue topic, and which cases were most challenging to classify for BERT and trigram.
+    \item \len{\textbf{IMPORTANT:} Explicitly Highlight connection/bridge between experiment1 and experiment2}
+    \item After confirming the detectability of age-related linguistic patterns in dialogue, we seek to control generated responses for age-related traits.
+    \item based on the effectiveness of n-gram based classification model compared to transformer-based, we use PPLM-setups with both bow-based and discriminator-based attribute models.
+    \item We generated dialogue responses to neutral, young, and old prompts using models based on either GPT-2 or DialoGPT, and used discriminator- or bow-based attribute models.
+    \item We analyzed the relationship between perplexity and target probability, the relationship between various evaluation metrics and response length, the effects of prompt class, BERT$_{FT}'s$ attention heads, and qualitative properties of generated samples manually.
+\end{itemize}
+
 \paragraph{Discussion points about classification}
 \begin{itemize}
     \item Can any ML architecture pick up signals from 1-6 token sequences? (See workshop paper submission feedback).
