@@ -69,83 +69,114 @@ were found between age groups, systems whose language generation capabilities ai
 
 \section{Limitations}
 
-\begin{itemize}
-    \item Can any ML architecture pick up signals from 1-6 token sequences? (See workshop paper submission feedback).
-    \item The age detection classification problem's age groups are defined with coarse granularity. Imagine that if we aim to leverage the predicted age signal in real systems, fine-grained grouping is more reasonable.
-    \item unfortunately, there are still problems especially as far as the identification of age groups with short utterances. Nevertheless, for future applications, the combination of speech analysis could bring to better results. (the sentences seem to short (6~7 words), it is doubtful if  ML models or even human could recognize the targets.)
-    \item What are the "none", "no info", "unknown" labels in the two datasets? This could be very critical given that the none + no info topics take nearly 50\% in the 50+ age group.
-    \item Perplexity is a very crude proxy for fluency. --> human evaluation or more reliable automated evaluation metric for fluency.
-    \item The confounding effects of topic on age detection and controlled generation.
-    \item We need to find out how much of "control" is attributable to method and how much to prompt-bias.
-    \item Interactivity is beyond the scope of this thesis
-    \item The representations for young and old style used in this research are specific to the BNC, and should not be interpreted as generally representative of speaking style of 19-29 and 50-plus.
-    \item Even within the context of the BNC, the representations used for classification and generation are indicative of textual features learned to coincide with utterances from certain age groups, and are not to be confused with general representations of age groups' speaking styles.
-    \item Acoustic signals are not considered in this work, but they are important characteristics of speaking style, and should also be taken into account when developing audio-based conversational systems.
-    \item despite formulation of binary classification requiring young-prob and old-prob to be complementary values, "young" and "old" speaking/writing styles are not semantically opposite styles, like positive vs negative sentiment tend to resemble more \len{Maybe think of a better example of semantic polar opposites. Also, maybe also mention that it still needs to be verified whether they are semantically opposite or not, but that you hypothesize that they are not. Idea for future research.}. So we shouldn't expect certain patterns in, e.g., ppl plots to be exactly opposite.
-\end{itemize}
+\len{Double check if you're not undermining your research. The discussion of limitations should aim to strengthen your credibility, not emphasize weaknesses or failures.}
+
+There are several limitations to take into account when interpreting the results presented in this thesis. The generalizability of the age detection results are limited by coarse granularity with which the age groups are defined. One could imagine that if we aim to leverage the predicted age signal in real-world conversational systems, a fine-grained grouping is more reasonable. Furthermore, age group information remains difficult to identify in short utterances. A non-negligible proportion of utterances seem too short for reliable classification, and it remains to be shown investigated if NLP models or even humans could recognize the targets. However, for future applications, the combination of speech analysis could improve performance. Acoustic signals are not considered in this work, but they are important characteristics of speaking style, and should also be taken into account when developing audio-based conversational systems. 
+
+Due to lack of information about the \textit{none} and \textit{no info} topics, the age detection results cannot rule out confounding factors. This is especially important for the 50-plus age group, where the \textit{none} and \textit{no info} topics apply to nearly 50\% of the utterances. Nevertheless, our analysis of classification performance per topic do not seem to indicate severe differences in the identifiability of age-related signals between topic categories. 
+
+The reliability of the controlled dialogue generation results is impacted by perplexity (measured by GPT-1) being a crude proxy for fluency. Perplexity also lacks generalizability as an evaluation measure, because it only measures the uncertainty assigned by one language model. Automated evaluation of fluency could be improved by considering an aggregated perplexity measure (i.e., perplexity averaged over an ensemble of language models). Alternatively, indications of a generated response's fluency could be made more reliable by consulting human opinion. 
+
+It is also important to realize that the learned representations for younger and older style used in this research are specific to the BNC \citep{love-spoken-bnc-2014}, and should not be interpreted as general representations of the speaking style of people of ages 19-29 and 50-plus. Even within the context of the BNC, the representations used for classification and generation are indicative of textual features learned to coincide with utterances from certain age groups, and are therefore approximations of the age groups' speaking styles. 
+
+Finally, due to the lack of age-labeled transcribed spontaneous dialogue data, we were constrained to using the same dialogue dataset to develop the attribute models (i.e., the BoWs or neural discriminators used in PPLM setups), and to train evaluation model (i.e., BERT$_{FT}$). It must be noted that this is still sound practice, because the attribute and evaluation models are not trained jointly, and do not share representations. Moreover, the approach of using an external classifier for evaluation is based on the work of \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug}. However, the assigned target probabilities indicating attribute adherence would be more generalizable if the evaluation model were trained on a different dataset of spontaneous dialogue utterances between speakers of the same age.
+
+
+
+% \begin{itemize}
+%     \item Can any ML architecture pick up signals from 1-6 token sequences? (See workshop paper submission feedback).
+%     \item The age detection classification problem's age groups are defined with coarse granularity. Imagine that if we aim to leverage the predicted age signal in real systems, fine-grained grouping is more reasonable.
+%     \item unfortunately, there are still problems especially as far as the identification of age groups with short utterances. Nevertheless, for future applications, the combination of speech analysis could bring to better results. (the sentences seem to short (6~7 words), it is doubtful if  ML models or even human could recognize the targets.)
+%     \item What are the "none", "no info", "unknown" labels in the two datasets? This could be very critical given that the none + no info topics take nearly 50\% in the 50+ age group.
+%     \item Perplexity is a very crude proxy for fluency. --> human evaluation or more reliable automated evaluation metric for fluency.
+%     \item The confounding effects of topic on age detection and controlled generation.
+%     \item We need to find out how much of "control" is attributable to method and how much to prompt-bias.
+%     \item Interactivity is beyond the scope of this thesis
+%     \item The methodological choices about age group granularity were constrained by insufficient age-labeled dialogue data for all age groups of interest.
+%     \item The representations for young and old style used in this research are specific to the BNC, and should not be interpreted as generally representative of speaking style of 19-29 and 50-plus.
+%     \item Even within the context of the BNC, the representations used for classification and generation are indicative of textual features learned to coincide with utterances from certain age groups, and are not to be confused with general representations of age groups' speaking styles.
+%     \item Acoustic signals are not considered in this work, but they are important characteristics of speaking style, and should also be taken into account when developing audio-based conversational systems.
+%     \item despite formulation of binary classification requiring young-prob and old-prob to be complementary values, "young" and "old" speaking/writing styles are not semantically opposite styles, like positive vs negative sentiment tend to resemble more \len{Maybe think of a better example of semantic polar opposites. Also, maybe also mention that it still needs to be verified whether they are semantically opposite or not, but that you hypothesize that they are not. Idea for future research.}. So we shouldn't expect certain patterns in, e.g., ppl plots to be exactly opposite.
+%     \item Attention is not explanation.?
+%     \item Due to the lack of age-labeled transcribed spontaneous dialogue data, we were constrained to using the same dialogue dataset to develop the attribute models (i.e., the BoWs or neural discriminators used in PPLM setups), and to train evaluation model (i.e., BERT$_{FT}$). It must be noted that this is still sound practice, because the attribute and evaluation models are not trained jointly, and do not share representations. Moreover, the approach is based on the work by \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug}. However, the assigned target probabilities indicating attribute adherence would be more generalizable if the evaluation model were trained on a different dataset of spontaneous dialogue utterances between speakers of the same age.
+% \end{itemize}
 
 \section{Future research directions}
 
-\begin{itemize}
-    \item Classify different age utterances.
-\end{itemize}
+While we performed the classification task at the level of single dialogue utterances, future work may take into account larger dialogue fragments, such as the entire dialogue or a fixed number of turns. This would make the setup more comparable to discourse, but but would require making experimental choices and dealing with extra computational challenges. Moreover, it could be tested whether the language used by a speaker is equally discriminative when talking to a same-age (this work) or a different-age interlocutor. Also, future work might involve leveraging acoustic signals for automated age-detection and controlled generation. Acoustic signals can contain important features indicative of speaking style, and could therefore substantially improve classification and controlled generation performance.
 
-\begin{itemize}
-    \item Topic-agnostic age control
-\end{itemize}
+Developing interactive age-adaptive conversational systems was beyond the scope of this thesis. Therefore, an interesting future research objective would be to use PPCM for age-adaptive dialogue generation. This would require also developing and training residual adapter modules, and generating style-specific dialogue datasets. Our age detection results suggest the important of $n$-gram features for age-identification. Future work could therefore entail adapting the PPLM and PPCM to work with $n$-gram lists (for $n>1$) as attribute models. This would require finding a way to by-pass the need to re-train large underlying language models like GPT-2 and DialoGPT for arbitrary $n$-grams. Finally, the current set of tools to analyze which features drive controlled generation in PPLM-setups is limited. It would be valuable to develop probing methods for PPLM-setups. Namely, visualizations or saliency methods targeted towards understanding the activation space perturbations made by PPLM could provide important insights about the effects of attribute models on controlled generated output.
 
-\section{Personal considerations (idk where to put this)?}
+% \begin{itemize}
+%     \item While we performed the classification task at the level of single dialogue utterances, future work may take into account larger dialogue fragments, such as the entire dialogue or a fixed number of turns. This would make the setup more comparable to discourse, but but would require making experimental choices and dealing with extra computational challenges. Moreover, it could be tested whether the language used by a speaker is equally discriminative when talking to a same-age (this work) or a different-age interlocutor.
+%     \item The confounding effects of topic on age detection and controlled generation. Topic-agnostic age control.
+%     \item Developing interactive age-adaptive conversational systems was beyond the scope of this thesis. Therefore, an interesting future research objective would be to use PPCM \citep{madotto-etal-2020-plug} in for age adaptive dialogue generation. 
+%     \item Leveraging acoustic signals for automated age-detection and controlled generation.
+%     \item Future research idea: adapting the PPLM-setup to work with $n$-gram lists for arbitrary $n$.
+%         \begin{itemize}
+%             \item Finding a way to by-pass the need to retrain GPT-2 for arbitrary n-grams
+%         \end{itemize}
+%     \item Future research idea: how to probe PPLM models, because BertViz doesn't work, as the attention weights are unchanged by PPLM.
+%     \item Emphasize the importance of PPLM-methods w.r.t. carbon footprint and the ecological cost of (re)training massive language models like GPT-x (Maybe this is better for the introduction?)
+% \end{itemize}
 
-\begin{itemize}
-    \item Carbon footprint of training large language models and how PPLM helps to alleviate this.
-    \item The dangers of language generation w.r.t. e.g. fake news
-\end{itemize}
+\section{Ethical and environmental considerations}
 
-\section{Bullet points}
+There is growing concern around the ethics, environmental costs, and societal dangers associated with powerful large-scale language models \citep{brown2020language-models-few-shot-gpt3, bender2021dangers}. There is a non-negligible societal risk accompanying the recent trend of deploying ever larger language models that are more capable of producing texts that are indistinguishable from human-written ones. Namely, such language models can be used to spread misinformation (e.g., fake news), or to perpetuate harmful social biases. Plug-and-Play language models carry the same risks, if not to a greater extent, as they can be used to produce personalized, and ultimately more convincing text. However, \cite{dathathri2019plug} also demonstrates the benevolent applicability of PPLM for language detoxification. Additionally, the same methods that generate convincing texts can be used to build more sophisticated tools for detecting artificially generated texts \cite{gehrmann-etal-2019-gltr}. Moreover, I believe that the positive applications of PPLM for, e.g, personalized dialogue generation, outweigh the potential risks of misuse. 
 
-\begin{itemize}
-    \item \len{Re-iterate this list and recap \textit{why} certain decisions were made.}
-    \item The research question was if it was possible to use PPLM for controlled dialogue generation. Before that, we wanted to confirm that age-related features in transcribed dialogue and discourse are prevalent enough to train various classifiers.
-    \item We performed age classification of utterances.
-    \item BERT was best, then trigram. 
-    \item We studied which features were most salient in driving classification, how classification performance related to dialogue topic, and which cases were most challenging to classify for BERT and trigram.
-    \item \len{\textbf{IMPORTANT:} Explicitly Highlight connection/bridge between experiment1 and experiment2}
-    \item After confirming the detectability of age-related linguistic patterns in dialogue, we seek to control generated responses for age-related traits.
-    \item based on the effectiveness of n-gram based classification model compared to transformer-based, we use PPLM-setups with both bow-based and discriminator-based attribute models.
-    \item We generated dialogue responses to neutral, young, and old prompts using models based on either GPT-2 or DialoGPT, and used discriminator- or bow-based attribute models.
-    \item We analyzed the relationship between perplexity and target probability, the relationship between various evaluation metrics and response length, the effects of prompt class, BERT$_{FT}'s$ attention heads, and qualitative properties of generated samples manually.
-\end{itemize}
+% \begin{itemize}
+%     \item Carbon footprint of training large language models and how PPLM helps to alleviate this.
+%     \item The societal dangers of language generation w.r.t. e.g. fake news
+%     \item What are the dangers of these methods? --> Read up on paper by Ebru et al
+%     \item The analyses about the effects of using strongly stylized prompts on the style of generation revealed that there is a considerable prompt-induced bias. Despite, efforts having been made in this study to avoid this bias by using neutral prompts, more research is needed to find out how much of "control" is attributable to method and how much to prompt-bias.
+%     \item despite formulation of binary classification requiring young-prob and old-prob to be complementary values, "young" and "old" speaking/writing styles are not semantically opposite styles, like positive vs negative sentiment tend to resemble more \len{Maybe think of a better example of semantic polar opposites. Also, maybe also mention that it still needs to be verified whether they are semantically opposite or not, but that you hypothesize that they are not. Idea for future research.}. So we shouldn't expect certain patterns in, e.g., ppl plots to be exactly opposite.
+% \end{itemize}
 
-\paragraph{Discussion points about classification}
-\begin{itemize}
-    \item Can any ML architecture pick up signals from 1-6 token sequences? (See workshop paper submission feedback).
-    \item age-related linguistic features that inform classification lie more at the syntactic level than at the lexical level.
-    \item A small discussion point on the effects of stopword omission on classification performance
-    \item \len{Re-read the relevant sections of the workshop paper submission}
-\end{itemize}
+% \section{Bullet points}
 
-\paragraph{Discussion points about generation}
-\begin{itemize}
-    \item What are the effects of prompts on generation? \len{This should probably be an analysis question.}
-    \item What are the limitations of your setup?
-        \begin{itemize}
-            \item Perplexity is a crude proxy for fluency and grammatical correctness.
-        \end{itemize}
-    \item Does this make the world better? How can this help people? --> It can help personalize virtual assistants (especially useful for new speakers of a language. E.g., the difference between young/informal/spoken French and French that is taught in school and courses is large. User-age personalization can adapt use of language of virtual assistants to variant of language spoken by user.)
-    \item What are the dangers of these methods? --> Read up on paper by Ebru et al
-    \item What are interesting future research directions?
-    \item My research is a promising step towards the development of personalized virtual assistants.
-    \item Keep in mind that...
-        \begin{itemize}
-            \item  The representations for young and old style used in this research are specific to the BNC, and should not be interpreted as generally representative of speaking style of 19-29 and 50-plus.
-            \item Even within the context of the BNC, the representations used for classification and generation are indicative of textual features learned to coincide with utterances from certain age groups.
-            \item despite formulation of binary classification requiring young-prob and old-prob to be complementary values, "young" and "old" speaking/writing styles are not semantically opposite styles, like positive vs negative sentiment tend to resemble more \len{Maybe think of a better example of semantic polar opposites. Also, maybe also mention that it still needs to be verified whether they are semantically opposite or not, but that you hypothesize that they are not. Idea for future research.}. So we shouldn't expect certain patterns in, e.g., ppl plots to be exactly opposite.
-        \end{itemize}
-    \item Future research idea: adapting the PPLM-setup to work with $n$-gram lists for arbitrary $n$.
-        \begin{itemize}
-            \item Finding a way to by-pass the need to retrain GPT-2 for arbitrary n-grams
-        \end{itemize}
-    \item Future research idea: real-time interactivity of age-adaptive conversational systems. I.e., a pipeline that (1) "starts off neutral", (2) classifies user's age based on minimal amount of utterances, (2*) uses bayesian modelling or reinforcement learning to constantly update belief, (3) adapts use of language to perceived user age.
-    \item Future research idea: how to probe PPLM models, because BertViz doesn't work, as the attention weights are unchanged by PPLM.
-    \item Emphasize the importance of PPLM-methods w.r.t. carbon footprint and the ecological cost of (re)training massive language models like GPT-x (Maybe this is better for the introduction?)
-\end{itemize}
+% \begin{itemize}
+%     \item \len{Re-iterate this list and recap \textit{why} certain decisions were made.}
+%     \item The research question was if it was possible to use PPLM for controlled dialogue generation. Before that, we wanted to confirm that age-related features in transcribed dialogue and discourse are prevalent enough to train various classifiers.
+%     \item We performed age classification of utterances.
+%     \item BERT was best, then trigram. 
+%     \item We studied which features were most salient in driving classification, how classification performance related to dialogue topic, and which cases were most challenging to classify for BERT and trigram.
+%     \item \len{\textbf{IMPORTANT:} Explicitly Highlight connection/bridge between experiment1 and experiment2}
+%     \item After confirming the detectability of age-related linguistic patterns in dialogue, we seek to control generated responses for age-related traits.
+%     \item based on the effectiveness of n-gram based classification model compared to transformer-based, we use PPLM-setups with both bow-based and discriminator-based attribute models.
+%     \item We generated dialogue responses to neutral, young, and old prompts using models based on either GPT-2 or DialoGPT, and used discriminator- or bow-based attribute models.
+%     \item We analyzed the relationship between perplexity and target probability, the relationship between various evaluation metrics and response length, the effects of prompt class, BERT$_{FT}'s$ attention heads, and qualitative properties of generated samples manually.
+% \end{itemize}
+
+% \paragraph{Discussion points about classification}
+% \begin{itemize}
+%     \item Can any ML architecture pick up signals from 1-6 token sequences? (See workshop paper submission feedback).
+%     \item age-related linguistic features that inform classification lie more at the syntactic level than at the lexical level.
+%     \item A small discussion point on the effects of stopword omission on classification performance
+%     \item \len{Re-read the relevant sections of the workshop paper submission}
+% \end{itemize}
+
+% \paragraph{Discussion points about generation}
+% \begin{itemize}
+%     \item What are the effects of prompts on generation? \len{This should probably be an analysis question.}
+%     \item What are the limitations of your setup?
+%         \begin{itemize}
+%             \item Perplexity is a crude proxy for fluency and grammatical correctness.
+%         \end{itemize}
+%     \item Does this make the world better? How can this help people? --> It can help personalize virtual assistants (especially useful for new speakers of a language. E.g., the difference between young/informal/spoken French and French that is taught in school and courses is large. User-age personalization can adapt use of language of virtual assistants to variant of language spoken by user.)
+%     \item What are the dangers of these methods? --> Read up on paper by Ebru et al
+%     \item What are interesting future research directions?
+%     \item My research is a promising step towards the development of personalized virtual assistants.
+%     \item Keep in mind that...
+%         \begin{itemize}
+%             \item  The representations for young and old style used in this research are specific to the BNC, and should not be interpreted as generally representative of speaking style of 19-29 and 50-plus.
+%             \item Even within the context of the BNC, the representations used for classification and generation are indicative of textual features learned to coincide with utterances from certain age groups.
+%             \item despite formulation of binary classification requiring young-prob and old-prob to be complementary values, "young" and "old" speaking/writing styles are not semantically opposite styles, like positive vs negative sentiment tend to resemble more \len{Maybe think of a better example of semantic polar opposites. Also, maybe also mention that it still needs to be verified whether they are semantically opposite or not, but that you hypothesize that they are not. Idea for future research.}. So we shouldn't expect certain patterns in, e.g., ppl plots to be exactly opposite.
+%         \end{itemize}
+%     \item Future research idea: adapting the PPLM-setup to work with $n$-gram lists for arbitrary $n$.
+%         \begin{itemize}
+%             \item Finding a way to by-pass the need to retrain GPT-2 for arbitrary n-grams
+%         \end{itemize}
+%     \item Future research idea: real-time interactivity of age-adaptive conversational systems. I.e., a pipeline that (1) "starts off neutral", (2) classifies user's age based on minimal amount of utterances, (2*) uses bayesian modelling or reinforcement learning to constantly update belief, (3) adapts use of language to perceived user age.
+%     \item Future research idea: how to probe PPLM models, because BertViz doesn't work, as the attention weights are unchanged by PPLM.
+%     \item Emphasize the importance of PPLM-methods w.r.t. carbon footprint and the ecological cost of (re)training massive language models like GPT-x (Maybe this is better for the introduction?)
+% \end{itemize}
