@@ -1,6 +1,6 @@
 % \len{TODO - Add a brief general introduction to the chapter here. See Sandro's comment. E.g:}
 
-\textit{This chapter is a two-part literature review. The first section, Background or Section \ref{sec:background}, provides an overview of this thesis' central problem of controllable dialogue generation, and the components involved, i.e., dialogue, (controllable) language generation, dialogue response generation, and age modeling. In the second section, Related work or Section \ref{sec:related_work}, I discuss previous approaches, relevant to my work, that have been proposed to tackle each of these components, either separately or jointly. Approaches to different, but strongly related, problems, like text style transfer, are also described in Section \ref{sec:related_work}.} 
+This chapter is a two-part literature review. The first section, Background or Section \ref{sec:background}, provides an overview of this thesis' central problem of controllable dialogue generation, and the components involved, i.e., dialogue, (controllable) language generation, dialogue response generation, and age modeling. In the second section, Related work or Section \ref{sec:related_work}, I discuss previous approaches, relevant to my work, that have been proposed to tackle each of these components, either separately or jointly. Approaches to different, but strongly related, problems, like text style transfer, are also described in Section \ref{sec:related_work}.
 
 \section{Background}
 \label{sec:background}
@@ -104,6 +104,7 @@ Controllable text generation or CTG is a more challenging problem than vanilla t
 % Following the success of open AI's pre-trained transformer model they went on to produce a series of generative pre-train transformers that I have been trained in a unsupervised language modelling session.
 
 \subsection{Dialogue, Dialogue Systems, and Dialogue Generation}
+\label{subsec:background_dialogue}
 
 \len{
     \begin{itemize}
@@ -175,6 +176,22 @@ Text generation is suitable to tackle tasks such as machine translation, abstrac
 
 % \len{...TO HERE.}
 %%%%%%%%%%%%%%%% ...TO HERE
+
+\subsection{Dialogue Response Generation as a Language Modeling Task} 
+\label{subsec:dialogue_generation_as_lm}
+
+\len{Is this the best place for this subsection?}
+
+Dialogue response generation can be formulated as a language modeling task. \cite{zeng-etal-2020-meddialog} suggest to formulate it as a language modeling task, where the next token or utterance is conditioned on the dialogue history. 
+% \len{TODO - Do I need the following sentence?}
+% To remain close to the training objectives of my baseline models (GPT-2 \citep{radford2019language} and DialoGPT \citep{zhang2019dialogpt}) I choose to adopt the language modeling formulation for conversation modeling. 
+More formally, it consists of concatenating all dialogue turns in a multi-turn dialogue session into a long text: $x_1, ..., x_N$. Denote the source sentence or dialogue history as $S = x_1, ..., x_m$ and the target sentence (ground truth response) as $T = x_{m + 1}, ..., x_N$. The conditional probability of dialogue continuation given its history $P(T | S)$ can be written as
+
+\begin{equation}
+    p(T | S) = \prod_{n = m + 1}^N p(x_n | x_1, ..., x_{n - 1}).
+\end{equation}
+
+A multi-turn dialogue session $T_1, ..., T_K$ can be written as $p(T_K, ..., T_2 | T_1)$ which is essentially the product of all source-target pairs probabilities $p(T_i | T_1, ..., T_{i - 1})$. This formulation also shows that optimising the single objective $p(T_K, ..., T_2 | T_1)$ is equivalent to optimising all source-target pair probabilities.
 
 \subsection{Controllable Dialogue Generation}
 
