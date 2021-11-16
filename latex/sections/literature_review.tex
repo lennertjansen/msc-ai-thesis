@@ -220,6 +220,117 @@ When generating responses, \textit{explicit} personalization models are conditio
 %         \end{itemize}
 % \end{enumerate}
 
+
+\subsection{Transformers}
+
+The Transformer architecture plays a central role in most of the recent advances in NLP. The same holds for the methods used in this thesis to investigate controlled dialogue generation and automated detection of age-related linguistic patterns in dialogue utterances. For a more detailed review of the model architecture, the reader is referred to the original paper \citep{vaswani2017attention} or this blog post\footnote{\url{https://jalammar.github.io/illustrated-transformer/}}.
+
+The Transformer, like most neural sequence processing models, has an encoder-decoder structure. On a high level, the encoder receives an input sequence $\textbf{x} = (x_1, ..., x_n)$ (e.g., a sentence), and maps this to a sequence of latent continuous variables $\textbf{z} = (z_1, ..., z_n)$. The decoder then takes $\textbf{z}$ as input, and maps this to an output sequence $\textbf{y} = (y_1, ..., y_m)$. Note that the use of positional encodings of the input and output embeddings enables the Transformer to process and generate sequences in arbitrary order, allowing for a high degree of parallelization. The generation of $\textbf{y}$ happens element-by-element in an auto-regressive fashion, where at step $t$, element $y_{t - 1}$ is also taken as input.
+
+Both the encoder and decoder are comprised of $N$ identical layers (denoted by the `N $\times$' in the left part of Figure \ref{fig:transformer_architecture}). Every sub-layer performs a succession of transformations using multi-head self-attention mechanisms and point-wise, fully connected layers, along with residual connections \citep{he2016residual} around every sub-layer followed by layer normalization \citep{DBLP:journals/corr/BaKH16}. The decoder's first self-attention sub-layer is masked to ensure that the output predictions at sequence position $i$ cannot depend on output positions greater than $i$. Finally, the decoder passes its output through a linear and softmax layer to produce a probability distribution over the problem space (e.g., the vocabulary) from which the most likely symbols for the generated output sequence $\textbf{y}$ can be sampled.
+
+A key aspect of the Transformer architecture is its use of attention \citep{DBLP:journals/corr/BahdanauCB14}. This allows the encoder-decoder architecture to selectively focus on parts of the input sequence to produce a more informative hidden representation. \cite{vaswani2017attention} formulate an attention function as a mapping of queries and sets of key-value pairs to an attention output, where matrices represent the queries $Q$, keys $K$, and values $V$. The attention output is a weighted sum of the values, based on the relevance of the corresponding keys to a query. In particular, they employ scaled dot-product attention:
+
+\begin{equation}
+    \texttt{Attention}(Q, K, V) = \texttt{softmax} \left( \frac{QK^T}{\sqrt{d_k}}\right) V.
+\end{equation}
+
+Furthermore, \cite{vaswani2017attention} propose to use multi-head attention by using learned linear projections to project the queries, keys and values $h$ times, and apply the aforementioned attention function to these projections in parallel. The concatenation of these attention outputs, passed through a linear layer, ultimately produces the final output of the Transformer's attention sub-layers. This allows the model to attend to the relevant information from all representation sub-spaces at various sequence positions. See Figure \ref{fig:transformer_architecture} for a schematic illustration of the Transformer's structure described above.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/transformer_lillog.png}
+    \caption{An overview of the full Transformer model architecture. \textit{Collated image source:} Fig. 17 in this blog post \url{https://lilianweng.github.io/lil-log/2018/06/24/attention-attention.html}. \textit{Original image source:} Figures 1 and 2 in \cite{vaswani2017attention}}
+    \label{fig:transformer_architecture}
+\end{figure}
+
+\subsection{Causal Language Modeling with Transformers for Dialogue Response Generation}
+As described in Section \ref{subsec:background_dialogue}, here we focus on dialogue response generation. A formulation of dialogue response generation as a language modeling task is described in Section \ref{subsec:dialogue_generation_as_lm}. Following the conventions of \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug}, a dialogue is comprised of multiple alternating turns (sometimes referred to as utterances) between more than one speaker. For simplicity, this project only focuses on dialogues between two speakers. The conversation history at turn $t$ is defined as $\mathcal{D}_t = \{S^{(1)}_1, S^{(2)}_1, ..., S^{(1)}_t\}$, where $S^{(j)}_t$ is speaker $j$'s utterance at time $t$. \cite{madotto-etal-2020-plug} denote speaker $1$ as the user $U$, and speaker $2$ as the conversational system $S$, yielding dialogue history $\mathcal{D}_t = \{U_1, S_1, ..., U_t\}$. This notational convention will also be used for the user-system experiments later on in this thesis.
+
+A Transformer-based language model (denoted $\texttt{LM}$) is used in this thesis to model the distribution of dialogues, using dialogue history at time $t$, $\mathcal{D}_t$, as a prompt to auto-regressively generate the dialogue continuation $S_t$. More specifically, let the concatenation of the dialogue history at $t$ and its continuation, $\{\mathcal{D}_t, S_t\}$, be represented as a sequence of tokens $\textbf{x}= \{x_0, ..., x_n\}$. Then, by recursively applying the product rule of probability (\cite{bishop2006pattern}), the unconditional probability of the sequence $p(\textbf{x})$ can be expressed as:
+
+\begin{equation}
+    p(\textbf{x}) = \prod_{i = 1}^n p(x_i | x_0, ..., x_{i - 1}).
+\end{equation}
+
+\cite{dathathri2019plug} and \cite{madotto-etal-2020-plug} define the Transformer's decoding process in a recursive fashion. Let $H_t$ denote the conversation history's key-value pairs, i.e., $H_t = \left[ (K_t^{(1)}, V_t^{(1)}), ..., (K_t^{(l)}, V_t^{(l)}) \right]$, with $(K_t^{(i)}, V_t^{(i)})$ representing the key-value pairs from the $\texttt{LM}$'s $i$-th layer generated at all time steps $0$ through $t$. This results in the recurrent dedocing process being expressed as:
+
+\begin{equation}
+    o_{t + 1}, H_{t + 1} = \texttt{LM} \left( x_t, H_t \right),
+\end{equation}
+
+where $o_{t + 1}$ is the hidden state of the last layer. Finally, after applying a softmax transformation, the next token $x_{t + 1}$ is sampled from the resulting probability distribution, i.e.,  $x_{t + 1} \sim p_{t + 1} = \texttt{softmax} \left( W o_{t + 1} \right)$, where $W$ is a linear mapping from the model's last hidden state to a vector of vocabulary size. This recursive formulation allows for efficient text generation by leveraging cached memories, without repeated forward passes.
+
+\subsection{Plug-and-Play Language Modeling}
+\label{sec:ppm}
+
+The Plug-and-Play Language Model (PPLM) \cite{dathathri2019plug} works by using a text classifier, referred to as an attribute model, to control the text generated by a language model. Let $p(X)$ denote the output distribution of a Transformer-based language model (e.g., GPT-2 or DialoGPT), where $X$ represents the generated text. And $p(a | X)$ denotes the attribute model (e.g., a single-layer or BoW classifier) that represents the degree of adherence of text $X$ to a certain attribute $a$ (e.g., topic or sentiment (previous work), or age-group characteristics (this work)). Then PPLM can be seen as modeling the conditional distribution of generated text $X$ given attribute $a$, i.e., $p(X | a)$. Note that Bayes' theorem ties these three definitions together as follows:
+
+\begin{equation}
+    p(X | a) \overbrace{=}^{\text{Bayes' theorem}} 
+    % \frac{p(a, X)}{p(a)} = 
+    \frac{p(X) p(a | X)}{p(a)} \propto
+    p(X)p(a | X).
+\end{equation}
+
+% \len{TODOs -
+% \begin{itemize}
+%     \item Maybe this isn't the best spot, but somewhere in the methodology motivate the choice of using a unigram wordlist as BoW, and a linear classifier trained with a transformer-based architecture.
+%     \item Also emphasize the continuing narrative between Experiment 1 and Experiment 2. Namely, how the best performing systems in Exp1 are used to inform choices during Exp2 (trigram and BERT best classifiers --> use unigram and linear layer used for PPLM).
+%     \item Also explain how the PPLM setup is not compatible with lists of $n$-grams (for $n>1$), as it makes perturbations at the unigram level. And adapting the system to fit trigram BoW's implies retraining the entire underlying language model (like GPT-2) for trigrams, defeating the purpose of PPLM (leveraging large scale language models for controllability, without having to finetune the massive architectures).
+%     \item Then go on to argue that the unigram classifier is on par with trigram, making it a viable choice for the 100MIU BoW.
+%     \item Also mention that your work extends the original BoW-PPLM by using various empirically generated BoWs, instead of curated wordlists. Making it more reproducible.
+%     \item Double-check if you should make this last argument in the methodology, and not in related work or experimental details.
+% \end{itemize}}
+
+To control the generated text, PPLM shifts the aforementioned history $H_t$ (i.e., all Transformer key-value pairs generated up to time $t$) in the direction of the sum of two gradients:
+
+\begin{enumerate}
+    \item Ascending $\nabla \log p(a | X)$: maximizing the log-likelihood of the desired attribute $a$ under the conditional attribute model. This enforces attribute control.
+    \item Ascending $\nabla \log p(X)$: maximizing the log-likelihood of the generated language under the original (possibly conversational) language model. This promotes fluency of the generated text.
+\end{enumerate}
+
+These two incentive-representing gradients are combined with various coefficients, yielding a set of tunable parameters to steer the generated text in the direction of the desired fluency, attribute control, and length.
+
+Let's first focus on the first of the two gradients, i.e., the attribute control promoting $\nabla \log p(a | X)$. $\Delta H_t$ represents the update to history $H_t$ that pushes the distribution of the generated text $X$ in the direction that has a higher likelihood of adhering to desired attribute $a$. The gradient update rule can be expressed as:
+
+\begin{equation}
+    \Delta H_t \leftarrow \Delta H_t + \alpha
+    \frac{\nabla_{\Delta H_t} \log p(a | H_t + \Delta H_t)}
+    {\norm{\nabla_{\Delta H_t} \log p(a | H_t + \Delta H_t)}^{\gamma}}
+\label{eq:H_update_rule}
+\end{equation}
+
+where $\alpha$ is the step size, and $\gamma$ denotes the normalization term's scaling coefficient. Both step size ($\alpha$) and the scaling coefficient ($\gamma$) influence attribute control. Attribute control can be softened by either decreasing $\alpha$ or increasing $\gamma$ and vice versa. Note that $\alpha = 0$ recovers the original uncontrolled underlying language model (e.g., GPT-2 or DialoGPT). In practice, $\Delta H_t$ is initialized at zero, and the update rule in Equation \ref{eq:H_update_rule} is applied $m$ times (usually 3 to 10), resulting in the updated key-value pair history $\tilde{H}_t  = H_t + \Delta H_t$. Then the updated history $\tilde{H}_t$ is passed through the language model, yielding the updated logits (final Transformer-layer): $\tilde{o}_{t + 1}, H_t = \texttt{LM}(x_t, \tilde{H}_t)$. And finally the shifted $\tilde{o}_{t + 1}$ is linearly mapped through a softmax layer to produce a new, more attribute-adherent, distribution from which to sample, i.e., $x_{t + 1} \sim \tilde{p}_{t + 1} = \texttt{softmax} \left( W \tilde{o}_{t + 1} \right)$.
+
+The method described until now will generate attribute-adherent text, but will likely yield fooling examples \citep{nguyen2015deep} that are gibberish to humans, but get assigned high $p(a | x)$ by the attribute model \citep{dathathri2019plug}. That is why \cite{dathathri2019plug} apply two methods to ensure fluency of the generated text. The first is to update $\Delta H_t$ such to minimize the Kullback-Leibler (KL) divergence (denoted $D_{KL})$ between the shifted and original distributions. In practice, $D_{KL}$ is scaled by a coefficient $\lambda_{KL}$, typically found to work well for most tasks when set to 0.01. Repetitive text generation (i.e., high $p(a | x)$ but low $p(x)$) can therefore sometimes be avoided by increasing $\lambda_{KL}$. The second method to ensure fluency is Post-norm Geometric Mean Fusion \citep{stahlberg-etal-2018-simple} which, instead of directly influencing $\Delta H_t$ like minimizing $D_{KL}$, fuses the altered generative distribution $\tilde{p}_{t + 1}$ with the unconditional language distribution $p(x)$. This is done during generation by sampling the next token as follows:
+
+\begin{equation}
+    x_{t + 1} \sim \frac{1}{\beta}
+    \left( 
+    \tilde{p}_{t + 1}^{\gamma_{gm}} p_{t + 1}^{1 - \gamma_{gm}}
+    \right)
+    \label{eq:gm_fusion}
+\end{equation}
+
+where $\beta$ is a normalization constant, $p_{t + 1}$ and $\tilde{p}_{t + 1}$ denote the original and modified distributions, respectively, and $\gamma_{gn}$ is a scaling term that interpolates between the two distributions. Because the new sampling distribution in Equation \ref{eq:gm_fusion} converges towards the unconditional language model as $\gamma_{gm} \rightarrow 0$, repetitive text generation can be avoided by decreasing the scaling term.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/pplm_fig1.png}
+    \caption{A schematic overview of the plug-and-play interaction between attribute model $p(a | \textbf{x})$ and language model $p(\textbf{x})$. \textit{Original image source:} Figure 1 of \cite{dathathri2019plug}}
+    \label{fig:pplm_schematic_overview}
+\end{figure}
+
+
+% \subsubsection{PPLM is not fine-tuning}
+
+It is worth mentioning that the plug-and-play method applied by \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug} is different from fine-tuning. Note that in Equation \ref{eq:H_update_rule} the gradient updates are restricted to the history $H_t$, and do not affect the model's parameters. Because the key-value pairs $(K_t^{(i)}, V_t^{(i)})$ that comprise $H_t$ are activations and not model-weights, the updates only take place in the activation-space. This means that PPLM leaves the underlying (conversational) language model untouched.
+
+Contrary to fine-tuning often massive LMs, PPLM does not incur a significant training cost (depending of course on the complexity of the discriminator or attribute model). However, \cite{madotto-etal-2020-plug} show that PPLM needs a fixed number of $m$ update-steps to for every generated token. This makes the original PPLM setup unsuitable for online interactive applications, like conversational systems. Addressing this problem, they introduce plug-and-play conversational model (PPCM), which extends PPLM by using the original model setup to generate dialogue datasets with the desired attribute $a$, and then use optimized residual adapters \citep{bapna-firat-2019-simple} to control $\texttt{LM}$'s output distribution. More specifically, \cite{madotto-etal-2020-plug} use PPLM to generate $n$ attribute-adherent dialogue datasets $\mathscr{D}^a = \{\mathcal{D}^1, ..., \mathcal{D}^n\}$, for attribute $a$. These generated dialogue datasets are then used to train the residual adapter modules that control the language model's output distribution.
+
 \subsection{Language and Age}
 The relationship between a person's age and use of language is a thoroughly studied subject with a decades long history and inherent challenges \citep{pennebaker2003words, nguyen2014gender, zheng2019personalized}. A number factors like community membership (e.g., gender, socioeconomic status, or political affiliation), experimental condition (e.g., emotional versus non-emotional disclosure), mode of disclosure (writing versus talking), and other confounding variables complicate the study of age's relation to language \citep{nguyen-etal-2011-author}. The relatively recent advent of widely available computational resources and vast amounts of textual data made it possible to leverage machine learning methods to help detect patterns in language that eluded conventional sociolinguistic research. Early computational investigations into the connection between a person's age and use of language is typically a combination of qualitative and statistical methods. For instance, using a mix between their proprietary count-based text analysis framework, Linguistic Inquiry and Word Count (LIWC) and sociolinguistic theory, \cite{pennebaker2003words} study the changes in written and spoken language use with increasing age. They discuss four important areas of a person's character that have been found to change with age: emotional experience and expression, identity and social relationships, time orientation, and cognitive abilities. These four axes and their hypothesized relationships with language use and age can be interpreted in the following ways:
 \begin{enumerate}

@@ -47,6 +47,21 @@
 \newcommand{\cmark}{\ding{51}}%
 \newcommand{\xmark}{\ding{55}}%
 
+%%%% For footnotes listing
+\usepackage{tocloft}
+
+%% Footnotes-Listing %%
+\newcommand{\listfootnotesname}{List of Footnotes}% 'List of Footnotes' title 
+\newlistof[chapter]{footnotes}{fnt}{\listfootnotesname}% New 'List of...' for footnotes 
+\let\oldfootnote\footnote % Save the old \footnote{...} command 
+\renewcommand\footnote[1]{% Redefine the new footnote to also add 'List of Footnote' entries. 
+    \refstepcounter{footnotes}% Add and step a reference to the footnote/counter. 
+    \oldfootnote{#1}% Make a regular footnote. 
+    \addcontentsline{fnt}{footnotes}{\protect 
+\numberline{\thefootnotes}#1}% Add the 'List of...' entry. 
+}
+
+
 
 
 
@@ -142,7 +157,7 @@ by\\[0.2cm]
 
 48EC\\ %
 
-11 January 2021 - 22 November 2021\\[1cm]%
+January 11, 2021 - \today\\[1cm]%
 
 
 
@@ -156,7 +171,7 @@ by\\[0.2cm]
 
 \begin{flushleft} \large
 
-\emph{Supervisor:} \\
+\emph{Supervisors:} \\
 
 Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabella Sinclair}% Supervisor's Name
 
@@ -213,8 +228,11 @@ Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabe
 
 %===================== END TITLE PAGE ===========================%
 
+%===================== TABLE OF CONTENTS & FOOTNOTES ===========%
 \doublespacing
 \tableofcontents
+
+\listoffootnotes
 
 % \newpage
 % \section{Research questions}
@@ -227,7 +245,7 @@ Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabe
 \chapter{Literature Review}
 \input{sections/literature_review}
 
-\chapter{Experiment 1: Classification}\label{ch:experiment1}
+\chapter{Experiment 1: Detecting Age-Related Linguistic Patterns in Dialogue and Discourse}\label{ch:experiment1}
 \input{sections/experiment1/exp1_intro}
 
 \input{sections/experiment1/exp1_data}
