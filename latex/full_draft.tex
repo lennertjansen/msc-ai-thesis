@@ -26,6 +26,8 @@
 \usepackage{makecell}
 \usepackage{tabstackengine}
 
+\usepackage{mwe} % for minipages/having to separate figures side-by-side
+
 \usepackage{tikz}
 \usetikzlibrary{bayesnet}
 \usetikzlibrary{arrows}
@@ -231,7 +233,8 @@ Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabe
 %===================== TABLE OF CONTENTS & FOOTNOTES ===========%
 \doublespacing
 \tableofcontents
-
+\listoffigures
+\listoftables
 \listoffootnotes
 
 % \newpage
@@ -245,7 +248,7 @@ Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabe
 \chapter{Literature Review}
 \input{sections/literature_review}
 
-\chapter{Experiment 1: Detecting Age-Related Linguistic Patterns in Dialogue and Discourse}\label{ch:experiment1}
+\chapter{Experiment 1: Detecting Age-Related Linguistic Patterns in Dialogue}\label{ch:experiment1}
 \input{sections/experiment1/exp1_intro}
 
 \input{sections/experiment1/exp1_data}
@@ -254,7 +257,9 @@ Dr \textsc{Sandro Pezzelle} \\ Dr \textsc{Raquel Fernández} \\ Dr \textsc{Arabe
 
 \input{sections/experiment1/exp1_results_analyses}
 
-\chapter{Experiment 2: Age-Adaptive Dialogue Generation using PPLM}
+\input{sections/experiment1/exp1_discussion_conclusion}
+
+\chapter{Experiment 2: Age-Adaptive Dialogue Generation using PPLM}\label{ch:experiment2}
 
 \input{sections/experiment2/exp2_intro}
 

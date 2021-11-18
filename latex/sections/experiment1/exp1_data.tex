@@ -69,7 +69,7 @@
 %     \label{tab:summary_corpora}
 % \end{table}
 
-We use a dataset of dialogue data where information about the age of the speakers involved in the conversation is available (see the dialogue snippets in Figure~), i.e., the spoken partition of the British National Corpus~\citep{love-spoken-bnc-2014}. We henceforth refer to it as our \emph{dialogue} dataset. For comparison with previous work,
+We use a dataset of dialogue data where information about the age of the speakers involved in the conversation is available (see the dialogue snippets in Figure~\ref{fig:ex1}), i.e., the spoken partition of the British National Corpus~\citep{love-spoken-bnc-2014}. We henceforth refer to it as our \emph{dialogue} dataset. For comparison with previous work,
 and to explore commonalities and differences between various types of language data,
 we also experiment with a dataset of discourse, i.e., the Blog Authorship Corpus used by \citet{schler2006effects}, that we henceforth refer to as our \emph{discourse} dataset.
 Below, we briefly describe the two datasets along with the pre-processing steps we took to
@@ -107,7 +107,7 @@ our experiments.
 \caption{Example dialogue snippets from speakers of different age groups (19-29 vs.\ 50+) in the British National Corpus.
 % \san{To be double-checked that A and B is correct + why they are not adjacent turns.}
 We conjecture that stylistic and lexical differences between age groups can be detected.
-In our approach, we experiment at the level of the utterance.}\label{fig:ex1}
+In our approach, we experiment at the level of the single utterance.}\label{fig:ex1}
 \end{figure}
 %-------------END OF FIG---------------
 
@@ -120,7 +120,8 @@ In our approach, we experiment at the level of the utterance.}\label{fig:ex1}
 \midrule
 % dialogue  & 2             & 64,967     & 420,122     & 6.5 ($\pm$10.1)         & 1 - 724           & 790              \\
 dialogue  & 2             & 67,282     & 787,352     & 11.7 ($\pm$19.0)         & 1 - 1246           & 790              \\
-discourse & 3             & 677,244    & 140M      & 102.2 ($\pm$212.9)     & 1 - 71,580         & 40  \\
+% discourse & 3             & 677,244    & 140M      & 102.2 ($\pm$212.9)     & 1 - 71,580         & 40  \\
+discourse & 3             & 678,165    & 137M      & 201.7 ($\pm$415.9)     & 1 - 131,169         & 40  \\
 \bottomrule
 \end{tabular}
 }
@@ -145,7 +146,7 @@ and only consider dialogues
 between people of the same age group. 
 We then focus on dialogues by speakers belonging to two age groups: 19-29 and 50+, in which we group conversations from five original brackets: 50-59, 60-69, 70-79, 80-89, and 90-99.
 % one where speakers' age ranges from 19 to 29 (hence, 19-29); one where it is equal to or greater than 50 (hence, 50+). 
-We omit the intermediate age bracket to allow for clearer differentiation.
+We omit the intermediate age brackets to allow for clearer differentiation.
 % The dialogues between speakers of intermediate ages are discarded. 
 % These two steps are performed to create sufficiently separated classes of comparable size. 
 
@@ -154,33 +155,36 @@ We split the dialogues into their constituent utterances (e.g., from each dialog
 Only samples which were not empty after pre-processing were kept.
 The resulting dialogue dataset, that we use for our experiments, includes around 67K utterances with an average length of 11.7 tokens. Descriptive statistics of it are reported in Table~\ref{tab:summary_corpora}.
 
-Each conversation in the British National Corpus is annotated with a list of \emph{topics} provided by the speakers during data collection. 
+Each conversation in the British National Corpus is annotated with a list of \emph{topics} provided by the speakers during data collection. However, we wish to obtain a better picture of how single representative dialogue topics are distributed among the age groups.
 % Since topic may constitute a confound for models toward detecting speakers' age group, we leverage this annotation to extract one single topic per utterance. 
 % \raq{In which sense do we leverage this information? The analysis we currently have of topics doesn't seem to shed light on whether it is a confound or not... Maybe give less importance to topics (no paragraph heading) - it's simply part of the descriptive statistics?} 
-To extract a single representative topic from this list, we first compute the frequency of all topic labels in the whole dataset. Then, for each utterance, we take the label in the conversation with the highest frequency in the ranking.
+Thus, to extract a single representative topic from this list, we first compute the frequency of all topic labels in the whole dataset. Then, for each utterance, we take the label in the conversation with the highest frequency in the ranking.
 In total, our final dataset includes 790 unique topic labels. The distribution of the most frequent ones is reported in Figure~\ref{fig:bnc_age_topic_dist_incl_unk}. As can be seen, frequent topics (besides the frequent \emph{none} label) are \emph{food}, \emph{work}, and \emph{holidays}, which reveals the colloquial and everyday nature of the dialogues in this dataset.
 
 \subsection{Discourse Dataset}
 % \san{Here we only describes BAC}
 
 % The second corpus is a dataset of 
-The Blog Authorship Corpus~\cite{schler2006effects} is a collection of blog posts
+The Blog Authorship Corpus~\citep{schler2006effects} is a collection of blog posts
 % dataset is a corpus of blogs
-posted on \url{https://www.blogger.com}, gathered in or before August 2004. % All blog entries are 
+written on \url{https://www.blogger.com}, gathered in or before August 2004. % All blog entries are 
 Each blog entry is
 written by a single user
 whose age, gender, and astrological sign are reported.
 The corpus contains almost 700,000 posts by 19,000 unique bloggers (i.e., $\sim$35 posts per blogger on average).
 % The original corpus consists of blog entries written by more than 19,000 bloggers, for a total of almost 700,000 posts, and over 140M words. 
 For our experiments, similar to~\citet{schler2006effects},
-we consider three age groups: 13-17, 23-27, and 33+. We pre-process the data in the same way as described above, namely by removing stopwords and non-alphabetical characters. The resulting dataset, that we use for our experiments, includes slightly more than 677K samples with an average length of 102.2 tokens. Descriptive statistics of it are reported in Table~\ref{tab:summary_corpora}. \len{TODO - Adjust paragraph to W.S. setting.}
+we consider three age groups: 13-17, 23-27, and 33+. We pre-process the data in the same way as described above, namely by removing non-alphabetical characters. The resulting dataset, that we use for our experiments, includes slightly more than 678K samples with an average length of 201.7 tokens. Descriptive statistics of it are reported in Table~\ref{tab:summary_corpora}. 
+% \len{TODO - Adjust paragraph to W.S. setting.}
 
 % only consider three age brackets, leaving gaps in between the age groups to avoid as much overlapping language use as possible between the classes. Similar to \citeauthor{schler2006effects}, we consider the following age brackets: 13-17, 23-27, and 33+.
 % for which information about age of the speaker / writer is available, the spoken component of the British National Corpus (BNC or BNC2014) \citep{love-spoken-bnc-2014}, and the Blog Authorship Corpus (BAC, or sometimes referred to as `blog corpus') \san{let's use just one abbreviation per corpus; I'd say BNC and BAC; but we can also use \emph{discourse} and \emph{dialogue}} \citep{schler2006effects}.
 
 %\paragraph{Topics}
 Each sample in the Blog Authorship Corpus is annotated with one topic. In our final discourse dataset, the unique topics present are 40. Figure~\ref{fig:blog_age_topic_dist_incl_unk} reports the distribution of the most frequent ones. As can be noted, frequent topics are \emph{student}, \emph{arts}, and \emph{technology}, which 
-reveals that this and the dialogue dataset are rather different.
+reveals that this and the dialogue dataset are rather different with respect to the topic themes, input text length, and how well the topics are organized. 
+Namely, the discourse dataset has a clear over-representation of topics related to student life, compared to the more colloquial and everyday subject matter of the dialogue dataset. Furthermore, the descriptive statistics in Table~\ref{tab:summary_corpora} show that the average data-entry length in tokens of the discourse dataset is almost 20 times larger than that of the dialogue dataset. Additionally, the differences number of unique topics (790 in dialogue dataset versus 40 in discourse dataset) between the two datasets illustrates the increased noisiness of the dialogue dataset compared to the discourse dataset. The shorter and noisier form of the dialogue dataset could make it more challenging to perform automated age group detection on its texts, as they are likely to carry less and more distorted discriminative signal.
+% and has only one topic per data-entry, compared to an average of \len{find average topic list length of bnc} topics per dialogue.
 
 
 \begin{figure}[H]
@@ -188,17 +192,17 @@ reveals that this and the dialogue dataset are rather different.
      \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/bnc_age_topic_histogram.png}
-        \caption{Distribution of most frequent topics (including the \emph{none} and \emph{no info} labels) in the \textbf{dialogue dataset}, shown by age group. Best viewed in color.}
+        \caption{}
         \label{fig:bnc_age_topic_dist_incl_unk}
      \end{subfigure}
      \hfill
      \begin{subfigure}[b]{0.45\textwidth}
         \centering
         \includegraphics[width=\textwidth]{figures/blog_age_topic_histogram.png}
-        \caption{Distribution of most frequent topics (including the \emph{unknown} label) in the \textbf{discourse dataset}, shown by age group. Best viewed in color.}
+        \caption{}
         \label{fig:blog_age_topic_dist_incl_unk}
      \end{subfigure}
-        \caption{}
+        \caption{Distribution of most frequent topics shown by age group, in the \textbf{dialogue dataset} ((a) / left) and \textbf{discourse dataset} ((b) / right). Best viewed in color.}
         \label{fig:bnc_blog_age_topic_dist_incl_unk}
 \end{figure}
 
