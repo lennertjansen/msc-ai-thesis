@@ -10,8 +10,40 @@
 %     \item The three most important papers to keep in mind for this section are: PPLM, DialoGPT, and Personalized Dialogue Generation with Diversified Traits
 % \end{itemize}
 
+\textbf{Captivating introduction to the thesis' topic by talking about recent years stuff.}
+\begin{itemize}
+    \item In recent years, impressive progress has been made in the development of conversational agents / dialogue systems \citep{mctear2020conversational}.
+    \item However, artificial systems that can tune their language to that of a particular individual or group of users continue to pose more of a challenge. Recent examples of this line of research include adaptation at style level (Ficler and Goldberg, 2017), persona-specific traits (Zhang et al., 2018), or other traits such as sentiment (Dathathri et al., 2020).
+    \item Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI \citep{edlund2008towards, scheutz2011toward}. (this one goes well with the statement about and the reference to Margot's work).
+\end{itemize}
 
- 
+Endowing dialogue systems with the capability to emulate users' speaking styles to generate human-like conversation is a long-standing goal in artificial intelligence (AI) research \citep{edlund2008towards, scheutz2011toward}.
+Despite impressive recent progress in the development of dialogue systems \citep{mctear2020conversational}, dialogue systems that can tune their language to that of a particular individual or group of users continue to pose more of a challenge.
+
+\textbf{Motivate research}
+\begin{itemize}
+    \item Personalised interaction is of crucial importance to obtain systems that can be trusted by users and perceived as natural (van der Goot and Pilgrim, 2019), but most of all to be accessible to varying user profiles, rather than targeted at one particular user group (Zheng et al., 2019; Zeng et al., 2020).
+\end{itemize}
+
+\textbf{Talk about ``this work''}
+\begin{itemize}
+    \item more properly introduce controlled dialogue generation
+    \item controlled dialogue generation can be used to adapt dialogue systems' linguistic style to that of user.
+    \item controlled dialogue generation is...
+    \item Research objectives
+    \item Hypotheses? Or maybe not, since we discuss all of them in the experiment introductions
+    \item 
+\end{itemize}
+
+\textbf{Contributions?}
+\begin{itemize}
+    \item ...
+\end{itemize}
+
+\textbf{Outline (and maybe briefly motivate the two-experiment) structure}
+\begin{itemize}
+    \item The rest of this thesis is structured as follows...
+\end{itemize}
 
 In recent years, we have witnessed promising advances in natural language processing (NLP) tasks, such as language modeling, reading comprehension, machine translation, controllable text generation, and conversational response generation \citep{radford2019language, DBLP:journals/corr/BahdanauCB14, dathathri2019plug, madotto-etal-2020-plug}. \cite{vaswani2017attention}'s Transformer architecture plays a central role in many of the state of the art (SotA) solutions to these problems. Transformer-based language models (LMs) pre-trained on massive amounts of textual data, most famously OpenAI's GPT-2 (Generative Pre-trained Transformer-2), have demonstrated their usefulness for several of the aforementioned NLP tasks \citep{radford2019language}. For instance, controllable text generation and producing dialogue responses have improved greatly because of GPT-based hybrid models. %Given the non-trivial requirements for sufficiently massive training corpora and computational resources, GPT-based solutions are worth considering for these two problems.
 
@@ -64,4 +96,10 @@ Finally, my research focuses on the degree to which such a CTG model is successf
     \item We build on the work of Schler et al. (2006), who focus on age detection in written discourse using a   corpus of blog posts. The authors learn a Multi-Class Real Winnow classifier leveraging a set of pre-determined style- and content-based features, including part-of-speech categories, function words, and the 1000 unigrams with the highest information gain in the training set. They find that content features (lexical unigrams) yield higher accuracy (74\%) than style features (72\%), while their best results (76.2\%) are obtained with their combination. \len{Be mindful that this could also be used in CHapter 2}
     \item We extend this investigation in several key ways: (1) we leverage state-of-the-art NLP models that allow us to learn representations end-to-end, without the need to specify concrete features in advance; (2) we apply this approach to dialogue data, using a large-scale dataset of transcribed, spontaneous open-domain dialogues, and also use this approach to replicate the experiments of Schler et al. (2006) on disccourse; (3) we show that text-based models can indeed detect age-related differences, even in the case of very sparse signal at the level of dialogue utterances; and finally (4) we carry out an in-depth analysis of the models’ predictions to gain insight on which elements of language use are most informative. 
     \item Our work can be considered a first step toward the modeling of age-related linguistic adaptation by AI conversational systems. In particular, our results can inform future work on controlled text generation for dialogue agents (Dathathri et al., 2020; Madotto et al., 2020).
+\end{itemize}
+
+Oher phrases
+
+\begin{itemize}
+    \item Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI \citep{edlund2008towards, scheutz2011toward}. (this one goes well with the statement about and the reference to Margot's work).
 \end{itemize}

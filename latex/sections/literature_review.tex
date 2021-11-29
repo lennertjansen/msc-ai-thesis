@@ -132,7 +132,7 @@ Controlled text generation or CTG is a more challenging problem than vanilla tex
 
 % Following the success of open AI's pre-trained transformer model they went on to produce a series of generative pre-train transformers that I have been trained in a unsupervised language modelling session.
 
-\subsection{On Dialogue, Dialogue Systems, and Dialogue Generation}
+\subsection{Dialogue and Dialogue Systems}
 \label{subsec:background_dialogue}\label{subsec:dialogue_generation_as_lm}
 
 % \len{
@@ -269,34 +269,55 @@ Despite the many types of modules that can comprise a dialogue system, generally
 
 % \len{Depending on how the preceding subsection unfolds, you could remove this subsection's title and merge the two subsections (maybe not just concatenation).}
 
+\subsection{Dialogue Generation and Controlled Dialogue Generation}
+\label{subsec:controlled_dialogue_generation}
+
 Dialogue response generation, also referred to simply as dialogue generation, is the task of automatically generating a response given a prompt \citep{madotto-etal-2020-plug}. 
 % Dialogue generation can be framed as a next utterance prediction problem \citep{welleck-etal-2019-dialogue}. In this framework, an utterance is a sequence of tokens representing a dialogue turn. The next utterance utterance, $\textbf{x}_{t + 1}$, is predicted conditioned on a dialogue prefix or prompt, $\textbf{x}_{\leq t}$ (e.g., a single previous dialogue turn, or the entire conversation history). And a succession of utterances can be seen as a dialogue between agents.
-Dialogue generation can be formulated as a language modeling task \citep{welleck-etal-2019-dialogue, zhang2019dialogpt}, where the next utterance is conditioned on the dialogue history.
-In this framework, an utterance is a sequence of tokens representing a dialogue turn. The next utterance utterance, $\textbf{x}_{t + 1}$, is predicted conditioned on a dialogue prefix or prompt, $\textbf{x}_{\leq t}$ (e.g., a single previous dialogue turn, or the entire conversation history). And a succession of utterances can be seen as a dialogue between agents.
+Dialogue generation can be formulated as a language modeling task \citep{welleck-etal-2019-dialogue}, where the next utterance is conditioned on the dialogue history.
+In this framework, an utterance is a sequence of tokens representing a dialogue turn. The next utterance utterance, $\textbf{x}_{t + 1}$, is predicted conditioned on a dialogue prefix or prompt, $\textbf{x}_{\leq t}$ (e.g., a single previous dialogue turn, or the entire conversation history). 
+% And a succession of utterances can be seen as a dialogue between agents.
 % \len{TODO - Do I need the following sentence?}
 % To remain close to the training objectives of my baseline models (GPT-2 \citep{radford2019language} and DialoGPT \citep{zhang2019dialogpt}) I choose to adopt the language modeling formulation for conversation modeling. 
-The language modeling formulation of dialogue generation consists of concatenating all dialogue turns in a multi-turn dialogue session into a long text: $\textbf{x}_1, ..., \textbf{x}_N$. Denote the source sentence or dialogue history as $S = \textbf{x}_1, ..., \textbf{x}_m$ and the target sentence (ground truth response) as $T = x_{m + 1}, ..., x_N$. The conditional probability of dialogue continuation given its history $P(T | S)$ can be written as
+When developing dialogue generation models, the language modeling training objective can be formulated as a product of source-target pair probabilities \citep{zhang2019dialogpt}. This consists of concatenating all dialogue turns in a multi-turn dialogue session into a long text: $\textbf{x}_1, ..., \textbf{x}_N$. The source sequence (or dialogue history) is then denoted as $\mathcal{D} = \textbf{x}_1, ..., \textbf{x}_m$ and the target sequence (or ground truth dialogue continuation) as $T = \textbf{x}_{m + 1}, ..., \textbf{x}_N$. The conditional probability of dialogue continuation given its history $P(T | \mathcal{D})$ can be then expressed as
 
 \begin{equation}
-    p(T | S) = \prod_{n = m + 1}^N p(\textbf{x}_n | \textbf{x}_1, ..., \textbf{x}_{n - 1}).
+    p(T | \mathcal{D}) = \prod_{n = m + 1}^N p(\textbf{x}_n | \textbf{x}_1, ..., \textbf{x}_{n - 1}).
 \end{equation}
 
-A multi-turn dialogue session $T_1, ..., T_K$ can be written as $p(T_K, ..., T_2 | T_1)$ which is essentially the product of all source-target pairs probabilities $p(T_i | T_1, ..., T_{i - 1})$. This formulation also shows that optimising the single objective $p(T_K, ..., T_2 | T_1)$ is equivalent to optimising all source-target pair probabilities.
+A multi-turn dialogue session $T_1, ..., T_K$ can be written as $p(T_K, ..., T_2 | T_1)$ which is essentially the product of all source-target pairs probabilities $p(T_i | T_1, ..., T_{i - 1})$. This formulation also shows that optimising the single objective $p(T_K, ..., T_2 | T_1)$ is equivalent to optimising all source-target pair probabilities. Sampling from such a dialogue generation model, i.e., generating a next utterance $\textbf{x}_{t + 1}$ based on a dialogue history at turn $t$, $\mathcal{D}_t$, entails sampling from the conditional distribution $p(\textbf{x}_{t + 1} | \mathcal{D}_t)$.
 
-\subsection{Controlled Dialogue Generation}
-\label{subsec:controlled_dialogue_generation}
+% \subsection{Controlled Dialogue Generation}
 
 % \len{Sandro suggests to move the entire following subsection to the Related Work section. See comment. FROM HERE...}
 
-Analogous to the definition of controlled text generation given earlier in Section \ref{subsec:text_gen_and_ctg}, \textit{controlled dialogue generation} refers to the process of enforcing a particular linguistic style on an automatically generated dialogue response, and it is the core task of this thesis.
+Analogous to the definition of controlled text generation given earlier in Section \ref{subsec:text_gen_and_ctg}, \textit{controlled dialogue generation} refers to the process of enforcing a particular linguistic style on an automatically generated dialogue response, and it is the core task of this thesis. 
+Controlled dialogue generation can be seen as sampling from the conditional distribution $p(\textbf{x}_{t + 1} | \mathcal{D}_t, a)$, where $\textbf{x}_{t + 1}$ is a sequence of tokens representing the next dialogue turn or utterance, $\mathcal{D}_t$ is the dialogue history at dialogue turn $t$, and $a$ denotes a specific linguistic style which utterance $\textbf{x}_{t + 1}$ is desired to possess. Similar to the distinction made between text generation and controlled text generation in Section \ref{subsec:text_gen_and_ctg}, controlled dialogue generation can also be seen as a more restrictive version of dialogue generation, as the probability space being conditioned on is further constrained to also contain the style attribute $a$. This style attribute typically represents concrete linguistic styles, like sentiment or topic \citep{madotto-etal-2020-plug}, and rarely a more abstract style, like the speaking style of a particular age group. However, recent efforts to develop personalized dialogue systems require researchers to develop controlled dialogue generation models that control for more abstract linguistic styles.
 
-\len{Revise this section}
 
-Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI \citep{edlund2008towards, scheutz2011toward, madotto-etal-2020-plug}. \cite{zheng2019personalized} argue that this objective is difficult to reach because of the challenge of representing personality traits via language expression and the lack of large-scale persona-labeled dialogue datasets. Assuming an encoder-decoder setup, the same authors postulate that most personalized neural conversation models can be classified as one of two types: implicit and explicit personalisation models. For implicit personalization models, each speaker has its own vector representation, which implicitly captures the speaking style of the speaker in the decoding process \citep{ijcai2017-521, li-etal-2016-persona}. These models enjoy the benefit of having a more granular and realistic representation of speaking style, as opposed to a simple discrete set of traits (as is the case for explicit personalization models). On the other hand, it is unclear how speaker style is captured and should be interpreted, as all the information about a speaker's style is encoded in a real-valued vector. Furthermore, these methods suffer from a data sparsity issue, because each dialogue should be tagged with a speaker identifier and there should be sufficient dialogues from each trait-group to train a reliable trait-adaptive model. 
+
+% \begin{itemize}
+%     \item Controlled dialogue generation can be seen as sampling from the conditional distribution $p(\textbf{x}_{t + 1} | \mathcal{D}_t, a)$, where $\textbf{x}_{t + 1}$ is a sequence of tokens representing the next dialogue turn or utterance, $\mathcal{D}_t$ is the dialogue history at dialogue turn $t$, and $a$ denotes a specific linguistic style which utterance $\textbf{x}_{t + 1}$ is desired to possess.
+%     \item How is controlled dialogue generation different from regular dialogue generation?
+%     \item How is controlled dialogue generation different from controlled text generation.
+%     \item Segue to dialogue personalization
+% \end{itemize}
+
+% \len{Revise this section}
+
+\subsection{Personalized Dialogue Generation Models}
+Personalized dialogue generation models are special cases of controlled dialogue generation models in that they attempt constrain generated dialogue responses to possess certain linguistic characteristics that align with a user's persona (e.g., their age, gender, or geographical region).
+% Personalized interaction is of crucial importance to obtain dialogue systems that can be trusted by users and perceived as natural \citep{van2019exploring}, but most of all to be accessible to varying user profiles, rather than targeted at one particular user group \citep{zheng2019personalized, zeng-etal-2020-meddialog}.
+% Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI \citep{edlund2008towards, scheutz2011toward}.
+Although this thesis solely focuses on a particular aspect of a user's profile, i.e., their age group, discussing general personalization in dialogue generation models is still useful to develop a broader understanding controlled dialogue generation. Namely, the distinctions between types of personalization approaches for dialogue generation models, and the associated challenges often also apply to controlled dialogue generation models more broadly.
+
+Assuming an encoder-decoder setup, personalized dialogue generation models can be classified as one of two types: implicit and explicit personalisation models \cite{zheng2019personalized}. For implicit personalization models, each speaker has its own vector representation, which implicitly captures the speaking style of the speaker in the decoding process \citep{ijcai2017-521, li-etal-2016-persona}. These models enjoy the benefit of having a more granular and realistic representation of speaking style, as opposed to a simple discrete set of traits (as is the case for explicit personalization models). On the other hand, it is unclear how speaker style is captured and should be interpreted, as all the information about a speaker's style is encoded in a real-valued vector. Furthermore, these methods suffer from a data sparsity issue, because each dialogue should be tagged with a speaker identifier and there should be sufficient dialogues from each trait-group to train a reliable trait-adaptive model. 
 % \len{This should be in the related work. See comment.} 
 % This last drawback is a bigger hurdle for the method proposed by \cite{zheng2019personalized} than it is for mine, as their work deals with personalization for intersections of multiple traits, whereas this thesis focuses on adaptation to a small number of age groups.
 
-When generating responses, \textit{explicit} personalization models are conditioned either on a given personal profile \citep{ijcai2018-595}, text-described persona \citep{zhang-etal-2018-personalizing}, or simply an attribute label \citep{madotto-etal-2020-plug}. That is, speaker traits are represented as key-value pairs or descriptions about age, gender, etc. This can be seen as conditioning the decoder's output on an attribute $a$. Speakers with same set of personality traits can share attribute representations, so it does not require a speaker-specific representation vector. Such structured character descriptions are more explicit, straight-forward, and interpretable. However, explicit personalization models require manually labeled or crowdsourced datasets for development, making it difficult to scale these models to large-scale dialogue datasets \cite{zheng2019personalized, madotto-etal-2020-plug}.
+When generating responses, explicit personalization models are conditioned either on a given personal profile \citep{ijcai2018-595}, text-described persona \citep{zhang-etal-2018-personalizing}, or simply an attribute label \citep{madotto-etal-2020-plug}. That is, speaker traits are represented as key-value pairs or descriptions about age, gender, etc. This can be seen as conditioning the decoder's output on an attribute $a$ (as is the case in this thesis). Speakers with same set of personality traits can share attribute representations, so it does not require a speaker-specific representation vector. Such structured character descriptions are more explicit, straight-forward, and interpretable. However, explicit personalization models require manually labeled or crowdsourced datasets for development, making it difficult to scale these models to large-scale dialogue datasets \citep{zheng2019personalized, madotto-etal-2020-plug}.
+
+% \cite{zheng2019personalized} argue that this objective is difficult to reach because of the challenge of representing personality traits via language expression and the lack of large-scale persona-labeled dialogue datasets.
 
 % \len{...TO HERE}
 
@@ -341,7 +362,13 @@ Furthermore, \cite{vaswani2017attention} propose to use multi-head attention by 
 \end{figure}
 
 \subsection{Causal Language Modeling with Transformers for Dialogue Generation}
-As described in Section \ref{subsec:background_dialogue}, here we focus on dialogue generation. A formulation of dialogue generation as a language modeling task is described in Section \ref{subsec:dialogue_generation_as_lm}. Following the conventions of \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug}, a dialogue is comprised of multiple alternating turns (sometimes referred to as utterances) between more than one speaker. For simplicity, this project only focuses on dialogues between two speakers. The conversation history at turn $t$ is defined as $\mathcal{D}_t = \{S^{(1)}_1, S^{(2)}_1, ..., S^{(1)}_t\}$, where $S^{(j)}_t$ is speaker $j$'s utterance at time $t$. \cite{madotto-etal-2020-plug} denote speaker $1$ as the user $U$, and speaker $2$ as the conversational system $S$, yielding dialogue history $\mathcal{D}_t = \{U_1, S_1, ..., U_t\}$. This notational convention will also be used for the user-system experiments later on in this thesis.
+% As described in Section \ref{subsec:background_dialogue}, here we focus on dialogue generation. 
+% A formulation of dialogue generation as a language modeling task is described in Section \ref{subsec:dialogue_generation_as_lm}. 
+As previously described in Section \ref{subsec:background_dialogue}, 
+% Following the conventions of \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug}, 
+a dialogue is comprised of multiple alternating turns, i.e., utterances, between more than one speaker. Furthermore, as described in Section \ref{subsec:controlled_dialogue_generation}, the concatenation of the sequences representing utterances is defined as the dialogue history. Because the focus of this thesis is on dialogues between two speakers, the dialogue history at turn $t$ is defined as $\mathcal{D}_t = \{S^{(1)}_1, S^{(2)}_1, ..., S^{(1)}_t\}$, where $S^{(j)}_t$ is speaker $j$'s utterance at time $t$. 
+% \cite{madotto-etal-2020-plug} denote speaker $1$ as the user $U$, and speaker $2$ as the conversational system $S$, yielding dialogue history $\mathcal{D}_t = \{U_1, S_1, ..., U_t\}$. 
+% This notational convention will also be used for the user-system experiments later on in this thesis.
 
 A Transformer-based language model (denoted $\texttt{LM}$) is used in this thesis to model the distribution of dialogues, using dialogue history at time $t$, $\mathcal{D}_t$, as a prompt to auto-regressively generate the dialogue continuation $S_t$. More specifically, let the concatenation of the dialogue history at $t$ and its continuation, $\{\mathcal{D}_t, S_t\}$, be represented as a sequence of tokens $\textbf{x}= \{x_0, ..., x_n\}$. Then, by recursively applying the product rule of probability (\cite{bishop2006pattern}), the unconditional probability of the sequence $p(\textbf{x})$ can be expressed as:
 
@@ -353,12 +380,15 @@ A Transformer-based language model (denoted $\texttt{LM}$) is used in this thesi
 
 \begin{equation}
     o_{t + 1}, H_{t + 1} = \texttt{LM} \left( x_t, H_t \right),
+\label{eq:transformer_lm_io}
 \end{equation}
 
 where $o_{t + 1}$ is the hidden state of the last layer. Finally, after applying a softmax transformation, the next token $x_{t + 1}$ is sampled from the resulting probability distribution, i.e.,  $x_{t + 1} \sim p_{t + 1} = \texttt{softmax} \left( W o_{t + 1} \right)$, where $W$ is a linear mapping from the model's last hidden state to a vector of vocabulary size. This recursive formulation allows for efficient text generation by leveraging cached memories, without repeated forward passes.
 
 \subsection{Plug-and-Play Language Modeling}
 \label{sec:ppm}
+
+% \len{This section needs paragraph headers}
 
 The Plug-and-Play Language Model (PPLM) \cite{dathathri2019plug} works by using a text classifier, referred to as an attribute model, to control the text generated by a language model. Let $p(X)$ denote the output distribution of a Transformer-based language model (e.g., GPT-2 or DialoGPT), where $X$ represents the generated text. And $p(a | X)$ denotes the attribute model (e.g., a single-layer or BoW classifier) that represents the degree of adherence of text $X$ to a certain attribute $a$ (e.g., topic or sentiment (previous work), or age-group characteristics (this work)). Then PPLM can be seen as modeling the conditional distribution of generated text $X$ given attribute $a$, i.e., $p(X | a)$. Note that Bayes' theorem ties these three definitions together as follows:
 
@@ -399,7 +429,7 @@ Let's first focus on the first of the two gradients, i.e., the attribute control
 
 where $\alpha$ is the step size, and $\gamma$ denotes the normalization term's scaling coefficient. Both step size ($\alpha$) and the scaling coefficient ($\gamma$) influence attribute control. Attribute control can be softened by either decreasing $\alpha$ or increasing $\gamma$ and vice versa. Note that $\alpha = 0$ recovers the original uncontrolled underlying language model (e.g., GPT-2 or DialoGPT). In practice, $\Delta H_t$ is initialized at zero, and the update rule in Equation \ref{eq:H_update_rule} is applied $m$ times (usually 3 to 10), resulting in the updated key-value pair history $\tilde{H}_t  = H_t + \Delta H_t$. Then the updated history $\tilde{H}_t$ is passed through the language model, yielding the updated logits (final Transformer-layer): $\tilde{o}_{t + 1}, H_t = \texttt{LM}(x_t, \tilde{H}_t)$. And finally the shifted $\tilde{o}_{t + 1}$ is linearly mapped through a softmax layer to produce a new, more attribute-adherent, distribution from which to sample, i.e., $x_{t + 1} \sim \tilde{p}_{t + 1} = \texttt{softmax} \left( W \tilde{o}_{t + 1} \right)$.
 
-The method described until now will generate attribute-adherent text, but will likely yield fooling examples \citep{nguyen2015deep} that are gibberish to humans, but get assigned high $p(a | x)$ by the attribute model \citep{dathathri2019plug}. That is why \cite{dathathri2019plug} apply two methods to ensure fluency of the generated text. The first is to update $\Delta H_t$ such to minimize the Kullback-Leibler (KL) divergence (denoted $D_{KL})$ between the shifted and original distributions. In practice, $D_{KL}$ is scaled by a coefficient $\lambda_{KL}$, typically found to work well for most tasks when set to 0.01. Repetitive text generation (i.e., high $p(a | x)$ but low $p(x)$) can therefore sometimes be avoided by increasing $\lambda_{KL}$. The second method to ensure fluency is Post-norm Geometric Mean Fusion \citep{stahlberg-etal-2018-simple} which, instead of directly influencing $\Delta H_t$ like minimizing $D_{KL}$, fuses the altered generative distribution $\tilde{p}_{t + 1}$ with the unconditional language distribution $p(x)$. This is done during generation by sampling the next token as follows:
+The method described until now will generate attribute-adherent text, but will likely yield fooling examples \citep{nguyen2015deep} that are gibberish to humans, but get assigned high $p(a | x)$ by the attribute model \citep{dathathri2019plug}. That is why \cite{dathathri2019plug} apply two methods to ensure fluency of the generated text. The first is to update $\Delta H_t$ such to minimize the Kullback-Leibler (KL) divergence \citep{kullback1951information} (denoted $D_{KL})$ between the shifted and original distributions. In practice, $D_{KL}$ is scaled by a coefficient $\lambda_{KL}$, typically found to work well for most tasks when set to 0.01. Repetitive text generation (i.e., high $p(a | x)$ but low $p(x)$) can therefore sometimes be avoided by increasing $\lambda_{KL}$. The second method to ensure fluency is Post-norm Geometric Mean Fusion \citep{stahlberg-etal-2018-simple} which, instead of directly influencing $\Delta H_t$ like minimizing $D_{KL}$, fuses the altered generative distribution $\tilde{p}_{t + 1}$ with the unconditional language distribution $p(x)$. This is done during generation by sampling the next token as follows:
 
 \begin{equation}
     x_{t + 1} \sim \frac{1}{\beta}
@@ -420,9 +450,73 @@ where $\beta$ is a normalization constant, $p_{t + 1}$ and $\tilde{p}_{t + 1}$ d
 \end{figure}
 
 
-% \subsubsection{PPLM is not fine-tuning}
+As mentioned at the beginning of this section (i.e., Section \ref{sec:ppm}) and shown in Equation \ref{eq:H_update_rule}, the PPLM-method uses gradient updates that maximize the attribute model's log-likelihood $\log p(a | X)$ to enforce an attribute-specific style on a language model's generated output.
+The simplest attribute model is a bag-of-words (BoW), i.e., a list of words that represents the stylistic attribute desired to be enforced on the generated text.
+The log-likelihood of a BoW attribute model is the log of the sum of likelihoods of every constituent word of the BoW.
+Given a bag-of-words $\{w_1, ..., w_k\}$ that represents an attribute $a$, and the output distribution of the language model $p_{t + 1}$, the attribute model's log-likelihood is
+\begin{equation}
+    \log p(a | x) = \log \left( \sum_{i}^{k} p_{t + 1} [w_i] \right)
+    \label{eq:bow_att_model_loglikelihood}
+\end{equation}
+Ascending $\nabla \log p(a | x)$ therefore increases the likelihood of words in the BoW, $\{w_1, ..., w_k\}$, being generated. Furthermore, this implies that BoW-based control is exerted most noticeably at the lexical level.
 
-It is worth mentioning that the plug-and-play method applied by \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug} is different from fine-tuning. Note that in Equation \ref{eq:H_update_rule} the gradient updates are restricted to the history $H_t$, and do not affect the model's parameters. Because the key-value pairs $(K_t^{(i)}, V_t^{(i)})$ that comprise $H_t$ are activations and not model-weights, the updates only take place in the activation-space. This means that PPLM leaves the underlying (conversational) language model untouched.
+BoW attribute models are known to be capable of capturing accurate representations of attributes like sentiment and topic \citep{li-etal-2018-delete}.
+However, it can be desirable to use a more complex attribute model, i.e., a neural discriminator, when the attribute is more abstract and not easily easily represented as a BoW (e.g., age-specific language) \citep{dathathri2019plug}.
+In the PPLM-method, a discriminator attribute model $f := p(a | x)$ is developed by training a singly layered linear discriminator on (presumably attribute-adherent) input sentences $x$ and their corresponding labels $y_x$. More specifically, for an input sentence $x$ of length (in tokens) $t$, the set of hidden states $o_{:t}^{x}$ is collected from the Transformer-based $\texttt{LM}$ (see Equation \ref{eq:transformer_lm_io}).
+The set of hidden states is then averaged over all time steps, yielding $\bar{o}_t^x$.
+The discriminator $f$ is then trained using the cross-entropy between the discriminator's output $f(\bar{o}_t^x)$ and the label distribution $y$. Because the discriminator attribute model is trained on $\bar{o}_t^x$, it is possible to capture and propagate a more comprehensive representation of $a$, shifting $\texttt{LM}$'s output distribution towards one that favors sentences that align with $a$.
+
+Although the discriminator attribute model requires a separate training schedule, the computational cost of training and using such an attribute model in a PPLM-setup is negligible compared to fine-tuning a typical choice of $\texttt{LM}$ (e.g., GPT-2-medium \citep{radford2019language}) for controlled generation. Namely, the number of trainable parameters comprising the discriminator attribute model is equal to $(L_o \cdot N_a) + N_a$, where $L_o$ is the length of the hidden state vector, and $N_a$ is the number of classes defined in attribute $a$ (e.g., $N_a = 2$ if $a$ represents age, defined by two age groups, younger and older). Note that this is a substantially smaller number of trainable parameters than $\texttt{LM}$ typically has.
+For instance, training a PPLM-setup consisting of GPT-2-medium as its underlying language model, a discriminator attribute model, and an attribute $a$ with two classes amounts to training $(1024 \cdot 2) + 2 = 2050$ parameters, whereas fine-tuning the same language model to generate attribute-adherent text for \textit{both} attribute classes entails training $2 \cdot 345\text{M}$ parameters (i.e., one fully fine-tuned model per attribute class).
+% The discriminator attribute model's training objective can therefore be expressed as:
+
+% \begin{equation}
+%     \log p(a | x) = \log f()
+% \end{equation}
+
+
+
+% \len{Mention attribute models and their formulas so you can base your hypotheses on them.}
+% \textbf{Stuff about BoW attribute models}
+% \begin{itemize}
+%     % \item As mentioned at the beginning of this section (i.e., Section \ref{sec:ppm}) and shown in Equation \ref{eq:H_update_rule}, the PPLM-method uses gradient updated that maximize the attribute model's log-likelihood $\log p(a | X)$ to enforce an attribute-specific style on a language model's generated output.
+%     % \item The simplest attribute model is a bag-of-words (BoW), i.e., a list of words that represents the stylistic attribute desired to be enforced on the generated text.
+%     % \item The log-likelihood of a BoW attribute model is the log of the sum of likelihoods of every constituent word of the BoW.
+%     % \item Given a bag-of-words $\{w_1, ..., w_k\}$ that represents an attribute $a$, and the output distribution of the language model $p_{t + 1}$, the attribute model's log-likelihood is
+%     % \begin{equation}
+%     %     \log p(a | x) = \log \left( \sum_{i}^{k} p_{t + 1} [w_i] \right)
+%     %     \label{eq:bow_att_model_loglikelihood}
+%     % \end{equation}
+%     \item Ascending $\nabla \log p(a | x)$ therefore increases the likelihood of words in the BoW, $\{w_1, ..., w_k\}$, being generated.
+%     \item Emphasize that BoW-based control is exerted most noticeably at the lexical level.
+% \end{itemize}
+
+% \textbf{Stuff about discriminator attribute models}
+
+% \begin{itemize}
+%     % \item BoW-based attribute models are known to be capable of capturing accurate representations of attributes like sentiment and topic \citep{li-etal-2018-delete}.
+%     % \item However, it can be desirable to use a more complex attribute model, i.e., a neural discriminator, when the attribute is more abstract and not easily easily represented as a BoW (e.g., age-specific language).
+%     % \item In the PPLM-method, a discriminator attribute model $f$ is developed by training a singly layered neural discriminator on (presumably attribute-adherent) input sentences $x$ and their corresponding labels $y_x$.
+%     % \item More specifically, for an input sentence $x$ of length (in tokens) $t$, 
+%     % the set of hidden states $o_{:t}^{x}$ is collected from the Transformer-based $\texttt{LM}$ (see Equation \ref{eq:transformer_lm_io}).
+%     % the Transformer-based $\texttt{LM}$ outputs the corresponding hidden state of its last layer, $o_{:t}^{x}$ (see Equation \ref{eq:transformer_lm_io}). 
+%     % \item The set of hidden states is then averaged over all time steps, yielding $\bar{o}_t^x$.
+%     % \item The discriminator $f$ is then trained on the mean of the hidden states over all time steps, $\bar{o}_t^x$.
+%     \item (tl;dr version) The discriminator $f$ is then trained using the cross-entropy between the discriminator's output $f(\bar{o}_t^x)$ and the label distribution $y$.
+%     \item The number of trainable parameters comprising the discriminator attribute model is equal to $(L_o \cdot N_a) + N_a$, where $L_o$ is the length of the hidden state vector, and $N_a$ is the number of classes defined in attribute $a$ (e.g., $N_a = 2$ if $a$ represents age, defined by two age groups, younger and older). Note that this is a substantially smaller number of trainable parameters than $\texttt{LM}$ typically has. 
+%     \item For instance, training a PPLM-setup consisting of GPT-2-medium \citep{radford2019language} as its underlying language model, a discriminator attribute model, and an attribute $a$ with two classes amounts to training $(1024 \cdot 2) + 2 = 2050$ parameters, whereas fine-tuning the same language model to generate attribute-adherent text for \textit{both} attribute classes entails training $2 \cdot 345\text{M}$ parameters (i.e., one fully fine-tuned model per attribute class).
+%     \item The discriminator is optimized in a greedy manner \textbf{REFERENCE}, by only considering the next token being generated when optimizing the odds of the sentence possessing features learned to be attribute-adherent by $f$.
+%     \item The optimization objective is expressed as:
+%     \begin{equation}
+%         \log p(a | x ) = \log f(o_{:t + 1}, o_{t + 2})
+%         \label{eq:disc_att_model_loglikelihood}
+%     \end{equation}
+%     \item
+% \end{itemize}
+
+
+
+It is worth mentioning that the Plug-and-Play method applied by \cite{dathathri2019plug} and \cite{madotto-etal-2020-plug} is different from fine-tuning. Note that in Equation \ref{eq:H_update_rule} the gradient updates are restricted to the history $H_t$, and do not affect the model's parameters. Because the key-value pairs $(K_t^{(i)}, V_t^{(i)})$ that comprise $H_t$ are activations and not model-weights, the updates are only made to the activation-space. This means that PPLM leaves the underlying (conversational) language model untouched.
 
 Contrary to fine-tuning often massive LMs, PPLM does not incur a significant training cost (depending of course on the complexity of the discriminator or attribute model). However, \cite{madotto-etal-2020-plug} show that PPLM needs a fixed number of $m$ update-steps to for every generated token. This makes the original PPLM setup unsuitable for online interactive applications, like conversational systems. Addressing this problem, they introduce plug-and-play conversational model (PPCM), which extends PPLM by using the original model setup to generate dialogue datasets with the desired attribute $a$, and then use optimized residual adapters \citep{bapna-firat-2019-simple} to control $\texttt{LM}$'s output distribution. More specifically, \cite{madotto-etal-2020-plug} use PPLM to generate $n$ attribute-adherent dialogue datasets $\mathscr{D}^a = \{\mathcal{D}^1, ..., \mathcal{D}^n\}$, for attribute $a$. These generated dialogue datasets are then used to train the residual adapter modules that control the language model's output distribution.
 
