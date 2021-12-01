@@ -319,6 +319,7 @@ Secondly, some topics appear to be easier for one model rather than the other, a
 % We explore this issue more in-depth in the following section, where we compare the predictions by the two models and qualitatively inspect some examples.
 
 \subsection{Comparing Model Predictions}
+\label{subsec:exp1_comparing_model_preds}
 We split the data for analysis by whether or not both models make the same correct or incorrect prediction, or whether they differ. Table~\ref{tab:bnc_tri_bert_cases} shows the breakdown of these results.
 As can be seen, a quite large fraction of samples are correctly classified by both models (63.17\%), while in 19.78\% cases neither of the models make a correct prediction. The remaining cases are comparably split between cases where only one of the two is correct, with BERT slightly outperforming the trigram model by 1.23 percentage points. %, but the other is not.
 As shown in Figure~\ref{fig:bnc_blog_age_topic_dist_incl_unk}, the 19-29 age group appears to be be slightly easier compared to the 50+ group, where models are observed to make more errors: the trigram misclassifies 50+ utterances 1.12 times as often as 19-29 utterances, and 1.17 times as often by BERT$_{FT}$.
@@ -337,6 +338,7 @@ on average, shorter utterances contain less signal. On the other hand, short utt
 
 
 \subsection{Most Informative N-grams}
+\label{subsec:exp1_most_inf_ngrams}
 %\js{todo: analysis on trigrams: both quant and qual because we select them based on their effectiveness (top 10) + perform more qual investigation (e.g. nouns, content words, idiosyncratic expressions; also related to point below) (optional, but very nice) analysis of features wrt topics: are there features that are not dependent on the topic under discussion (i.e., more "linguistic" features)?}
 
 \begin{table}[H]

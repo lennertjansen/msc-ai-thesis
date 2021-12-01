@@ -39,7 +39,7 @@ In the second section, Related work or Section \ref{sec:related_work}, I discuss
 
 % \len{isn't this redundant, given the chapter's introduction?}
 
-\subsection{Language and Age}
+\subsection{Language and Age}\label{subsec:background_lang_age}
 The relationship between a person's age and use of language is a thoroughly studied subject with a decades long history and inherent challenges \citep{pennebaker2003words, nguyen2014gender, zheng2019personalized}. A number factors like community membership (e.g., gender, socioeconomic status, or political affiliation), experimental condition (e.g., emotional versus non-emotional disclosure), mode of disclosure (writing versus talking), and other confounding variables complicate the study of age's relation to language \citep{nguyen-etal-2011-author}. The relatively recent advent of widely available computational resources and vast amounts of textual data made it possible to leverage machine learning methods to help detect patterns in language that eluded previous conventional sociolinguistic research. Early computational investigations into the connection between a person's age and use of language is typically a combination of qualitative and statistical methods. For instance, using a mix between their proprietary count-based text analysis framework, Linguistic Inquiry and Word Count (LIWC) and sociolinguistic theory, \cite{pennebaker2003words} study the changes in written and spoken language use with increasing age. They discuss four important areas of a person's character that have been found to change with age: emotional experience and expression, identity and social relationships, time orientation, and cognitive abilities. These four axes and their hypothesized relationships with language use and age can be interpreted in the following ways:
 \begin{enumerate}
     \item \textit{Emotional experience and expression:} This is the relationship between increasing age and linguistically observable manifestations of a person's experienced emotions. In practical terms, this is framed as detectable instances of positive and negative affect in language. This complex relationship between age and emotional expression is characterized by decreased levels of negative affect and slightly non-decreasing levels of positive affect. This is also confirmed by the findings of \cite{schler2006effects}.
@@ -48,7 +48,8 @@ The relationship between a person's age and use of language is a thoroughly stud
     
     \item \textit{Time orientation:} This relationship describes how people express their perception of and orientation towards time. For instance, this can be indicated by the use of time-related verb tenses. The authors suggest that older individuals tend to be more past-oriented than their younger future-oriented counterparts.
     
-    \item \textit{Cognitive abilities:} This refers to markers of cognitive capacity in language. Aging is expected to be associated with less use of cognitively complex words after a certain mid-adulthood peak. Specifically, the relationship between markers of cognitive complexity in natural language (cognitive mechanisms, causal insight, and exclusive words) and age is hypothesized to be curvilinear. And because verbal ability does not decline until very late in life, markers of verbal ability (e.g., use of big words) are not expected to show changes with age.
+    \item \textit{Cognitive abilities:} This refers to markers of cognitive capacity in language. Aging is expected to be associated with less use of cognitively complex words after a certain mid-adulthood peak. Specifically, the relationship between markers of cognitive complexity in natural language (cognitive mechanisms, causal insight, and exclusive words) and age is hypothesized to be curvilinear, with markers of verbal ability only declining very late in life. 
+    % And because verbal ability does not decline until very late in life, markers of verbal ability (e.g., use of big words) are not expected to show changes with age.
 \end{enumerate}
 
 \cite{pennebaker2003words} consider the following variables: positive and negative emotions, first-person singular and first-person plural pronouns, social references, time-related words (past-tense, present-tense, and future-tense verbs), big words ($>6$ letters), cognitive mechanisms, causal insight, and exclusive words. Their main findings suggest that increasing with age, people use more positive and fewer negative affect words, use fewer self-references, use more future-tense and fewer past-tense verbs, and exhibit a general pattern of increasing cognitive complexity.
@@ -339,7 +340,7 @@ When generating responses, explicit personalization models are conditioned eithe
 
 \subsection{Transformers}
 
-The Transformer architecture plays a central role in most of the recent advances in NLP. The same holds for the methods used in this thesis to investigate controlled dialogue generation and automated detection of age-related linguistic patterns in dialogue utterances. For a more detailed review of the model architecture, the reader is referred to the original paper \citep{vaswani2017attention} or this blog post\footnote{\url{https://jalammar.github.io/illustrated-transformer/}}.
+The Transformer architecture plays a central role in most of the recent advances in NLP. The same holds for the methods used in this thesis to investigate controlled dialogue generation and automated detection of age-related linguistic patterns in dialogue utterances. For a more detailed review of the model architecture, the reader is referred to the original paper \citep{vaswani2017attention}, the annotated and replicated version of the original paper \citep{rush-2018-annotated}, or this blog post\footnote{\url{https://jalammar.github.io/illustrated-transformer/}}.
 
 The Transformer, like most neural sequence processing models, has an encoder-decoder structure. On a high level, the encoder receives an input sequence $\textbf{x} = (x_1, ..., x_n)$ (e.g., a sentence), and maps this to a sequence of latent continuous variables $\textbf{z} = (z_1, ..., z_n)$. The decoder then takes $\textbf{z}$ as input, and maps this to an output sequence $\textbf{y} = (y_1, ..., y_m)$. Note that the use of positional encodings of the input and output embeddings enables the Transformer to process and generate sequences in arbitrary order, allowing for a high degree of parallelization. The generation of $\textbf{y}$ happens element-by-element in an auto-regressive fashion, where at step $t$, element $y_{t - 1}$ is also taken as input.
 
@@ -362,6 +363,7 @@ Furthermore, \cite{vaswani2017attention} propose to use multi-head attention by 
 \end{figure}
 
 \subsection{Causal Language Modeling with Transformers for Dialogue Generation}
+\label{subsec:causal_lm_with_transformers_dialogue_gen}
 % As described in Section \ref{subsec:background_dialogue}, here we focus on dialogue generation. 
 % A formulation of dialogue generation as a language modeling task is described in Section \ref{subsec:dialogue_generation_as_lm}. 
 As previously described in Section \ref{subsec:background_dialogue}, 
@@ -388,7 +390,11 @@ where $o_{t + 1}$ is the hidden state of the last layer. Finally, after applying
 \subsection{Plug-and-Play Language Modeling}
 \label{sec:ppm}
 
-% \len{This section needs paragraph headers}
+\len{This section needs 
+\begin{itemize}
+    \item a brief intro paragraph (a couple of sentences) introducing the pplm-method and its central importance to this thesis
+    \item paragraph headers
+\end{itemize}}
 
 The Plug-and-Play Language Model (PPLM) \cite{dathathri2019plug} works by using a text classifier, referred to as an attribute model, to control the text generated by a language model. Let $p(X)$ denote the output distribution of a Transformer-based language model (e.g., GPT-2 or DialoGPT), where $X$ represents the generated text. And $p(a | X)$ denotes the attribute model (e.g., a single-layer or BoW classifier) that represents the degree of adherence of text $X$ to a certain attribute $a$ (e.g., topic or sentiment (previous work), or age-group characteristics (this work)). Then PPLM can be seen as modeling the conditional distribution of generated text $X$ given attribute $a$, i.e., $p(X | a)$. Note that Bayes' theorem ties these three definitions together as follows:
 
@@ -409,7 +415,7 @@ The Plug-and-Play Language Model (PPLM) \cite{dathathri2019plug} works by using 
 %     \item Double-check if you should make this last argument in the methodology, and not in related work or experimental details.
 % \end{itemize}}
 
-To control the generated text, PPLM shifts the aforementioned history $H_t$ (i.e., all Transformer key-value pairs generated up to time $t$) in the direction of the sum of two gradients:
+To control the generated text, PPLM shifts the previously mentioned history $H_t$ (see Section \ref{subsec:causal_lm_with_transformers_dialogue_gen} and Equation \ref{eq:transformer_lm_io}), i.e., all Transformer key-value pairs generated up to time $t$, in the direction of the sum of two gradients:
 
 \begin{enumerate}
     \item Ascending $\nabla \log p(a | X)$: maximizing the log-likelihood of the desired attribute $a$ under the conditional attribute model. This enforces attribute control.
