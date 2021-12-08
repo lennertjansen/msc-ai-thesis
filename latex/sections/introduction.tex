@@ -18,172 +18,198 @@
 % \end{itemize}
 
 % captivating intro with a short timeline/overview introduction to the field
-Endowing dialogue systems with the capability to emulate users' speaking styles to generate human-like conversation is a long-standing goal in artificial intelligence (AI) research \citep{edlund2008towards, scheutz2011toward}.
+Endowing dialogue systems with the capability to emulate users' speaking styles in order to generate human-like conversation is a long-standing goal in artificial intelligence (AI) research. 
+% \len{isn't human-like conversation the goal?} \citep{edlund2008towards, scheutz2011toward}.
 Despite impressive recent progress in the development of dialogue systems \citep{mctear2020conversational}, the development of systems that can adapt their language to that of a particular individual or group of users continues to pose more of a challenge.
 Recent examples of this line of research include adaptation at style level \citep{ficler-goldberg-2017-controlling}, persona-specific traits \citep{zhang-etal-2018-personalizing}, or other traits such as sentiment and topic \citep{madotto-etal-2020-plug}.
 
 % broad importance
-Personalized interaction between users and dialogue systems is of crucial importance to obtain systems that can be trusted by users and perceived as natural \citep{van2019exploring}, but most of all to be accessible to varying user profiles, rather than targeted at one particular user group \citep{zheng2019personalized, zeng-etal-2020-meddialog}. \len{TODO - More things that are important?}
+Personalized interaction between users and dialogue systems is of crucial importance to obtain systems that can be trusted by users and perceived as natural \citep{van2019exploring}, but most of all to be accessible to varying user profiles, rather than targeted at one particular user group \citep{zheng2019personalized, zeng-etal-2020-meddialog}.
+% \len{TODO - More things that are important?}
 % \len{Maybe this isn't the most natural place to mention this: }Moreover, it is in the interest of preserving privacy to be able to identify and adapt to a user's linguistic style by leveraging user-generated signal, rather than working from ground truth metadata about user demographics.
 
 % this work and research goals?
-In this thesis, we focus on a particular user property a dialogue system can detect and adapt its language to: the user's age group. 
+In this thesis, I focus on a particular user property a dialogue system can detect and adapt its language to: the user's age group. 
 The research presented in this thesis is comprised of two connected experiments that serve as important steps towards the development of age-adaptive dialogue systems.
-The first experiment, Experiment 1, focuses on the automated detection of age-related linguistic patterns in dialogue. Subsequently, the goal of the second experiment, Experiment 2, is to develop dialogue generation models that can produce conversational responses that possess linguistic features learned to be characteristic of certain age groups, based on the results of Experiment 1. \len{Rephrase this sentence to make it easier to read}
+The first experiment, Experiment 1, focuses on the automated detection of age-related linguistic patterns in dialogue. 
+Subsequently, the goal of the second experiment, Experiment 2, is to develop dialogue generation models that can produce conversational responses that possess linguistic features learned by Experiment 1's classifiers to be characteristic of certain age groups.
+% , based on the results of Experiment 1. \len{Rephrase this sentence to make it easier to read}
 % \len{(about dialogue a...)}, where the results of the first, Experiment 1, inform the decisions on the second, Experiment 2.
 
-\paragraph{Experiment 1 \len{idk about the paragraph headers yet. Also revise this paragraph because it contains a lot of re-used sentences of the paper}} The preliminary research objective of this thesis is to investigate whether the linguistic behavior of conversational participants differs across age groups using state-of-the-art natural language processing (NLP) models on purely textual data, without considering vocal cues.
-We aim to detect age from characteristics of language use and adapt to this signal, rather than work from ground-truth metadata about user demographics.
-This is in the interest of preserving privacy, and from the perspective that while age and language use may have a relationship, this will not be linear \citep{pennebaker2003words} and there are individual differences.
+% \paragraph{Experiment 1 \len{idk about the paragraph headers yet. Also revise this paragraph because it contains a lot of re-used sentences of the paper}} 
+\paragraph{Experiment 1} The preliminary research objective of this thesis is to investigate whether the linguistic behavior of conversational participants differs across age groups by using state-of-the-art natural language processing (NLP) models on purely textual data, without considering vocal cues.
+I aim to detect age from characteristics of language use and adapt to this signal, rather than work from ground-truth metadata about user demographics.
+This is in the interest of preserving privacy, and from the perspective that while age and language use may have a relationship, this will not be linear \citep{pennebaker2003words} and there are individual differences. \len{revise this last sentence}
 % Previous work on age detection in dialogue has focused on speech features, which are known to systematically vary across age groups (REFFF). For example, Wolters et al. (2009) learn logistic regression age classifiers from a small dialogue dataset using different acoustic cues supplemented with a small set of hand-crafted lexical features, while Li et al. (2013) develop SVM classifiers using acoustic and prosodic features extracted from scripted utterances spoken by participants interacting with an artificial system.
 Previous work on age detection in dialogue has largely focused on combinations of auditory speech features or handcrafted features \citep{schler2006effects, wolters2009age, li2013automatic}.
-In contrast to this line of work, we investigate whether different age groups can be detected from textual linguistic information rather than voice-related cues, and train our models end-to-end. We explore whether, and to what extent, various state-of-the-art NLP models are able to capture such differences in dialogue data as a preliminary step to age-group adaptation by conversational agents.
+In contrast to this line of work, I investigate whether different age groups can be detected from textual linguistic information rather than voice-related cues, and train my models end-to-end. I explore whether, and to what extent, various state-of-the-art NLP models are able to capture such differences in dialogue data as a preliminary step to age-group adaptation by dialogue systems.
+% \len{dialogue systems?}.
 % \len{This could be a good sentence to bridge the aims of the two parts}
-% As our preliminary research objective, we aim to investigate the extent to which text-based natural language processing (NLP) models can detect age-related linguistic patterns in transcribed dialogues.
+% As my preliminary research objective, I aim to investigate the extent to which text-based natural language processing (NLP) models can detect age-related linguistic patterns in transcribed dialogues.
 
-\paragraph{Experiment 2} The main research objective of this thesis is to
-% Subsequently, our main research objective is to develop dialogue response generation models that can detectably emulate the linguistic styles of age groups studied in Experiment 1 \len{rephrase this}.
+% \paragraph{Experiment 2}
+% Subsequently, my main research objective is to develop dialogue response generation models that can detectably emulate the linguistic styles of age groups studied in Experiment 1 \len{rephrase this}.
 
-\begin{itemize}
-    \item we aim to test whether it is possible to generate dialogue responses that possess age-indicative features, identified and studied in Experiment 1.
-    \item  Therefore(?), the main focus of this thesis in on \textit{controlled dialogue generation}, which entails enforcing a specific linguistic style on automatically generated dialogue responses.
-    \item Specifically, we focus on controlling generated dialogue responses to possess stylistic features that are characteristic of certain age groups.
-    \item Recent work on dialogue generation models often relies on the Transformer architecture \citep{vaswani2017attention}, and the use of large-scale pre-trained Transformer-based architectures for dialogue generation has also become commonplace \citep{zhang2019dialogpt, brown2020language-models-few-shot-gpt3}
-    \item however, retraining such large-scale pre-trained language models to generate text with a specific style is extremely computationally expensive, environmentally harmful (find a reference that confirms this), and infeasible for most developers.
-    \item Plug-and-Play language models (PPLM) \citep{dathathri2019plug} circumvent these problems by providing a framework to control the output of large transformer-based language models by using substantially smaller style-specific attribute models to perturb the underlying language model's activation space.
-    \item While previous work on Plug-and-Play approaches to controlled text generation demonstrated adaptation to coarse and tangible linguistic style, like topic and sentiment \citep{madotto-etal-2020-plug}, more fine-grained and abstract linguistic styles, like age-related language, remains unexplored. 
-    \item Our work therefore focuses on the use of Plug-and-Play Language Models for age-adaptive dialogue generation.
-\end{itemize}
+\paragraph{Experiment 2} In Experiment 2, I aim to test whether it is possible to generate dialogue responses that possess age-indicative features, identified and studied in Experiment 1.
+The main focus of this thesis is therefore on \textit{controlled dialogue generation}, which entails enforcing a specific linguistic style on automatically generated dialogue responses.
+Specifically, I focus on controlling generated dialogue responses to possess stylistic features that are characteristic of certain age groups.
+Recent work on dialogue generation models often relies on the Transformer architecture \citep{vaswani2017attention}, and the use of large-scale pre-trained Transformer-based architectures for dialogue generation has also become commonplace \citep{zhang2019dialogpt, brown2020language-models-few-shot-gpt3}.
+However, retraining such large-scale pre-trained language models to generate text with a specific style is extremely computationally expensive, and infeasible for most developers.
+Plug-and-Play language models (PPLM) \citep{dathathri2019plug} circumvent these problems by providing a framework to control the output of large Transformer-based language models by using substantially smaller style-specific attribute models to perturb the underlying language model's activation space.
+While previous work on Plug-and-Play approaches to controlled text generation demonstrated adaptation to coarse and tangible linguistic style, like topic and sentiment \citep{madotto-etal-2020-plug}, more fine-grained and abstract linguistic styles, like age-related language, remains unexplored.
+This work therefore focuses on the use of Plug-and-Play Language Models for age-adaptive dialogue generation.
 
-\paragraph{Contributions?}
+% \begin{itemize}
+%     \item I aim to test whether it is possible to generate dialogue responses that possess age-indicative features, identified and studied in Experiment 1.
+%     \item  Therefore(?), the main focus of this thesis in on \textit{controlled dialogue generation}, which entails enforcing a specific linguistic style on automatically generated dialogue responses.
+%     \item Specifically, I focus on controlling generated dialogue responses to possess stylistic features that are characteristic of certain age groups.
+%     \item Recent work on dialogue generation models often relies on the Transformer architecture \citep{vaswani2017attention}, and the use of large-scale pre-trained Transformer-based architectures for dialogue generation has also become commonplace \citep{zhang2019dialogpt, brown2020language-models-few-shot-gpt3}
+%     \item however, retraining such large-scale pre-trained language models to generate text with a specific style is extremely computationally expensive, environmentally harmful (find a reference that confirms this), and infeasible for most developers.
+%     \item Plug-and-Play language models (PPLM) \citep{dathathri2019plug} circumvent these problems by providing a framework to control the output of large transformer-based language models by using substantially smaller style-specific attribute models to perturb the underlying language model's activation space.
+%     \item While previous work on Plug-and-Play approaches to controlled text generation demonstrated adaptation to coarse and tangible linguistic style, like topic and sentiment \citep{madotto-etal-2020-plug}, more fine-grained and abstract linguistic styles, like age-related language, remains unexplored. 
+%     \item My work therefore focuses on the use of Plug-and-Play Language Models for age-adaptive dialogue generation.
+% \end{itemize}
 
-\paragraph{Overview}
+\paragraph{Key Contributions}
+% \len{@Sandro, should I mention the contributions here or in the discussion? Right now they're in the discussion in their own section (Section \ref{sec:contributions})}}
+My age detection experiment builds on the work of \cite{schler2006effects}, who focus on age detection in written discourse using handcrafted features. I extend their work by: \textbf{(1)} eliminating the need for handcrafted features by learning end-to-end representations using state-of-the-art NLP models; \textbf{(2)} applying this approach to dialogue data, using a dataset of transcribed spontaneous open-domain dialogues; \textbf{(3)} showing that text-based models can indeed detect age-related differences, even in the case of very sparse signals at the level of dialogue utterances; \textbf{(4)} carrying out an in-depth analysis of the models' predictions to gain insight about which elements of language use are most informative. Furthermore, the age detection analyses motivate the use of local features (i.e., BoW-based attribute models) for controlled generation as a viable alternative to neural discriminator-based attribute models. My work on age detection from dialogue can be considered a preliminary step to the modeling of age-related linguistic adaptation by AI conversational systems. In particular, these results informed my work on controlled dialogue generation using PPLM.
+
+My work on controlled dialogue generation using PPLM builds on previous work on controlled language generation by \cite{dathathri2019plug}, who focus on controlled story writing for concrete styles (e.g., sentiment, or topic). I extend their work in several important ways: \textbf{(1)} I control language generation for more abstract writing styles, i.e., age group specific linguistic style; \textbf{(2)} I use PPLM for dialogue response generation; \textbf{(3)} I propose methods for empirical development of BoW attribute models (as opposed to the manually curated BoWs used by \cite{dathathri2019plug}) and demonstrate their applicability for controlled dialogue generation; \textbf{(4)} I thoroughly study the relationships between dialogue response quality, response style, and response length; 
+% (5) I also contribute to a clearer understanding of what age-related features a fine-tuned BERT model seems to focus on when classifying generated responses; 
+and finally \textbf{(5)} I carry out an extensive analysis on the effects of prompt-induced biases on the quality and style-attribute adherence of generated language, which has been overlooked by previous work on Plug-and-Play generation. 
+Despite previous work also focusing on 
+% Plug-and-Play 
+conversational models, my work demonstrates a Plug-and-Play approach to controlled dialogue generation, without the need to generate attribute-specific dialogue datasets, or separately optimize residual adapter modules \citep{madotto-etal-2020-plug}.
+
+% Overall, this research is a promising step towards the development of adaptive conversational systems. In particular, the development of age-adaptive conversational systems can benefit from these results. Since consistent language style differences were found between age groups, systems whose language generation capabilities aim to be consistent with a given age group should therefore reproduce these patterns. This could be achieved, as I have shown, by embedding Plug-and-Play modules that control the generation of a system’s output, which could lead to better, more natural interactions between human speakers and a conversational system.
+
+\paragraph{Overview of Thesis}
 The code for the experiments is available on GitHub.\footnote{\url{https://github.com/lennertjansen/msc-ai-thesis}}
-The rest of this thesis is structured as follows: Chapter \ref{ch:literature_review} is a two-part literature review that first provides the relevant theoretical background of important components involved with age-adaptive dialogue generation using PPLM (Section \ref{sec:background}), and then compares our work to the most relevant related work (Section \ref{sec:related_work}).
-Then, in Chapter \ref{ch:experiment1}, we report our work on detecting age-related linguistic patterns in dialogue (i.e., Experiment 1)\len{maybe just say the age detection results}, starting with the clearly stated research objectives and hypotheses, followed by a description of the datasets used throughout this thesis in Section \ref{sec:data}, the methodology and experimental in Section \ref{sec:exp1_methods_exp_setup}, the results of Experiment 1 in Section \ref{sec:exp1_results}, subsequent quantitative and qualitative analyses of these results in Section \ref{sec:exp1_analyses}, and a short discussion and conclusion to Experiment 1 in Section \ref{sec:exp1_discussion_conclusion}.
-Chapter \ref{ch:experiment2} reports our research about age-adaptive dialogue generation using PPLM (i.e., Experiment 2). We begin by more explicitly describing the research objectives and hypotheses, and connection to Experiment 1 in Section \ref{sec:exp2_intro}. This is followed by Experiment 2's methodology and experimental setup in Section \ref{sec:exp2_methods}. The results of our age-adaptive dialogue are discussed in Section \ref{sec:exp2_results}, followed by various quantitative and qualitative analyses of these results in Section \ref{sec:exp2_analyses}.
-The main contributions and key takeaways of this thesis are summarized in Chapter \ref{ch:discussion}, along with an extensive discussion about the implications of our results, the research limitations, ethical considerations, and future research directions.
+The rest of this thesis is structured as follows: Chapter \ref{ch:literature_review} is a two-part literature review that first provides the relevant theoretical background of important components involved with age-adaptive dialogue generation using PPLM (Section \ref{sec:background}), and then compares my work to the most relevant related work (Section \ref{sec:related_work}).
+Then, in Chapter \ref{ch:experiment1}, I report my work on detecting age-related linguistic patterns in dialogue (i.e., Experiment 1), starting with the clearly stated research objectives and hypotheses, followed by a description of the datasets used throughout this thesis in Section \ref{sec:data}, the methodology and experimental in Section \ref{sec:exp1_methods_exp_setup}, the results of Experiment 1 in Section \ref{sec:exp1_results}, subsequent quantitative and qualitative analyses of these results in Section \ref{sec:exp1_analyses}, and a short discussion and conclusion to Experiment 1 in Section \ref{sec:exp1_discussion_conclusion}.
+Chapter \ref{ch:experiment2} reports my research about age-adaptive dialogue generation using PPLM (i.e., Experiment 2). I begin by more explicitly describing the research objectives and hypotheses, and connection to Experiment 1 in Section \ref{sec:exp2_intro}. This is followed by Experiment 2's methodology and experimental setup in Section \ref{sec:exp2_methods}. The results of the age-adaptive dialogue are discussed in Section \ref{sec:exp2_results}, followed by various quantitative and qualitative analyses of these results in Section \ref{sec:exp2_analyses}.
+The main contributions and key takeaways of this thesis are summarized in Chapter \ref{ch:discussion}, along with an extensive discussion about the implications of the results, the research limitations, ethical considerations, and future research directions.
 Finally, the most important conclusions to be derived from this thesis are repeated in Chapter \ref{ch:conclusion}.
 
 
 % \begin{itemize}
     % \item The code for the experiments is available on GitHub.\footnote{\url{https://github.com/lennertjansen/msc-ai-thesis}}
-    % \item The rest of this thesis is structured as follows: Chapter \ref{ch:literature_review} is a two-part literature review that first provides the relevant theoretical background of important components involved with age-adaptive dialogue generation using PPLM (Section \ref{sec:background}), and then compares our work to the most relevant related work (Section \ref{sec:related_work}).
-    % \item Then, in Chapter \ref{ch:experiment1}, we report our work on detecting age-related linguistic patterns in dialogue (i.e., Experiment 1)\len{maybe just say the age detection results}, starting with the clearly stated research objectives and hypotheses, followed by a description of the datasets used throughout this thesis in Section \ref{sec:data}, the methodology and experimental in Section \ref{sec:exp1_methods_exp_setup}, the results of Experiment 1 in Section \ref{sec:exp1_results}, subsequent quantitative and qualitative analyses of these results in Section \ref{sec:exp1_analyses}, and a short discussion and conclusion to Experiment 1 in Section \ref{sec:exp1_discussion_conclusion}.
-%     \item Chapter \ref{ch:experiment2} reports our research about age-adaptive dialogue generation using PPLM (i.e., Experiment 2). We begin by more explicitly describing the research objectives and hypotheses, and connection to Experiment 1 in Section \ref{sec:exp2_intro}. This is followed by Experiment 2's methodology and experimental setup in Section \ref{sec:exp2_methods}. The results of our age-adaptive dialogue are discussed in Section \ref{sec:exp2_results}, followed by various quantitative and qualitative analyses of these results in Section \ref{sec:exp2_analyses}. 
-%     \item The main contributions and key takeaways of this thesis are summarized in Chapter \ref{ch:discussion}, along with an extensive discussion about the implications of our results, the research limitations, ethical considerations, and future research directions.
+    % \item The rest of this thesis is structured as follows: Chapter \ref{ch:literature_review} is a two-part literature review that first provides the relevant theoretical background of important components involved with age-adaptive dialogue generation using PPLM (Section \ref{sec:background}), and then compares my work to the most relevant related work (Section \ref{sec:related_work}).
+    % \item Then, in Chapter \ref{ch:experiment1}, I report my work on detecting age-related linguistic patterns in dialogue (i.e., Experiment 1)\len{maybe just say the age detection results}, starting with the clearly stated research objectives and hypotheses, followed by a description of the datasets used throughout this thesis in Section \ref{sec:data}, the methodology and experimental in Section \ref{sec:exp1_methods_exp_setup}, the results of Experiment 1 in Section \ref{sec:exp1_results}, subsequent quantitative and qualitative analyses of these results in Section \ref{sec:exp1_analyses}, and a short discussion and conclusion to Experiment 1 in Section \ref{sec:exp1_discussion_conclusion}.
+%     \item Chapter \ref{ch:experiment2} reports my research about age-adaptive dialogue generation using PPLM (i.e., Experiment 2). I begin by more explicitly describing the research objectives and hypotheses, and connection to Experiment 1 in Section \ref{sec:exp2_intro}. This is followed by Experiment 2's methodology and experimental setup in Section \ref{sec:exp2_methods}. The results of my age-adaptive dialogue are discussed in Section \ref{sec:exp2_results}, followed by various quantitative and qualitative analyses of these results in Section \ref{sec:exp2_analyses}. 
+%     \item The main contributions and key takeaways of this thesis are summarized in Chapter \ref{ch:discussion}, along with an extensive discussion about the implications of my results, the research limitations, ethical considerations, and future research directions.
 %     \item Finally, the most important conclusions to be derived from this thesis are repeated in Chapter \ref{ch:conclusion}.
 % \end{itemize}
 
-% \len{I doubt anything of this paragraph is re-usable, but its worth a shot.} In recent years, we have witnessed promising advances in natural language processing (NLP) tasks, such as language modeling, reading comprehension, machine translation, controllable text generation, and conversational response generation \citep{radford2019language, DBLP:journals/corr/BahdanauCB14, dathathri2019plug, madotto-etal-2020-plug}. \cite{vaswani2017attention}'s Transformer architecture plays a central role in many of the state of the art (SotA) solutions to these problems. Transformer-based language models (LMs) pre-trained on massive amounts of textual data, most famously OpenAI's GPT-2 (Generative Pre-trained Transformer-2), have demonstrated their usefulness for several of the aforementioned NLP tasks \citep{radford2019language}. For instance, controllable text generation and producing dialogue responses have improved greatly because of GPT-based hybrid models. %Given the non-trivial requirements for sufficiently massive training corpora and computational resources, GPT-based solutions are worth considering for these two problems.
+% \len{I doubt anything of this paragraph is re-usable, but its worth a shot.} In recent years, I have witnessed promising advances in natural language processing (NLP) tasks, such as language modeling, reading comprehension, machine translation, controllable text generation, and conversational response generation \citep{radford2019language, DBLP:journals/corr/BahdanauCB14, dathathri2019plug, madotto-etal-2020-plug}. \cite{vaswani2017attention}'s Transformer architecture plays a central role in many of the state of the art (SotA) solutions to these problems. Transformer-based language models (LMs) pre-trained on massive amounts of textual data, most famously OpenAI's GPT-2 (Generative Pre-trained Transformer-2), have demonstrated their usefulness for several of the aforementioned NLP tasks \citep{radford2019language}. For instance, controllable text generation and producing dialogue responses have improved greatly because of GPT-based hybrid models. %Given the non-trivial requirements for sufficiently massive training corpora and computational resources, GPT-based solutions are worth considering for these two problems.
 
 
 % \textbf{Motivate research generally / importance in a broad sense}
 % \begin{itemize}
 %     \item Personalized interaction between the user and dialogue system is of crucial importance to obtain systems that can be trusted by users and perceived as natural (van der Goot and Pilgrim, 2019), but most of all to be accessible to varying user profiles, rather than targeted at one particular user group (Zheng et al., 2019; Zeng et al., 2020).
-%     % \item previous work on controlled (dialogue) generation has focused on topical or sentiment-related stylistic attributes. We focus on a more abstract linguistic style, that of age-related speaking style. (this isn't really a motivation tho)
+%     % \item previous work on controlled (dialogue) generation has focused on topical or sentiment-related stylistic attributes. I focus on a more abstract linguistic style, that of age-related speaking style. (this isn't really a motivation tho)
 %     % \item controlling dialogue generation for user-specific stylistic attributes is important for user trust in dialogue systems. it is also a more challenging endeavor than previous work on topical attribute control. 
 %     % \item it is in the interest of preserving privacy to adapt dialogue systems' language to that of the user by inferring the user's linguistic style from detected signals, rather than working from ground truth metadata about the user.
-%     % \item We aim to detect age from characteristics of language use and adapt to this signal, rather than work from ground truth metadata about user demographics—both in the interest of preserving privacy, and from the perspective that while age and language use may have a relationship, this will not be linear (Pennebaker and Stone, 2003) and individual differences should be taken into account.
+%     % \item I aim to detect age from characteristics of language use and adapt to this signal, rather than work from ground truth metadata about user demographics—both in the interest of preserving privacy, and from the perspective that while age and language use may have a relationship, this will not be linear (Pennebaker and Stone, 2003) and individual differences should be taken into account.
 %     % \item isn't it also important to mention the significant computational costs required to adapt large pre-trained dialogue generation models to specific linguistic styles, and how PPLM circumvents these costs?
 % \end{itemize}
 
 
 
-\textbf{Talk about ``this work''}
-\begin{itemize}
-    \item previous work on controlled (dialogue) generation has focused on topical or sentiment-related stylistic attributes. We focus on a more abstract linguistic style, that of age-related speaking style. (this isn't really a motivation tho)
-    \item controlling dialogue generation for user-specific stylistic attributes is important for user trust in dialogue systems. it is also a more challenging endeavor than previous work on topical attribute control. 
-    \item it is in the interest of preserving privacy to adapt dialogue systems' language to that of the user by inferring the user's linguistic style from detected signals, rather than working from ground truth metadata about the user.
-    \item We aim to detect age from characteristics of language use and adapt to this signal, rather than work from ground truth metadata about user demographics—both in the interest of preserving privacy, and from the perspective that while age and language use may have a relationship, this will not be linear (Pennebaker and Stone, 2003) and individual differences should be taken into account.
-    \item isn't it also important to mention the significant computational costs required to adapt large pre-trained dialogue generation models to specific linguistic styles, and how PPLM circumvents these costs?
-    \item The main focus of this thesis is on \textit{controlled dialogue generation}, which entails enforcing a specific linguistic style on automatically generated responses to dialogue utterances.
-    \item More specifically, we focus controlling generated dialogue responses to possess stylistic features of certain age groups.
-    \item a dialogue system's module dedicated to generating language (NLG module) is often GPT-based (references) / transformer-based. Using pre-trained versions of such transformers has also become ubiquitous/commonplace 
-    \item however, retraining such large-scale pre-trained language models to generate text with a specific style is extremely computationally expensive, environmentally harmful (find a reference that confirms this), and infeasible for most developers.
-    \item Plug-and-Play language models circumvent these problems by providing a framework to control the output of large transformer-based language models by using substantially smaller style-specific attribute models to perturb the underlying language model's activation space.
-    \item our work focuses on the use of plug-and-play language models for age-adaptive dialogue generation.
-    \item preliminary research objective is automated detection of age-related linguistic patterns from dialogue and discourse
-    \item more properly introduce controlled dialogue generation
-    \item controlled dialogue generation can be used to adapt dialogue systems' linguistic style to that of user.
-    \item controlled dialogue generation is...
-    \item Research objectives
-    \item Hypotheses? Or maybe not, since we discuss all of them in the experiment introductions
-    \item While previous work on age detection in dialogue has focused on auditory speech features, like vocal cues (REFS), our work focuses on detecting age-related linguistic patterns from purely text-based dialogue, which is more challenging due to sparser signal and less thoroughly studied.
-    \item previous work also uses handcrafted features, whereas our systems are trained end-to-end.
-\end{itemize}
+% \textbf{Talk about ``this work''}
+% \begin{itemize}
+%     \item previous work on controlled (dialogue) generation has focused on topical or sentiment-related stylistic attributes. I focus on a more abstract linguistic style, that of age-related speaking style. (this isn't really a motivation tho)
+%     \item controlling dialogue generation for user-specific stylistic attributes is important for user trust in dialogue systems. it is also a more challenging endeavor than previous work on topical attribute control. 
+%     \item it is in the interest of preserving privacy to adapt dialogue systems' language to that of the user by inferring the user's linguistic style from detected signals, rather than working from ground truth metadata about the user.
+%     \item I aim to detect age from characteristics of language use and adapt to this signal, rather than work from ground truth metadata about user demographics—both in the interest of preserving privacy, and from the perspective that while age and language use may have a relationship, this will not be linear (Pennebaker and Stone, 2003) and individual differences should be taken into account.
+%     \item isn't it also important to mention the significant computational costs required to adapt large pre-trained dialogue generation models to specific linguistic styles, and how PPLM circumvents these costs?
+%     \item The main focus of this thesis is on \textit{controlled dialogue generation}, which entails enforcing a specific linguistic style on automatically generated responses to dialogue utterances.
+%     \item More specifically, I focus controlling generated dialogue responses to possess stylistic features of certain age groups.
+%     \item a dialogue system's module dedicated to generating language (NLG module) is often GPT-based (references) / transformer-based. Using pre-trained versions of such transformers has also become ubiquitous/commonplace 
+%     \item however, retraining such large-scale pre-trained language models to generate text with a specific style is extremely computationally expensive, environmentally harmful (find a reference that confirms this), and infeasible for most developers.
+%     \item Plug-and-Play language models circumvent these problems by providing a framework to control the output of large transformer-based language models by using substantially smaller style-specific attribute models to perturb the underlying language model's activation space.
+%     \item my work focuses on the use of plug-and-play language models for age-adaptive dialogue generation.
+%     \item preliminary research objective is automated detection of age-related linguistic patterns from dialogue and discourse
+%     \item more properly introduce controlled dialogue generation
+%     \item controlled dialogue generation can be used to adapt dialogue systems' linguistic style to that of user.
+%     \item controlled dialogue generation is...
+%     \item Research objectives
+%     \item Hypotheses? Or maybe not, since I discuss all of them in the experiment introductions
+%     \item While previous work on age detection in dialogue has focused on auditory speech features, like vocal cues (REFS), my work focuses on detecting age-related linguistic patterns from purely text-based dialogue, which is more challenging due to sparser signal and less thoroughly studied.
+%     \item previous work also uses handcrafted features, whereas my systems are trained end-to-end.
+% \end{itemize}
 
-\textbf{Contributions?}
-\begin{itemize}
-    \item Our contributions are divisible into two categories: those relating to age group detection from text, and age-adaptive dialogue generation.
-    \item automated age group detection contributions...
-    \item controlled dialogue generation contributions...
-    \item overall this thesis is a promising (first?) step the development of age-adaptive dialogue systems
-\end{itemize}
+% \textbf{Contributions?}
+% \begin{itemize}
+%     \item My contributions are divisible into two categories: those relating to age group detection from text, and age-adaptive dialogue generation.
+%     \item automated age group detection contributions...
+%     \item controlled dialogue generation contributions...
+%     \item overall this thesis is a promising (first?) step the development of age-adaptive dialogue systems
+% \end{itemize}
 
-\textbf{Outline (and maybe briefly motivate the two-experiment) structure}
-\begin{itemize}
-    \item The rest of this thesis is structured as follows...
-    % \item \len{Fix this. }The remainder of this thesis is structured as follows: Chapter \ref{sec:background} positions the subject of controlled text generation in its theoretical background, and and \ref{sec:related_work} compares it to the most relevant related work. The methodology in Section \ref{sec:exp1_methods_exp_setup} gives detailed explanations of the most important modeling methods and techniques used for this research. \len{The code used to produce the results can be found on GitHub\footnote{\url{https://github.com/lennertjansen/msc-ai-thesis}}. (Is this the best place to mention this?)}
-    \item also emphasize that the respective hypotheses per experiment are presented and motivated in the experiment chapters' introductions (CROSS-REFS)
-\end{itemize}
+% \textbf{Outline (and maybe briefly motivate the two-experiment) structure}
+% \begin{itemize}
+%     \item The rest of this thesis is structured as follows...
+%     % \item \len{Fix this. }The remainder of this thesis is structured as follows: Chapter \ref{sec:background} positions the subject of controlled text generation in its theoretical background, and and \ref{sec:related_work} compares it to the most relevant related work. The methodology in Section \ref{sec:exp1_methods_exp_setup} gives detailed explanations of the most important modeling methods and techniques used for this research. \len{The code used to produce the results can be found on GitHub\footnote{\url{https://github.com/lennertjansen/msc-ai-thesis}}. (Is this the best place to mention this?)}
+%     \item also emphasize that the respective hypotheses per experiment are presented and motivated in the experiment chapters' introductions (CROSS-REFS)
+% \end{itemize}
 
 
-% \len{CTG comes out of the blue in the following paragraph. Introduce it a little bit by describing what is is, and why/how it is an important task.}
+% % \len{CTG comes out of the blue in the following paragraph. Introduce it a little bit by describing what is is, and why/how it is an important task.}
 
-\textbf{Old sentences that could be re-used}
+% \textbf{Old sentences that could be re-used}
 
-\begin{itemize}
-    \item Controllable text generation entails generating text samples that possess a predefined textual property, like having a positive sentiment, or being about a certain topic.
-    \item Controlling more fine-grained linguistic properties, like resemblance of age-specific vernacular, still poses an important, yet unsolved/insufficiently studied (?) challenge.
-    \item Personalized interaction between humans and AI systems is crucial to obtain systems that can be trusted by users and are perceived as natural.
-    \item (Age-)adaptive language generation can be used to personalize AI-powered personal assistants like Siri and Alexa, improving user experience and trust.
-    \item It is important for AI-power conversational agents to be accessible to varying user profiles, rather than targeted at one particular user group. 
-    \item In this work, I/we focus on one aspect that may influence successful personalization of conversational agents: user age profile.
-\end{itemize}
+% \begin{itemize}
+%     \item Controllable text generation entails generating text samples that possess a predefined textual property, like having a positive sentiment, or being about a certain topic.
+%     \item Controlling more fine-grained linguistic properties, like resemblance of age-specific vernacular, still poses an important, yet unsolved/insufficiently studied (?) challenge.
+%     \item Personalized interaction between humans and AI systems is crucial to obtain systems that can be trusted by users and are perceived as natural.
+%     \item (Age-)adaptive language generation can be used to personalize AI-powered personal assistants like Siri and Alexa, improving user experience and trust.
+%     \item It is important for AI-power conversational agents to be accessible to varying user profiles, rather than targeted at one particular user group. 
+%     \item In this work, I/I focus on one aspect that may influence successful personalization of conversational agents: user age profile.
+% \end{itemize}
 
-Controllable text generation (CTG) aims to enforce abstract properties, like writing style, on the passages being produced. Fine-tuning large-scale LMs for writing-style adaptation is extremely expensive, but \cite{dathathri2019plug} and \cite{li-etal-2020-optimus} propose methods that both excel at the task, while bypassing significant retraining costs. Dialogue response generation is the task of producing replies to a conversational agent's prompts, in a manner that is ideally both non-repetitive and relevant to the course of the conversation. With DialoGPT, \cite{zhang2019dialogpt} also manage to leverage GPT-2's powerful fluency for dialogue tasks, by framing them as language modeling tasks where multi-turn dialogue sessions are seen as long texts.
+% Controllable text generation (CTG) aims to enforce abstract properties, like writing style, on the passages being produced. Fine-tuning large-scale LMs for writing-style adaptation is extremely expensive, but \cite{dathathri2019plug} and \cite{li-etal-2020-optimus} propose methods that both excel at the task, while bypassing significant retraining costs. Dialogue response generation is the task of producing replies to a conversational agent's prompts, in a manner that is ideally both non-repetitive and relevant to the course of the conversation. With DialoGPT, \cite{zhang2019dialogpt} also manage to leverage GPT-2's powerful fluency for dialogue tasks, by framing them as language modeling tasks where multi-turn dialogue sessions are seen as long texts.
 
-% CTG and dialogue response generation share the overarching objective of producing grammatically correct text that is distinct from any training instance. LJ/RF: this isn't necessarily correct. Every generated response doesn't have to be distinct from any training objective.
+% % CTG and dialogue response generation share the overarching objective of producing grammatically correct text that is distinct from any training instance. LJ/RF: this isn't necessarily correct. Every generated response doesn't have to be distinct from any training objective.
 
-\len{Introduce dialogue response generation a bit more. Also emphasize its importance. And then introduce the combined task and its importance.}
-A blend of CTG and dialogue response generation, i.e., controllable dialogue response generation, is an interesting and only partially explored route. It ties closely to one of Artificial Intelligence's long-standing goals of achieving human-like conversation with machines, as humans are known to adapt their language use to the characteristics of their interlocutor \citep{gallois2015communication}. Adaptive dialogue generation is difficult due to the challenge of representing traits, like age, gender, or other persona-labeled traits via language expression \citep{zheng2019personalized}.
-% and the lack of persona trait labeled dialogue datasets. \cite{zheng2019personalized} explore the problem of personalized dialogue generation, and introduced \texttt{PersonalDialog} a large-scale multi-turn Chinese Mandarin dialogue dataset with personality trait labeling, and persona-aware adaptive dialogue generation models using RNNs and attention mechanisms. 
+% \len{Introduce dialogue response generation a bit more. Also emphasize its importance. And then introduce the combined task and its importance.}
+% A blend of CTG and dialogue response generation, i.e., controllable dialogue response generation, is an interesting and only partially explored route. It ties closely to one of Artificial Intelligence's long-standing goals of achieving human-like conversation with machines, as humans are known to adapt their language use to the characteristics of their interlocutor \citep{gallois2015communication}. Adaptive dialogue generation is difficult due to the challenge of representing traits, like age, gender, or other persona-labeled traits via language expression \citep{zheng2019personalized}.
+% % and the lack of persona trait labeled dialogue datasets. \cite{zheng2019personalized} explore the problem of personalized dialogue generation, and introduced \texttt{PersonalDialog} a large-scale multi-turn Chinese Mandarin dialogue dataset with personality trait labeling, and persona-aware adaptive dialogue generation models using RNNs and attention mechanisms. 
 
-In this thesis, we investigate the problem of controllable dialogue generation, with a focus on adapting responses to users' age. As a preliminary research objective, we aim to study to what extent a classifier can detect age-related linguistic differences in natural language, and which features are most helpful in age-group detection. Do they (i.e., the linguistic or latent features exploited by the classifier) match the age-related informative features reported in previous work? 
-After empirically confirming that speaker age detection is possible, we explore whether large-scale LMs, e.g. GPT-2, can be leveraged for text generation, controlled for age-groups. And what role does the used data play in the differences in output and performance between regular GPT-2 and controllable GPT-2?
-Finally, my research focuses on the degree to which such a CTG model is successful in generating dialogue that is adaptive w.r.t. age, such that it has a detectable effect on the perception of the user.
+% In this thesis, I investigate the problem of controllable dialogue generation, with a focus on adapting responses to users' age. As a preliminary research objective, I aim to study to what extent a classifier can detect age-related linguistic differences in natural language, and which features are most helpful in age-group detection. Do they (i.e., the linguistic or latent features exploited by the classifier) match the age-related informative features reported in previous work? 
+% After empirically confirming that speaker age detection is possible, I explore whether large-scale LMs, e.g. GPT-2, can be leveraged for text generation, controlled for age-groups. And what role does the used data play in the differences in output and performance between regular GPT-2 and controllable GPT-2?
+% Finally, my research focuses on the degree to which such a CTG model is successful in generating dialogue that is adaptive w.r.t. age, such that it has a detectable effect on the perception of the user.
 
-% \len{Fix this. }The remainder of this thesis is structured as follows: Chapter \ref{sec:background} positions the subject of controlled text generation in its theoretical background, and and \ref{sec:related_work} compares it to the most relevant related work. The methodology in Section \ref{sec:exp1_methods_exp_setup} gives detailed explanations of the most important modeling methods and techniques used for this research. \len{The code used to produce the results can be found on GitHub\footnote{\url{https://github.com/lennertjansen/msc-ai-thesis}}. (Is this the best place to mention this?)}
+% % \len{Fix this. }The remainder of this thesis is structured as follows: Chapter \ref{sec:background} positions the subject of controlled text generation in its theoretical background, and and \ref{sec:related_work} compares it to the most relevant related work. The methodology in Section \ref{sec:exp1_methods_exp_setup} gives detailed explanations of the most important modeling methods and techniques used for this research. \len{The code used to produce the results can be found on GitHub\footnote{\url{https://github.com/lennertjansen/msc-ai-thesis}}. (Is this the best place to mention this?)}
 
-% The main contributions of this paper are ...
+% % The main contributions of this paper are ...
 
-% The remainder of this work is structured as follows, ...
+% % The remainder of this work is structured as follows, ...
 
-\begin{itemize}
-    \item When introducing your own work and proposing your hypothesis, use the following argument: \textit{This idea that age prediction from text is more challenging than topic or sentiment prediction could be an indication that controlled language generation for age-differences is also a more nuanced problem than topical steered text generation.}
-\end{itemize}
+% \begin{itemize}
+%     \item When introducing your own work and proposing your hypothesis, use the following argument: \textit{This idea that age prediction from text is more challenging than topic or sentiment prediction could be an indication that controlled language generation for age-differences is also a more nuanced problem than topical steered text generation.}
+% \end{itemize}
 
-\textbf{Useful parts from the Clic-it paper's introduction you can work into this introduction (REVISE BEFORE USING):}
+% \textbf{Useful parts from the Clic-it paper's introduction you can work into this introduction (REVISE BEFORE USING):}
 
-\begin{itemize}
-    \item Research on developing conversational agents has experienced impressive progress, particularly in recent years \citep{mctear2020conversational}. 
-    \item However, artificial systems that can tune their language to that of a particular individual or group of users continue to pose more of a challenge. Recent examples of this line of research include adaptation at style level (Ficler and Goldberg, 2017), persona-specific traits (Zhang et al., 2018), or other traits such as sentiment (Dathathri et al., 2020).
-    \item Personalised interaction is of crucial importance to obtain systems that can be trusted by users and perceived as natural (van der Goot and Pilgrim, 2019), but most of all to be accessible to varying user profiles, rather than targeted at one particular user group (Zheng et al., 2019; Zeng et al., 2020).
-    \item  In this work, we focus on one particular aspect that may influence conversational agent success: user age profile.
-    \item We investigate whether the linguistic behavior of conversational participants differs across age  groups using state-of-theart NLP models on purely textual data, without considering vocal cues. 
-    \item We aim to detect age from characteristics of language use and adapt to this signal, rather than work from ground-truth metadata about user demographics. 
-    \item \len{Important to mention} This is in the interest of preserving privacy, and from the perspective that while age and language use may have a relationship, this will not be linear (Pennebaker and Stone, 2003) and there are individual differences. 
-    \item Previous work on age detection in dialogue has
-    focused on speech features, which are known to systematically vary across age groups. For example, Wolters et al. (2009) learn logistic regression age classifiers from a small dialogue dataset using different acoustic cues supplemented with a small set of hand-crafted lexical features, while Li et al. (2013) develop SVM classifiers using acoustic and prosodic features extracted from scripted utterances spoken by participants interacting with an artificial system.
-    \item In contrast to this line of work, we investigate whether different age groups can be detected from textual linguistic information rather than voice-related cues. We explore whether, and to what extent, various state-of-the-art NLP models are able to capture such differences in dialogue data as a preliminary step to age-group adaptation by conversational agents. \len{This could be a good sentence to bridge the aims of the two parts}
-    \item We build on the work of Schler et al. (2006), who focus on age detection in written discourse using a   corpus of blog posts. The authors learn a Multi-Class Real Winnow classifier leveraging a set of pre-determined style- and content-based features, including part-of-speech categories, function words, and the 1000 unigrams with the highest information gain in the training set. They find that content features (lexical unigrams) yield higher accuracy (74\%) than style features (72\%), while their best results (76.2\%) are obtained with their combination. \len{Be mindful that this could also be used in CHapter 2}
-    \item We extend this investigation in several key ways: (1) we leverage state-of-the-art NLP models that allow us to learn representations end-to-end, without the need to specify concrete features in advance; (2) we apply this approach to dialogue data, using a large-scale dataset of transcribed, spontaneous open-domain dialogues, and also use this approach to replicate the experiments of Schler et al. (2006) on disccourse; (3) we show that text-based models can indeed detect age-related differences, even in the case of very sparse signal at the level of dialogue utterances; and finally (4) we carry out an in-depth analysis of the models’ predictions to gain insight on which elements of language use are most informative. 
-    \item Our work can be considered a first step toward the modeling of age-related linguistic adaptation by AI conversational systems. In particular, our results can inform future work on controlled text generation for dialogue agents (Dathathri et al., 2020; Madotto et al., 2020).
-\end{itemize}
+% \begin{itemize}
+%     \item Research on developing conversational agents has experienced impressive progress, particularly in recent years \citep{mctear2020conversational}. 
+%     \item However, artificial systems that can tune their language to that of a particular individual or group of users continue to pose more of a challenge. Recent examples of this line of research include adaptation at style level (Ficler and Goldberg, 2017), persona-specific traits (Zhang et al., 2018), or other traits such as sentiment (Dathathri et al., 2020).
+%     \item Personalised interaction is of crucial importance to obtain systems that can be trusted by users and perceived as natural (van der Goot and Pilgrim, 2019), but most of all to be accessible to varying user profiles, rather than targeted at one particular user group (Zheng et al., 2019; Zeng et al., 2020).
+%     \item  In this work, I focus on one particular aspect that may influence conversational agent success: user age profile.
+%     \item I investigate whether the linguistic behavior of conversational participants differs across age  groups using state-of-theart NLP models on purely textual data, without considering vocal cues. 
+%     \item I aim to detect age from characteristics of language use and adapt to this signal, rather than work from ground-truth metadata about user demographics. 
+%     \item \len{Important to mention} This is in the interest of preserving privacy, and from the perspective that while age and language use may have a relationship, this will not be linear (Pennebaker and Stone, 2003) and there are individual differences. 
+%     \item Previous work on age detection in dialogue has
+%     focused on speech features, which are known to systematically vary across age groups. For example, Wolters et al. (2009) learn logistic regression age classifiers from a small dialogue dataset using different acoustic cues supplemented with a small set of hand-crafted lexical features, while Li et al. (2013) develop SVM classifiers using acoustic and prosodic features extracted from scripted utterances spoken by participants interacting with an artificial system.
+%     \item In contrast to this line of work, I investigate whether different age groups can be detected from textual linguistic information rather than voice-related cues. I explore whether, and to what extent, various state-of-the-art NLP models are able to capture such differences in dialogue data as a preliminary step to age-group adaptation by conversational agents. \len{This could be a good sentence to bridge the aims of the two parts}
+%     \item I build on the work of Schler et al. (2006), who focus on age detection in written discourse using a   corpus of blog posts. The authors learn a Multi-Class Real Winnow classifier leveraging a set of pre-determined style- and content-based features, including part-of-speech categories, function words, and the 1000 unigrams with the highest information gain in the training set. They find that content features (lexical unigrams) yield higher accuracy (74\%) than style features (72\%), while their best results (76.2\%) are obtained with their combination. \len{Be mindful that this could also be used in CHapter 2}
+%     \item I extend this investigation in several key ways: (1) I leverage state-of-the-art NLP models that allow me to learn representations end-to-end, without the need to specify concrete features in advance; (2) I apply this approach to dialogue data, using a large-scale dataset of transcribed, spontaneous open-domain dialogues, and also use this approach to replicate the experiments of Schler et al. (2006) on disccourse; (3) I show that text-based models can indeed detect age-related differences, even in the case of very sparse signal at the level of dialogue utterances; and finally (4) I carry out an in-depth analysis of the models’ predictions to gain insight on which elements of language use are most informative. 
+%     \item My work can be considered a first step toward the modeling of age-related linguistic adaptation by AI conversational systems. In particular, my results can inform future work on controlled text generation for dialogue agents (Dathathri et al., 2020; Madotto et al., 2020).
+% \end{itemize}
 
-Oher phrases
+% Oher phrases
 
-\begin{itemize}
-    \item Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI \citep{edlund2008towards, scheutz2011toward}. (this one goes well with the statement about and the reference to Margot's work).
-\end{itemize}
+% \begin{itemize}
+%     \item Endowing a dialogue system with personality traits to generate human-like conversation is a long-standing goal in AI \citep{edlund2008towards, scheutz2011toward}. (this one goes well with the statement about and the reference to Margot's work).
+% \end{itemize}

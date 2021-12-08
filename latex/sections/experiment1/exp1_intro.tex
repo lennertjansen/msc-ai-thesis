@@ -1,13 +1,13 @@
 % \section{Introduction}
 
-In this chapter we report experiments aimed at age detection from text, and the components involved. 
+In this chapter I report experiments aimed at age detection from text, and the components involved. 
 While previous work showed differences at various linguistic levels between age groups when experimenting with written discourse data (e.g., blog posts), previous work on dialogue has largely been focused on acoustic information related to voice and prosody \citep{wolters2009age, li2013automatic}.
 Detecting age-related linguistic properties of human dialogues is of crucial importance for developing AI based conversational systems which are able to adapt to the age-specific speaking style their human interlocutors. In particular, being able to detect and investigate these linguistic differences is important for controlled dialogue generation (the main topic of this thesis), as it can provide insights about which linguistic features are most salient for distinguishing between, and adapting to, different age groups. More generally, it is interesting in itself to understand which age-related linguistic features are most characterizing of age groups. 
 
-We therefore aim to investigate whether, and to what extent, current text-based NLP models can detect such linguistic differences, and what the features driving their predictions are. We perform our age groups detection experiments on dialogue (transcribed open-domain spontaneous dialogue) and discourse (blog posts) text data, and on the former we carry out an in-depth analysis about the saliency of identified age-related linguistic features.
-% \len{we experiment with both dialogue and written discourse (blogs)}
-% The problem we tackle in this first phase of experiments is automated detection of age-related linguistic patterns in dialogue, using current text-based NLP models. 
-% Being able to detect and investigate these linguistic differences is important for controlled dialogue generation, as it can provide us with insights about which linguistic features are most salient for distinguishing between, and adapting to, different age groups. 
+I therefore aim to investigate whether, and to what extent, current text-based NLP models can detect such linguistic differences, and what the features driving their predictions are. The age group detection experiment is performed on dialogue (i.e., transcribed open-domain spontaneous dialogue) and discourse (i.e., blog posts) text data, and on the former, an in-depth analysis is carried out about the saliency of identified age-related linguistic features.
+% \len{I experiment with both dialogue and written discourse (blogs)}
+% The problem I tackle in this first phase of experiments is automated detection of age-related linguistic patterns in dialogue, using current text-based NLP models. 
+% Being able to detect and investigate these linguistic differences is important for controlled dialogue generation, as it can provide me with insights about which linguistic features are most salient for distinguishing between, and adapting to, different age groups. 
 % \begin{itemize}
 %     \item Based on previous work on age detection from written blog posts (Schler)
 %     \item based on age detection from short text fragments (tweets) (nguyen)
@@ -15,14 +15,14 @@ We therefore aim to investigate whether, and to what extent, current text-based 
 % \end{itemize}
 
 
-Based on previous work on automated detection of age-related linguistic differences between age groups from written discourse (i.e., blog posts \citep{schler2006effects}) and open-domain texts \citep{abdallah2020age}, we expect that the classification models are able to reliably detect age-related differences in both transcribed dialogue and discourse, and the most informative differences to lie at the syntactic-level. However, we also hypothesize age group detection to be more challenging from our dialogue data than from our discourse data, based on earlier work on age group detection from short-form text (i.e., tweets \citep{nguyen2014gender}) and the shorter and noisier data-entries that constitute our dialogue data, when compared to our discourse data. Furthermore, we believe that our results about detection of age-related characteristics from dialogue (i.e., Experiment 1) can inform our work on age-adaptive dialogue generation, reported in the next chapter (Experiment 2).
-% \len{Re-do this sentence, it's very bad as it is. You havent mentioned the dialogue and discourse datasets yet. What you wanna say here is that you expect doing automated age detection will be more challenging for dialogue than for our discourse/blog dataset because (1) dialogue is short from (ref to Nguyen), and (2) our open-domain spontaneous dialogue dataset is less structured and more noisy}.
+Based on previous work on automated detection of age-related linguistic differences between age groups from written discourse (i.e., blog posts \citep{schler2006effects}) and open-domain texts \citep{abdallah2020age}, I expect that the classification models are able to reliably detect age-related differences in both transcribed dialogue and discourse, and the most informative differences to lie at the syntactic-level. However, I also hypothesize age group detection to be more challenging from the dialogue data than from the discourse data, based on earlier work on age group detection from short-form text (i.e., tweets \citep{nguyen2014gender}) and the shorter and noisier data-entries that constitute the dialogue data, when compared to the discourse data. Furthermore, I believe that the results about detection of age-related characteristics from dialogue (i.e., Experiment 1) can inform my work on age-adaptive dialogue generation, reported in the next chapter (Experiment 2).
+% \len{Re-do this sentence, it's very bad as it is. You havent mentioned the dialogue and discourse datasets yet. What you wanna say here is that you expect doing automated age detection will be more challenging for dialogue than for my discourse/blog dataset because (1) dialogue is short from (ref to Nguyen), and (2) my open-domain spontaneous dialogue dataset is less structured and more noisy}.
 
 % \len{makes sense to end the bulk of this introduction with the prospective connection to the next Experiment} \textbf{Signaalwoord?} 
 
-The rest of this chapter is structured as follows: The following section describes the two datasets used for these experiments. There we provide descriptive statistics, examples, and comparisons between the datasets. Section \ref{sec:exp1_methods_exp_setup} covers the problem description in more detail, along with the models used, and our experimental setup. The classification results are presented in Section \ref{sec:exp1_results}. Then for the dialogue classification models, Section \ref{sec:exp1_analyses} contains both quantitative and qualitative analyses of the results.
+The rest of this chapter is structured as follows: The following section describes the two datasets used for these experiments. There, I provide descriptive statistics, examples, and comparisons between the datasets. Section \ref{sec:exp1_methods_exp_setup} covers the problem description in more detail, along with the models used, and the experimental setup. The classification results are presented in Section \ref{sec:exp1_results}. Then for the dialogue classification models, Section \ref{sec:exp1_analyses} contains both quantitative and qualitative analyses of the results.
 
-% Things to make clear in this short introduction, but keep it brief (look at the abstract and introduction of our paper for inspiration):
+% Things to make clear in this short introduction, but keep it brief (look at the abstract and introduction of my paper for inspiration):
 % \begin{itemize}
 %     \item The direction of information should be from general and intuitive to more technical and fine-grained (specific).
 %     \item First tell the reader what the overall idea is (based on previous work), and then how you plan to investigate it., and then provide details about your methods and expected outcomes (also based on previous work)
@@ -37,10 +37,10 @@ The rest of this chapter is structured as follows: The following section describ
 % \textbf{from Abstract:}
 % \begin{itemize}
 %     \item While previous work showed differences at various linguistic levels between age groups when experimenting with written discourse data (e.g., blog posts), previous work on dialogue has largely been limited to acoustic information related to voice and prosody.
-%     \item Detecting fine-grained linguistic properties of human dialogues is of crucial importance for developing AI based conversational systems which are able to adapt to their human interlocutors. We therefore investigate whether, and to what extent, current text-based NLP models can detect such linguistic differences, and what the features driving their predictions are.
-%     \item We show that models achieve a fairly good performance on age group prediction, though the task appears to be more challenging compared to discourse
-%     \item Through in-depth analysis of the best models’ errors and the most predictive cues, we show that, in dialogue, differences among age groups mostly concern stylistic and lexical choices. 
-%     \item We believe these findings can inform future work on developing controlled generation models for adaptive conversational systems.
+%     \item Detecting fine-grained linguistic properties of human dialogues is of crucial importance for developing AI based conversational systems which are able to adapt to their human interlocutors. I therefore investigate whether, and to what extent, current text-based NLP models can detect such linguistic differences, and what the features driving their predictions are.
+%     \item I show that models achieve a fairly good performance on age group prediction, though the task appears to be more challenging compared to discourse
+%     \item Through in-depth analysis of the best models’ errors and the most predictive cues, I show that, in dialogue, differences among age groups mostly concern stylistic and lexical choices. 
+%     \item I believe these findings can inform future work on developing controlled generation models for adaptive conversational systems.
 % \end{itemize}
 
 % \textbf{from Introduction}:

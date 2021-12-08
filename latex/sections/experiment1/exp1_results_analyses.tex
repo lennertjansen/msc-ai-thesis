@@ -1,10 +1,9 @@
 \section{Detecting Age-Related Linguistic Patterns in Dialogue and Discourse}
 \label{sec:exp1_results}
 
-We first report results on \emph{discourse}
+First, I report the results on \emph{discourse}
 % dataset
-to check whether we replicate
-previous findings. Then, we focus on \emph{dialogue} to answer our research questions. We report accuracy and $F_1$ for each age group.
+to check whether previous findings \citep{schler2006effects} are replicated. Then, I focus on \emph{dialogue} to answer my research questions. The accuracy and $F_1$ of the classifiers are reported for each age group.
 
 \subsection{Classification Performance on Discourse}
 Table~\ref{tab:blog_classification} reports the results.
@@ -16,7 +15,7 @@ all models are well above the majority class baseline in terms of both accuracy 
 % age group-specific 
 $F_1$s (0.642). This overall confirms previous evidence \citep{schler2006effects} that language features of (written) \emph{discourse} can predict, to some extent, the age group to which the person
 % speaker
-belongs. At the same time, BERT fine-tuned on the age classification task stands out as our best-performing model by achieving highest accuracy (0.742) and highest $F_1$ in all age groups.
+belongs. At the same time, BERT fine-tuned on the age classification task stands out as the best-performing model by achieving highest accuracy (0.742) and highest $F_1$ in all age groups.
 % BiLSTM and LSTM rank second (0.720) and third (0.714) in terms of accuracy, respectively, while a somehow more mixed pattern is observed for $F_1$ scores.
 %, where $n$-gram models come into play.
 % , where $n$-gram models can perform on par with or better than LSTMs on certain age groups.
@@ -24,39 +23,39 @@ LSTM ranks  second (0.663) in terms of accuracy, while the second best $F_1$ sco
 Overall, these results indicate that powerful neural models that are capable of representing the linguistic context % (BERT \emph{in primis}) 
 have a great advantage on this dataset over simpler $n$-gram models, which are more than 10 accuracy points behind. 
 
-Finally, it should be noted that our best results are slightly lower than those obtained by~\citet{schler2006effects}. This could be due to two main reasons: First, they experiment with a
+Finally, it should be noted that my best results are slightly lower than those obtained by~\citet{schler2006effects}. This could be due to two main reasons: First, they experiment with a
 differently pre-processed and smaller
 % (smaller)
 % significantly smaller 
-dataset than ours.\footnote{They are left with roughly 511K datapoints after pre-processing, 
-while we experiment with around 677K.}
+dataset than mine.\footnote{They are left with roughly 511K datapoints after pre-processing, 
+while I experiment with around 677K.}
 % which also has a different majority class and corresponding baseline (see Table~\ref{tab:blog_classification}). 
-Second, while in our approach all models are trained end-to-end on the task,~\citet{schler2006effects} use
-hand-crafted features that are specific to the dataset, 
+Second, while in my approach all models are trained end-to-end on the task,~\citet{schler2006effects} use
+handcrafted features that are specific to the dataset, 
 which could constitute an advantage.
 
 \subsection{Classification Performance on Dialogue}
 Table~\ref{tab:bnc_classification_ws} reports the results obtained on the dialogue dataset. As can be seen, BERT fine-tuned on the task is again the best-performing model in terms of accuracy (0.729), which confirms the effectiveness of this model in detecting age-related linguistic differences. At the same time, it can be noted that the model based on trigrams is basically on par with it in terms of accuracy (0.722) and well above both LSTM and BiLSTM (0.693 and 0.691, respectively). A similar pattern is shown for $F_1$ scores, where BERT fine-tuned and the trigram model achieve comparable performance, with LSTMs being overall behind. 
 
-Overall, our results indicate that predicting the age group to which a speaker belongs, using text-based models, is possible also for \emph{dialogue} data, though the task appears to be somehow more challenging compared to when performed on discourse.
+Overall, my results indicate that predicting the age group to which a speaker belongs, using text-based models, is possible also for \emph{dialogue} data, though the task appears to be somehow more challenging compared to when performed on discourse.
 Note that the improvement with respect to the majority/random baseline is lower in dialogue (22.9 and 27 accuracy point increase w.r.t baselines for best model for dialogue and discourse datasets, respectively).
 
-% \san{do we need a comment on the comparable accuracy, but with different N of classes and majority baseline?}\raq{maybe say: note that the improvement wrt to the random baseline is lower in dialogue}.
+% \san{do I need a comment on the comparable accuracy, but with different N of classes and majority baseline?}\raq{maybe say: note that the improvement wrt to the random baseline is lower in dialogue}.
 At the same time, the different ranking of models observed between discourse and dialogue suggests possibly different strategies used by models to solve the task. In particular, the very good performance of the trigram model in \emph{dialogue} suggests that leveraging `local' linguistic features captured by $n$-grams is extremely effective in this setup. This could indicate that differences among various age groups are at the level of
 % \textcolor{red}{
 local lexical constructions.
 % }
 % \raq{local lexical constructions?}
-% \raq{the next bit doesn't stand up, not only because of topics, but also because without stop words I don't see how we can make any claims regarding style at this stage}
-% lexical and stylistic features of the language used, rather than involving topical aspects. \san{if we don't include the analysis on topics, this cannot be claimed}
-This deserves further analysis, which we carry out in the next section.
-% \san{We should add a comment on how performance is with respect to topics: we refer to the plot}
+% \raq{the next bit doesn't stand up, not only because of topics, but also because without stop words I don't see how I can make any claims regarding style at this stage}
+% lexical and stylistic features of the language used, rather than involving topical aspects. \san{if I don't include the analysis on topics, this cannot be claimed}
+This deserves further analysis, which is carried out in the next section.
+% \san{I should add a comment on how performance is with respect to topics: I refer to the plot}
 
 
-% Here we have the tables with the numbers (accuracy, precision, etc.) for each model on each dataset. Highlight what are best models on each dataset, what are differences between the two datasets, etc.
+% Here I have the tables with the numbers (accuracy, precision, etc.) for each model on each dataset. Highlight what are best models on each dataset, what are differences between the two datasets, etc.
 % Are there differences or not? Yes. Models above baselines.
 
-% What are the features that drive the prediction? We look into two best-performing models.
+% What are the features that drive the prediction? I look into two best-performing models.
 
 
 
@@ -98,7 +97,7 @@ This deserves further analysis, which we carry out in the next section.
 %     \bottomrule
 %     \end{tabular}
 %     \caption{Discourse dataset. \len{\textbf{Excluding} stopwords} Test set results averaged over 5 random initializations. Format: \textit{average metric (standard error)}. Values in \textbf{bold} are the highest in the column; in \textcolor{blue}{blue}, the second highest. *: $F_1$ is actually $0/0$.}
-%     % \san{If we agree with the abbreviations used in this table, we could use them also in Table 3}}
+%     % \san{If I agree with the abbreviations used in this table, I could use them also in Table 3}}
 %     \label{tab:blog_classification}
 % \end{table*}
 
@@ -139,7 +138,7 @@ This deserves further analysis, which we carry out in the next section.
     \bottomrule
     \end{tabular}
     \caption{Discourse dataset. Test set results averaged over 5 random initializations. Format: \textit{average metric (standard error)}. Values in \textbf{bold} are the highest in the column; in \textcolor{blue}{blue}, the second highest. *: $F_1$ is actually $0/0$. **: these results were obtained with a different final dataset.}
-    % \san{If we agree with the abbreviations used in this table, we could use them also in Table 3}}
+    % \san{If I agree with the abbreviations used in this table, I could use them also in Table 3}}
     \label{tab:blog_classification}
 \end{table*}
 
@@ -303,43 +302,43 @@ where both models are correct/wrong or only BERT$_{FT}$/trigram is correct. Illu
 
 \section{Age Detection Analyses}
 \label{sec:exp1_analyses}
-Predominantly with the goal of obtaining insight about age-related distinguishing features in dialogue that can inform our subsequent experiment on age-adaptive dialogue generation (Experiment 2 in Chapter \ref{ch:experiment2}), we focus our analysis on the classification results obtained on the dialogue dataset. In particular, we compare the two best-performing models, namely BERT$_{FT}$
+Predominantly with the goal of obtaining insight about age-related distinguishing features in dialogue that can inform the subsequent experiment on age-adaptive dialogue generation (Experiment 2 in Chapter \ref{ch:experiment2}), the analysis is focused on the classification results obtained on the dialogue dataset. In particular, I compare the two best-performing models, namely BERT$_{FT}$
 and the one using trigrams, and aim to shed light on  what cues they use to solve the task.
-We first analyze how these models perform with respect to utterances of various topics.
-Secondly, we compare the prediction patterns of the two models, which allows us to highlight easy and hard examples.
-Finally, we focus on the trigram model and report the $n$-grams that turn out to be most informative to distinguish between age groups.
+First, I analyze how these models perform with respect to utterances of various topics.
+Secondly, I compare the prediction patterns of the two models, which allows for highlighting of easy and hard examples.
+Finally, I focus on the trigram model and report the $n$-grams that turn out to be most informative to distinguish between age groups.
 
 
 \subsection{Performance Against Topic}
 
 As described in Section~\ref{sec:datadialogue}, each utterance in the dialogue dataset is annotated with one label which is representative of its topic.\footnote{In particular, it represents one of the utterance's topic, i.e., the one most frequently used in the whole data.} This information is not explicitly available to the models.
-To explore how the two models deal with utterances in different topical contexts, we compare the accuracy they achieve on the 15 most frequent topics. The results are shown in Figure~\ref{fig:bnc_tri_bert_acc_topics_w_none}. Two main observations can be made: Firstly, some topics turn out to be generally easier/harder than others, i.e., both models achieve higher/lower performance. To illustrate, both models achieve an accuracy well above 70\% on topics like \emph{food}, \emph{holidays} or \emph{university}, while topics such as \emph{tv}, \emph{family} or \emph{no info} appear to be generally more challenging for both models. While this could be due to (a combination of) various factors, one intuitive possibility is that certain topics allow for more discriminative language features, which could be at the level of the lexicon or the style used to talk about them.
+To explore how the two models deal with utterances in different topical contexts, I compare the accuracy they achieve on the 15 most frequent topics. The results are shown in Figure~\ref{fig:bnc_tri_bert_acc_topics_w_none}. Two main observations can be made: Firstly, some topics turn out to be generally easier/harder than others, i.e., both models achieve higher/lower performance. To illustrate, both models achieve an accuracy well above 70\% on topics like \emph{food}, \emph{holidays} or \emph{university}, while topics such as \emph{tv}, \emph{family} or \emph{no info} appear to be generally more challenging for both models. While this could be due to (a combination of) various factors, one intuitive possibility is that certain topics allow for more discriminative language features, which could be at the level of the lexicon or the style used to talk about them.
 
-Secondly, some topics appear to be easier for one model rather than the other, and \emph{vice versa}. To illustrate, the trigram model outperforms BERT on the topics \emph{weather}, \emph{holidays} and \emph{tv}, while an opposite pattern is observed for \emph{work}, \emph{health}, and \emph{future plans}. We conjecture that these patterns could be indicative of different strategies and cues exploited by various models to make a prediction. 
-% We explore this issue more in-depth in the following section, where we compare the predictions by the two models and qualitatively inspect some examples.
+Secondly, some topics appear to be easier for one model rather than the other, and \emph{vice versa}. To illustrate, the trigram model outperforms BERT on the topics \emph{weather}, \emph{holidays} and \emph{tv}, while an opposite pattern is observed for \emph{work}, \emph{health}, and \emph{future plans}. I conjecture that these patterns could be indicative of different strategies and cues exploited by various models to make a prediction. 
+% I explore this issue more in-depth in the following section, where I compare the predictions by the two models and qualitatively inspect some examples.
 
 \subsection{Comparing Model Predictions}
 \label{subsec:exp1_comparing_model_preds}
-We split the data for analysis by whether or not both models make the same correct or incorrect prediction, or whether they differ. Table~\ref{tab:bnc_tri_bert_cases} shows the breakdown of these results.
+The data for analysis is split by whether or not both models make the same correct or incorrect prediction, or whether they differ. Table~\ref{tab:bnc_tri_bert_cases} shows the breakdown of these results.
 As can be seen, a quite large fraction of samples are correctly classified by both models (63.17\%), while in 19.78\% cases neither of the models make a correct prediction. The remaining cases are comparably split between cases where only one of the two is correct, with BERT slightly outperforming the trigram model by 1.23 percentage points. %, but the other is not.
 As shown in Figure~\ref{fig:bnc_blog_age_topic_dist_incl_unk}, the 19-29 age group appears to be be slightly easier compared to the 50+ group, where models are observed to make more errors: the trigram misclassifies 50+ utterances 1.12 times as often as 19-29 utterances, and 1.17 times as often by BERT$_{FT}$.
 
-To qualitatively inspect what the utterances falling into these classes look like, in Table~\ref{tab:qualexamples} we show a few cherry-picked cases for each age group. 
+To qualitatively inspect what the utterances falling into these classes look like, in Table~\ref{tab:qualexamples} a few cherry-picked cases are shown for each age group. 
 % \raq{
-We notice that, not surprisingly, both models have trouble with backchanneling utterances consisting of a single word, such as \emph{yeah}, \emph{mm}, or \emph{really?}, which are used by both age groups.
+It is observed that, not surprisingly, both models have trouble with backchanneling utterances consisting of a single word, such as \emph{yeah}, \emph{mm}, or \emph{really?}, which are used by both age groups.
 % }
 For example, both models seem to consider \emph{yeah} as a `younger' cue, which leads to wrong predictions when \emph{yeah} is used by a speaker in the 50+ group. As for the utterance \emph{really?}, BERT$_{FT}$ assigns it to the 50+ group, while the trigram model makes the opposite prediction.
 % \raq{
 This indicates that certain utterances simply do not contain sufficient distinguishing information, and model predictions that are based on them should therefore not be considered reliable.
 % should not be considered reliable??
 
-This seems to be particularly the case for short utterances. Indeed, through comparing the average length of the utterances incorrectly classified by both models (rightmost column of Table~\ref{tab:bnc_tri_bert_cases}), we notice that they are much shorter than those belonging to the other cases. This is interesting, and indicates a key challenge in the analysis of dialogue data: 
+This seems to be particularly the case for short utterances. Indeed, through comparing the average length of the utterances incorrectly classified by both models (rightmost column of Table~\ref{tab:bnc_tri_bert_cases}), it is seen that they are much shorter than those belonging to the other cases. This is interesting, and indicates a key challenge in the analysis of dialogue data: 
 on average, shorter utterances contain less signal. On the other hand, short utterances can provide rich conversational signal in dialogue; for example, backchanneling, exclamations, or other acknowledging acts. As a consequence, using length alone as a filter is not an appropriate approach, as it can remove aspects of language use key to differentiating speaker groups.
 
 
 \subsection{Most Informative N-grams}
 \label{subsec:exp1_most_inf_ngrams}
-%\js{todo: analysis on trigrams: both quant and qual because we select them based on their effectiveness (top 10) + perform more qual investigation (e.g. nouns, content words, idiosyncratic expressions; also related to point below) (optional, but very nice) analysis of features wrt topics: are there features that are not dependent on the topic under discussion (i.e., more "linguistic" features)?}
+%\js{todo: analysis on trigrams: both quant and qual because I select them based on their effectiveness (top 10) + perform more qual investigation (e.g. nouns, content words, idiosyncratic expressions; also related to point below) (optional, but very nice) analysis of features wrt topics: are there features that are not dependent on the topic under discussion (i.e., more "linguistic" features)?}
 
 \begin{table}[H]
     \centering
@@ -411,10 +410,10 @@ Analyzing the most informative $n$-grams
 % \raq{
 used by the trigram model
 %} 
-allows us to qualitatively compare the linguistic differences inherent to each age group. In Table~\ref{tab:top_ngrams_ws} we report the top 15 $n$-grams per group.
+allows for qualitative comparison between the linguistic differences inherent to each age group. In Table~\ref{tab:top_ngrams_ws}, the top 15 most informative $n$-grams per group are reported.
 % within the BNC. 
 % \raq{Table XX shows the top 15 n-grams per group.} 
-We find, firstly and intuitively, that colloquial language seems somewhat generational, with unigrams particularly indicative of younger speakers consisting of words such as 
+It appears that, primarily and intuitively, that colloquial language seems somewhat generational, with unigrams particularly indicative of younger speakers consisting of words such as 
 \emph{cool} and \emph{massive}, and
 % and foul language such as \emph{s**t}, \emph{f**k} and \emph{b***h}, and
 % \textit{`awesome' and `col' `massive' `lol' `literally' `mate'}, 
@@ -437,8 +436,8 @@ Interestingly, while topic words make up many of the most informative $n$-grams 
 % love}. 
 A key finding from~\citet{schler2006effects} is in the sentiment of language playing an important role, something which some of the most informative $n$-grams suggest may also be true for the dialogue dataset. As Table~\ref{tab:top_ngrams_ws} demonstrates, younger speakers use more dramatic language % in the younger speakers 
 such as negative foul words, and positive \textit{love, cute, cool}; all words with a strong connotative meaning. 
-%\textit{hate, really good, oh gosh, excited, scared}, whereas older speakers are comparatively more moderate. \san{Not sure we have examples of dramatic language in the table anymore; in any case, this paragraph needs to be updated} 
-This prompts us to hypothesize that further inspection is needed to determine whether the same sentiment pattern will be true of dialogue as it has been reported to be in discourse.
+%\textit{hate, really good, oh gosh, excited, scared}, whereas older speakers are comparatively more moderate. \san{Not sure I have examples of dramatic language in the table anymore; in any case, this paragraph needs to be updated} 
+This prompts me to hypothesize that further inspection is needed to determine whether the same sentiment pattern will be true of dialogue as it has been reported to be in discourse.
 
 \begin{table}[H]
     \centering
