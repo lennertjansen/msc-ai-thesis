@@ -69,7 +69,7 @@
 %     \label{tab:summary_corpora}
 % \end{table}
 
-One of the used datasets is one of dialogue data where information about the age of the speakers involved in the conversation is available (see the dialogue snippets in Figure~\ref{fig:ex1}), i.e., the spoken partition of the British National Corpus~\citep{love-spoken-bnc-2014}. It is henceforth referred to as the \emph{dialogue} dataset. For comparison with previous work,
+One of the used datasets is one of dialogue data where information about the age of the speakers involved in the conversation is available (see the dialogue snippets in Figure~\ref{fig:ex1}), i.e., the spoken partition of the British National Corpus~\citep{love-spoken-bnc-2014}. It is henceforth referred to as the \emph{dialogue} dataset. For comparison with previous work
 and to explore commonalities and differences between various types of language data,
 I also experiment with a dataset of discourse data, i.e., the Blog Authorship Corpus used by \citet{schler2006effects}, that is henceforth referred to as the \emph{discourse} dataset.
 Below, I briefly describe the two datasets along with the pre-processing steps taken to
@@ -107,7 +107,7 @@ the experiments.
 \caption{Example dialogue snippets from speakers of different age groups (19-29 vs.\ 50+) in the British National Corpus.
 % \san{To be double-checked that A and B is correct + why they are not adjacent turns.}
 I conjecture that stylistic and lexical differences between age groups can be detected.
-In my approach, experiments are conducted at the level of the single utterance.}\label{fig:ex1}
+In my approach, experiments are conducted at the level of a single utterance.}\label{fig:ex1}
 \end{figure}
 %-------------END OF FIG---------------
 
@@ -136,9 +136,9 @@ discourse & 3             & 678,165    & 137M      & 201.7 ($\pm$415.9)     & 1 
 
 % \san{Here I only describe BNC: remember to make comparisons with BAC wrt length of utterances; number of age brackets, etc.}
 
-This partition of the British National Corpus includes spoken informal open-domain conversations between people that were collected between 2012 and 2016 via crowd-sourcing, and then recorded and transcribed by the creators. Dialogues can be between two or more interlocutors, and are annotated
+This partition of the British National Corpus includes spoken informal open-domain conversations between people that were collected between 2012 and 2016 via crowd-sourcing and then recorded and transcribed by the creators. Dialogues can be between two or more interlocutors and are annotated
 % at the utterance level 
-along several dimensions including age and gender together with geographic and social indicators. Speaker ages in the original dataset are categorized in the following ten brackets: 0-10, 11-18, 19-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89, and 90-99.
+along several dimensions, including age and gender, together with geographic and social indicators. Speaker ages in the original dataset are categorized in the following ten brackets: 0-10, 11-18, 19-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89, and 90-99.
 
 
 The focus is on conversations in the British National Corpus that took place between two interlocutors,
@@ -152,8 +152,8 @@ The intermediate age brackets are omitted to allow for clearer differentiation.
 
 The dialogues are split into their constituent utterances (e.g., from each dialogue snippet in Figure~\ref{fig:ex1} three utterances are extracted), and further pre-process them by removing non-alphabetical characters.
 % and stopwords, by using the Natural Language Toolkit (NLTK) English stopword list \cite{bird2009natural}. 
-Only samples which were not empty after pre-processing were kept.
-The resulting dialogue dataset, that is used for the experiments, includes around 67K utterances with an average length of 11.7 tokens. Descriptive statistics of it are reported in Table~\ref{tab:summary_corpora}.
+Only samples that were not empty after pre-processing were kept.
+The resulting dialogue dataset that is used for the experiments includes around 67K utterances with an average length of 11.7 tokens. Descriptive statistics of it are reported in Table~\ref{tab:summary_corpora}.
 
 Each conversation in the British National Corpus is annotated with a list of \emph{topics} provided by the speakers during data collection. However, it is desirable to obtain a better picture of how single representative dialogue topics are distributed among the age groups.
 % Since topic may constitute a confound for models toward detecting speakers' age group, I leverage this annotation to extract one single topic per utterance. 
@@ -162,9 +162,6 @@ Thus, to extract a single representative topic from this list, I first compute t
 In total, the final dataset includes 790 unique topic labels. The distribution of the most frequent ones is reported in Figure~\ref{fig:bnc_age_topic_dist_incl_unk}. As can be seen, frequent topics (besides the frequent \emph{none} label) are \emph{food}, \emph{work}, and \emph{holidays}, which reveals the colloquial and everyday nature of the dialogues in this dataset.
 
 \subsection{Discourse Dataset}
-% \san{Here I only describes BAC}
-
-% The second corpus is a dataset of 
 The Blog Authorship Corpus~\citep{schler2006effects} is a collection of blog posts
 % dataset is a corpus of blogs
 written on \url{https://www.blogger.com}, gathered in or before August 2004. % All blog entries are 
@@ -174,7 +171,7 @@ whose age, gender, and astrological sign are reported.
 The corpus contains almost 700,000 posts by 19,000 unique bloggers (i.e., $\sim$35 posts per blogger on average).
 % The original corpus consists of blog entries written by more than 19,000 bloggers, for a total of almost 700,000 posts, and over 140M words. 
 For my experiments, similar to~\citet{schler2006effects},
-three age groups are considered: 13-17, 23-27, and 33+. The data are pre-processed in the same way as described above, namely by removing non-alphabetical characters. The resulting dataset, that is use for the experiments, includes slightly more than 678K samples with an average length of 201.7 tokens. Descriptive statistics of it are reported in Table~\ref{tab:summary_corpora}. 
+three age groups are considered: 13-17, 23-27, and 33+. The data are pre-processed in the same way as described above, namely by removing non-alphabetical characters. The resulting dataset that is used for the experiments includes slightly more than 678K samples with an average length of 201.7 tokens. Descriptive statistics of it are reported in Table~\ref{tab:summary_corpora}. 
 % \len{TODO - Adjust paragraph to W.S. setting.}
 
 % only consider three age brackets, leaving gaps in between the age groups to avoid as much overlapping language use as possible between the classes. Similar to \citeauthor{schler2006effects}, I consider the following age brackets: 13-17, 23-27, and 33+.
@@ -183,7 +180,7 @@ three age groups are considered: 13-17, 23-27, and 33+. The data are pre-process
 %\paragraph{Topics}
 Each sample in the Blog Authorship Corpus is annotated with one topic. In my final discourse dataset, the unique topics present are 40. Figure~\ref{fig:blog_age_topic_dist_incl_unk} reports the distribution of the most frequent ones. As can be noted, frequent topics are \emph{student}, \emph{arts}, and \emph{technology}, which 
 reveals that this and the dialogue dataset are rather different with respect to the topic themes, input text length, and how well the topics are organized. 
-Namely, the discourse dataset has a clear over-representation of topics related to student life, compared to the more colloquial and everyday subject matter of the dialogue dataset. Furthermore, the descriptive statistics in Table~\ref{tab:summary_corpora} show that the average data-entry length in tokens of the discourse dataset is almost 20 times larger than that of the dialogue dataset. Additionally, the differences number of unique topics (790 in dialogue dataset versus 40 in discourse dataset) between the two datasets illustrates the increased noisiness of the dialogue dataset compared to the discourse dataset. The shorter and noisier form of the dialogue dataset could make it more challenging to perform automated age group detection on its texts, as they are likely to carry less and more distorted discriminative signal.
+Namely, the discourse dataset has a clear over-representation of topics related to student life, compared to the more colloquial and everyday subject matter of the dialogue dataset. Furthermore, the descriptive statistics in Table~\ref{tab:summary_corpora} show that the average data-entry length in tokens of the discourse dataset is almost 20 times larger than that of the dialogue dataset. Additionally, the differences number of unique topics (790 in dialogue dataset versus 40 in discourse dataset) between the two datasets illustrates the increased noisiness of the dialogue dataset compared to the discourse dataset. The shorter and noisier form of the dialogue dataset could make it more challenging to perform automated age group detection on its texts, as they are likely to carry less discriminative signal with more noise.
 % and has only one topic per data-entry, compared to an average of \len{find average topic list length of bnc} topics per dialogue.
 
 
@@ -202,7 +199,7 @@ Namely, the discourse dataset has a clear over-representation of topics related 
         \caption{}
         \label{fig:blog_age_topic_dist_incl_unk}
      \end{subfigure}
-        \caption{Distribution of most frequent topics shown by age group, in the \textbf{dialogue dataset} ((a) / left) and \textbf{discourse dataset} ((b) / right). Best viewed in color.}
+        \caption{Distribution of most frequent topics shown by age group in the \textbf{dialogue dataset} ((a) / left) and \textbf{discourse dataset} ((b) / right). Best viewed in color.}
         \label{fig:bnc_blog_age_topic_dist_incl_unk}
 \end{figure}
 
